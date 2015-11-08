@@ -38,40 +38,43 @@ function topGames(data) {
   var TopGames = React.createClass({
     displayName: "TopGames",
 
-    render: function() {
-      var allProps = this.props;
+    render: function render() {
       return React.createElement(
-        "div",
-        { "className" : "game-item" },
-        React.createElement(
-          "h1",
-          null,
-          this.props.title
-        ),
-        React.createElement(
-          "img",
-          { "src" : this.props.src }
-        ),
-        React.createElement(
-          "span",
-          { "className" : "stats" },
-          React.createElement(
-            "span",
-            null,
-            this.props.viewers
-          ),
-          "/",
-          React.createElement(
-            "span",
-            null,
-            this.props.channels
+        "ul",
+        { "className" : "games-list" },
+        this.props.data.top.map(function(item, ind) {
+          return React.createElement(
+            "li",
+            { "key" : item + ind, "className" : "game-item" },
+            React.createElement(
+              "h1",
+              null,
+              item.game.title
+            ),
+            React.createElement(
+              "img",
+              { "src" : item.game.box.small }
+            ),
+            React.createElement(
+              "span",
+              { "className" : "stats" },
+              React.createElement(
+                "span",
+                null,
+                item.viewers
+              ),
+              "/",
+              React.createElement(
+                "span",
+                null,
+                item.channels
+              )
+            )
           )
-        )
+        })
       );
     }
   });
 
-  data.top.map(function(item) {
-    ReactDOM.render(React.createElement(TopGames, { "title" : item.game.name, "src" : item.game.box.small, "viewers" : item.viewers, "channels" : item.channels }), document.getElementById("online-streams"));
-  });
+    ReactDOM.render(React.createElement(TopGames, { data : data }), document.getElementById("online-streams"));
 }
