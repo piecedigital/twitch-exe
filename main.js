@@ -20,29 +20,38 @@ var ajax = function(optionsObj) {
 //////////////////////////////
 // app ///////////////////////
 //////////////////////////////
-function getGames() {
-  ajax({
-    url: "https://api.twitch.tv/kraken/games/top",
-    success: function(data) {
-      console.log(JSON.parse(data.target.response));
-      topGames(JSON.parse(data.target.response));
-    },
-    error: function(data) {
-      console.log(data)
-    }
-  });
-}
-getGames();
-
-function topGames(data) {
+function topGames() {
   var TopGames = React.createClass({
     displayName: "TopGames",
 
+    getGames: function() {
+      var classInstance = this;
+      ajax({
+        url: "https://api.twitch.tv/kraken/games/top",
+        success: function(data) {
+          console.log(JSON.parse(data.target.response));
+          console.log(classInstance)
+          classInstance.setState({games: JSON.parse(data.target.response)});
+        },
+        error: function(data) {
+          console.log(data)
+        }
+      });
+    },
+    getInitialState: function() {
+      return { games : {} };
+    },
+    componentDidMount: function() {
+      this.getGames();
+    },
     render: function render() {
+      if(this.state.games !== {}) {
+        return false;
+      }
       return React.createElement(
         "ul",
         { "className" : "games-list" },
-        this.props.data.top.map(function(item, ind) {
+        this.state.data.top.map(function(item, ind) {
           return React.createElement(
             "li",
             { "key" : item + ind, "className" : "game-item" },
@@ -76,5 +85,6 @@ function topGames(data) {
     }
   });
 
-    ReactDOM.render(React.createElement(TopGames, { data : data }), document.getElementById("online-streams"));
+  ReactDOM.render(React.createElement(TopGames, null), document.getElementById("online-streams"));
 }
+topGames();
