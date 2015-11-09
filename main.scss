@@ -1,0 +1,248 @@
+//////////////////////// Sass Prerequisites //////////////////////////
+/* font size */
+$em: 16px;
+
+///////////////////// Main Styling /////////////////////////////////
+/*///////////////////////// prerequisites /////////////////////////*/
+/* import styles */
+/* mixins */
+@import "const-modules/_mixins";
+
+/* defaults */
+@import "_defaults";
+html {
+	font-size: $em;
+}
+.page-wrap-960 {
+	max-width: 960px;
+}
+/* scrollbar */
+@import "_scrollbar";
+/* end import styles */
+
+/* optional styles */
+
+/* position */
+
+/* arrows */
+
+/* colors */
+
+/* column styles */
+.col-6-5-4-3-2-1 {
+	display: inline-block;
+	width: 16.6666666666668%;
+}
+.col-5-4-3-2-1 {
+	display: inline-block;
+	width: 20%;
+}
+.col-4-3-2-1 {
+	display: inline-block;
+	width: 25%;
+}
+.col-3-2-1 {
+	display: inline-block;
+	width: 33.3333333%;
+}
+
+/* width styles */
+
+/* height styles */
+
+/* font styles */
+
+/* padding styles */
+/* x-axis */
+
+/* y-axis */
+
+/* top */
+
+/* bottom */
+
+/* left */
+
+/* right */
+
+/* margin styles */
+/* x-axis */
+
+/* y-axis */
+
+/* top */
+
+/* bottom */
+
+/* left */
+
+/* right */
+
+/* border radius */
+
+/* buttons */
+
+
+/*///////////////////////// content styling /////////////////////////*/
+/* body ----------------------------*/
+body {
+	background-color: #6441a5;
+	color: rgba(40, 40, 40, 1);
+	padding: 0;
+	margin: 0;
+}
+#main-content {
+	display: block;
+	max-width: 960px;
+	background-color: rgba(250, 250, 250, 1);
+	margin: auto;
+}
+.separator {
+	height: .2*$em;
+	margin: .5*$em 0;
+}
+.small-separator {
+	height: .1*$em;
+	margin: .1*$em 0;
+}
+.separator, .small-separator {
+	display: block;
+	width: 100%;
+	padding: 0 3*$em;
+	border-radius: 5px;
+	& span {
+		display: block;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(160, 160, 160, 1);
+		
+	}
+}
+
+.section-title {
+	margin: 0 0 1*$em;
+}
+
+#games-list, #streams-list {
+	& .game-item, .stream-item {
+		display: inline-block;
+		position: relative;
+		vertical-align: top;
+		padding: 0 1*$em;
+		margin: 0 0 1*$em;
+		& img {
+			max-width: 100%;
+			max-height: 100%;
+		}
+		& .title {
+			display: block;
+			height: 3*$em;
+			font-size: 1*$em;
+			color: rgba(40, 40, 40, 1);
+		}
+		& .stats {
+			display: block;
+			font-size: .7*$em;
+			color: rgba(100, 100, 100, 1);
+		}
+	}
+}
+/* hover events ----------------------------*/
+
+/*///////////////////////// responsive styling /////////////////////////*/
+@include media-max(950px) {
+	/* prereqs ----------------------------*/
+	.col-6-5-4-3-2-1 {
+		width: 20%;
+	}
+	.col-5-4-3-2-1 {
+		width: 25%;
+	}
+	.col-4-3-2-1 {
+		width: 33.3333333%;
+	}
+	/* header ----------------------------*/
+	/* body ----------------------------*/
+	/* footer ----------------------------*/
+	/* hover events ----------------------------*/
+}
+@include media-max(850px) {
+	/* prereqs ----------------------------*/
+	.col-6-5-4-3-2-1 {
+		width: 25%;
+	}
+	/* header ----------------------------*/
+	/* body ----------------------------*/
+	/* footer ----------------------------*/
+	/* hover events ----------------------------*/
+}
+@include media-max(750px) {
+	/* prereqs ----------------------------*/
+	.col-6-5-4-3-2-1 {
+		width: 33.3333333%;
+	}
+	.col-5-4-3-2-1 {
+		width: 33.3333333%;
+	}
+	.col-4-3-2-1 {
+		width: 50%;
+	}
+	.col-3-2-1 {
+		width: 50%;
+	}
+	/* header ----------------------------*/
+	/* body ----------------------------*/
+	/* footer ----------------------------*/
+	/* hover events ----------------------------*/
+}
+@include media-max(650px) {
+	/* prereqs ----------------------------*/
+	.col-6-5-4-3-2-1 {
+		width: 50%;
+	}
+	/* header ----------------------------*/
+	/* body ----------------------------*/
+	/* footer ----------------------------*/
+	/* hover events ----------------------------*/
+}
+@include media-max(550px) {
+	/* prereqs ----------------------------*/
+	.col-6-5-4-3-2-1 {
+		display: block;
+		width: 100%;
+	}
+	.col-5-4-3-2-1 {
+		width: 50%;
+	}
+	.col-4-3-2-1 {
+		display: block;
+		width: 100%;
+	}
+	.col-3-2-1 {
+		display: block;
+		width: 100%;
+	}
+	/* header ----------------------------*/
+	/* body ----------------------------*/
+	/* footer ----------------------------*/
+	/* hover events ----------------------------*/
+}
+@include media-max(450px) {
+	/* prereqs ----------------------------*/
+	.col-5-4-3-2-1 {
+		display: block;
+		width: 100%;
+	}
+	/* header ----------------------------*/
+	/* body ----------------------------*/
+	/* footer ----------------------------*/
+	/* hover events ----------------------------*/
+}
+@include media-max(350px) {
+	/* prereqs ----------------------------*/
+	/* header ----------------------------*/
+	/* body ----------------------------*/
+	/* footer ----------------------------*/
+	/* hover events ----------------------------*/
+}
+/*///////////////////////// animations /////////////////////////*/

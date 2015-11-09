@@ -1,5 +1,27 @@
 {
-	"name": "Twitch Stream Viwerer",
-	"version": "1.0.0",
-	"main": "app.js"
+  "name": "Twitch Stream Viewer",
+  "version": "1.0.0",
+  "main": "app.js",
+  "description": "Desktop application for viewing Twitch.tv streams",
+  "keywords": [
+    "node",
+    "twich",
+    "livestream",
+    "viewer"
+  ],
+  "engines": {
+    "node": "^4.x.x"
+  },
+  "dependencies": {},
+  "author": {
+    "name": "Darryl Dixon",
+    "email": "piecedigitalstudios@gmail.com",
+    "url": "http://piecedigital.github.io"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.9.12",
+    "gulp": "^3.9.0",
+    "gulp-run": "^1.6.11",
+    "node-sass": "^3.4.1"
+  }
 }

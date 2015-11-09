@@ -2,7 +2,6 @@
 /*///////////////////////// prerequisites /////////////////////////*/
 /* custom styles */
 *, *:before, *:after {
-  font-size: 16px;
   box-sizing: border-box;
   font-family: sans-serif;
   transition: 0.5s all;
