@@ -26,14 +26,14 @@ var HomePage = React.createClass({
       { "id" : "front-page" },
       React.createElement(
         "h1",
-        { className : "unset section-title x-pad-1_0" },
+        { className : "section-title" },
         "Top Games"
       ),
       React.createElement(TopGames),
       separator,
       React.createElement(
         "h1",
-        { className : "unset section-title x-pad-1_0" },
+        { className : "section-title" },
         "Top Streams"
       ),
       React.createElement(TopStreams)
@@ -72,7 +72,7 @@ var TopGames = React.createClass({
     }
     return React.createElement(
       "ul",
-      { "id" : "games-list", "className" : "unset x-pad-1_0 center-justify" },
+      { "id" : "games-list", "className" : "" },
       this.state.games.top.map(function(item, ind) {
         return React.createElement(
           "li",
@@ -137,11 +137,11 @@ var TopStreams = React.createClass({
     }
     return React.createElement(
       "ul",
-      { "id" : "streams-list", "className" : "unset x-pad-1_0" },
+      { "id" : "streams-list", "className" : "" },
       this.state.streams.featured.map(function(item, ind) {
         return React.createElement(
           "li",
-          { "key" : "stream-item" + ind, "className" : "stream-item inline-block col-3-2-1" },
+          { "key" : "stream-item" + ind, "className" : "stream-item col-3-2-1" },
           React.createElement(
             "img",
             { "src" : item.stream.preview.large }
