@@ -123,13 +123,23 @@ body {
 	margin: 0 0 1*$em;
 	padding: 1*$em 1*$em 0;
 }
+#top-streams {
+	padding: 1*$em 10*$em 1*$em 1*$em;
+	background-color: rgba(60, 60, 60, 1);
+	& .top-streams-viewer {
+		max-width: 100%;
+		& .video {
+			width: 100%;
+		}
+	}
+}
 
-#games-list, #streams-list {
+#games-list, #featured-streams-list {
 	padding: 0;
 	margin: 0;
 	padding: 1*$em;
 	text-align: center;
-	& .game-item, .stream-item {
+	& .game-item, .featured-stream-item {
 		display: inline-block;
 		position: relative;
 		vertical-align: top;

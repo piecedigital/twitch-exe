@@ -1,6 +1,7 @@
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
 var shell = require("shell");
+var debug = require("debug")
 
 // Report crashes to our server.
 require('crash-reporter').start();
@@ -17,12 +18,22 @@ app.on('window-all-closed', function() {
     app.quit();
   }
 });
+console.log(__dirname)
+// pepper flash
+// Specify flash path.
+// On Windows, it might be /path/to/pepflashplayer.dll
+// On OS X, /path/to/PepperFlashPlayer.plugin
+// On Linux, /path/to/libpepflashplayer.so
+app.commandLine.appendSwitch('ppapi-flash-path', '' + __dirname + '/flash/pepflashplayer.dll');
+
+// Specify flash version
+app.commandLine.appendSwitch('ppapi-flash-version', '19.0.0.226');
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ "width" : 700, "height" : 700, "frame" : true, "icon" : __dirname + "/icon.png", "toolbar" : false, "auto-hide-menu-bar" : false, "title" :"Guide Cyberclub Chat" });
+  mainWindow = new BrowserWindow({ "width" : 700, "height" : 700, "web-preferences" : { "plugins" : true }, "frame" : true, "icon" : __dirname + "/icon.png", "toolbar" : false, "auto-hide-menu-bar" : false, "title" :"Guide Cyberclub Chat" });
 
   // and load the index.html of the app.
   mainWindow.loadUrl('file://' + __dirname + '/index.html');
