@@ -14,7 +14,9 @@ html {
   font-size: 16px; }
 
 .page-wrap-960 {
-  max-width: 960px; }
+  display: block;
+  max-width: 960px;
+  margin: auto; }
 
 /* scrollbar */
 ::-webkit-scrollbar {
@@ -116,6 +118,10 @@ html {
 /* border radius */
 /* buttons */
 /*///////////////////////// content styling /////////////////////////*/
+/* prereqs */
+.off-black {
+  background-color: #141414; }
+
 /* body ----------------------------*/
 body {
   background-color: white;
@@ -125,7 +131,6 @@ body {
 
 #main-content {
   display: block;
-  max-width: 960px;
   background-color: #fafafa;
   margin: auto; }
 
@@ -155,7 +160,6 @@ body {
 #top-streams {
   position: relative;
   padding: 16px 16px 16px;
-  background-color: #141414;
   text-align: right; }
   #top-streams .top-streams-viewer {
     position: absolute;
@@ -170,7 +174,8 @@ body {
     max-width: 368px;
     min-height: 352px;
     color: white;
-    margin: 0 0 16px; }
+    margin: 0 0 16px;
+    text-align: left; }
     #top-streams .top-streams-info p {
       margin: 0; }
     #top-streams .top-streams-info .top-stream-channel .image-div {
@@ -185,15 +190,21 @@ body {
     padding: 0;
     margin: 0;
     text-align: center; }
-    #top-streams #top-streams-list li {
-      padding: 8px; }
-      #top-streams #top-streams-list li img {
+    #top-streams #top-streams-list .top-stream-item {
+      padding: 8px;
+      -webkit-filter: grayscale(1); }
+      #top-streams #top-streams-list .top-stream-item img {
         max-width: 100%;
         max-height: 100%;
         box-shadow: 0 0 0 1.6px white;
-        opacity: .5; }
-      #top-streams #top-streams-list li.selected img {
-        opacity: 1; }
+        opacity: .5;
+        cursor: pointer; }
+        #top-streams #top-streams-list .top-stream-item img:hover {
+          opacity: 1; }
+      #top-streams #top-streams-list .top-stream-item.selected {
+        -webkit-filter: grayscale(0); }
+        #top-streams #top-streams-list .top-stream-item.selected img {
+          opacity: 1; }
 
 #games-list, #featured-streams-list {
   padding: 0;

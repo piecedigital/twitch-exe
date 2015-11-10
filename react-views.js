@@ -1,6 +1,27 @@
 //////////////////////////////
 // app ///////////////////////
 //////////////////////////////
+var pageWrap = function(attrs, content) {
+  var initAttrs = { "className" : "page-wrap-960" };
+
+  for(var key in attrs) {
+    initAttrs[key] = (initAttrs[key]) ? `${initAttrs[key]} ${attrs[key]}` : `${attrs[key]}`;
+  };
+
+  return React.createElement(
+    "div",
+    initAttrs,
+    content
+  );
+};
+var section = function(attrs, content) {
+  return React.createElement(
+    "section",
+    attrs,
+    content
+  );
+};
+
 var separator = React.createElement(
   "span",
   { className : "separator" },
@@ -17,6 +38,7 @@ var smallSeparator = React.createElement(
     null
   )
 );
+
 var HomePage = React.createClass({
   displayName: "HomePage",
 
@@ -24,21 +46,48 @@ var HomePage = React.createClass({
     return React.createElement(
       "div",
       { "id" : "front-page" },
-      React.createElement(TopStreams),
-      separator,
-      React.createElement(
-        "h1",
-        { className : "section-title" },
-        "Top Games"
+      section(
+        { "className" : "off-black" },
+        React.createElement(TopStreams)
       ),
-      React.createElement(TopGames),
-      separator,
-      React.createElement(
-        "h1",
-        { className : "section-title" },
-        "Featured Streams"
+      pageWrap(
+        null,
+        separator
       ),
-      React.createElement(FeaturedStreams)
+      section(
+        null,
+        pageWrap(
+          null,
+          React.createElement(
+            "h1",
+            { className : "section-title" },
+            "Top Games"
+          )
+        )
+      ),
+      section(
+        null,
+        React.createElement(TopGames)
+      ),
+      pageWrap(
+        null,
+        separator
+      ),
+      section(
+        null,
+        pageWrap(
+          null,
+          React.createElement(
+            "h1",
+            { className : "section-title" },
+            "Featured Streams"
+          )
+        )
+      ),
+      section(
+        null,
+        React.createElement(FeaturedStreams)
+      )
     );
   }
 });
@@ -48,11 +97,11 @@ var TopStreams = React.createClass({
 
   getStreams: function() {
     // sets variable to access the class object
-    var classInstance = this;
+    var elemInstance = this;
     ajax({
       url: "https://api.twitch.tv/kraken/streams/featured?limit=6",
       success: function(data) {
-        classInstance.setState({streams: JSON.parse(data.target.response)});
+        elemInstance.setState({streams: JSON.parse(data.target.response)});
         console.log("Top Streams", JSON.parse(data.target.response));
       },
       error: function(data) {
@@ -66,95 +115,100 @@ var TopStreams = React.createClass({
   componentDidMount: function() {
     this.getStreams();
   },
-  componentWillUpdate: function(nextProps, nextState) {
-    //console.log(nextState)
+  setStream: function(e) {
+    this.setState({ "index" : e.target.parentNode.attributes["data-item-index"].value });
+    document.querySelector(".top-stream-item.selected").className = document.querySelector(".top-stream-item.selected").className.replace(/selected/gi, "");
+    e.target.parentNode.className = e.target.parentNode.className + " selected";
   },
   render: function render() {
     if(!this.state.streams.featured) {
       return false;
     }
     // sets variable to access the class object
-    var classInstance = this;
+    var elemInstance = this;
 
-    return React.createElement(
-      "div",
-      { "id" : "top-streams" },
+    return pageWrap(
+      { "className" : "" },
       React.createElement(
         "div",
-        { "className" : "top-streams-viewer" },
-        React.createElement(
-          "iframe",
-          { "className" : "video", "src" : `${this.state.streams.featured[this.state.index].stream.channel.url}/embed`, "width" : "100%", "height" : "100%", "frameBorder" : "0" }
-        )
-      ),
-      React.createElement(
-        "div",
-        { "className" : "top-streams-info" },
+        { "id" : "top-streams" },
         React.createElement(
           "div",
-          { "className" : "top-stream-channel" },
+          { "className" : "top-streams-viewer" },
+          React.createElement(
+            "iframe",
+            { "className" : "video", "src" : `${this.state.streams.featured[this.state.index].stream.channel.url}/embed`, "width" : "100%", "height" : "100%", "frameBorder" : "0" }
+          )
+        ),
+        React.createElement(
+          "div",
+          { "className" : "top-streams-info" },
           React.createElement(
             "div",
-            { "className" : "image-div" },
+            { "className" : "top-stream-channel" },
             React.createElement(
-              "img",
-              { "className" : "", "src" : this.state.streams.featured[this.state.index].stream.channel.logo }
+              "div",
+              { "className" : "image-div" },
+              React.createElement(
+                "img",
+                { "className" : "", "src" : this.state.streams.featured[this.state.index].stream.channel.logo }
+              )
+            ),
+            React.createElement(
+              "div",
+              { "className" : "details-div" },
+              React.createElement(              "span",
+                { "className" : "" },
+                `${this.state.streams.featured[this.state.index].stream.channel.display_name}`
+              ),
+              React.createElement(
+                "br",
+                null
+              ),
+              React.createElement(
+                "span",
+                null,
+                `playing ${this.state.streams.featured[this.state.index].stream.game}`
+              )
             )
           ),
           React.createElement(
-            "div",
-            { "className" : "details-div" },
-            React.createElement(              "span",
-              { "className" : "" },
-              `${this.state.streams.featured[this.state.index].stream.channel.display_name}`
-            ),
-            React.createElement(
-              "br",
-              null
-            ),
-            React.createElement(
-              "span",
-              null,
-              `playing ${this.state.streams.featured[this.state.index].stream.game}`
-            )
+            "h1",
+            { "className" : "section-title" },
+            this.state.streams.featured[this.state.index].title
+          ),
+          React.createElement(
+            "p",
+            { "dangerouslySetInnerHTML" : { "__html" : this.state.streams.featured[this.state.index].text.replace(/<br>[\n]*.*/gi, "") } }
           )
         ),
         React.createElement(
-          "h1",
-          { "className" : "section-title" },
-          this.state.streams.featured[this.state.index].title
-        ),
-        React.createElement(
-          "p",
-          { "dangerouslySetInnerHTML" : { "__html" : this.state.streams.featured[this.state.index].text.replace(/<br>[\n]*.*/gi, "") } }
+          "ul",
+          { "id" : "top-streams-list", "className" : "" },
+          this.state.streams.featured.map(function(item, ind) {
+            return React.createElement(
+              "li",
+              { "key" : "top-stream-item" + ind, "className" : `${(ind === elemInstance.state.index) ? "selected" : ""} top-stream-item col-6-5-4-3-2-1`, "data-item-index" : ind },
+              React.createElement(
+                "img",
+                { "src" : item.stream.preview.medium, "onClick" : elemInstance.setStream }
+              )
+            )
+          })
         )
-      ),
-      React.createElement(
-        "ul",
-        { "id" : "top-streams-list", "className" : "" },
-        this.state.streams.featured.map(function(item, ind) {
-          return React.createElement(
-            "li",
-            { "key" : "top-stream-item" + ind, "className" : `${(ind === classInstance.state.index) ? "selected" : ""} top-stream-item col-6-5-4-3-2-1` },
-            React.createElement(
-              "img",
-              { "src" : item.stream.preview.medium }
-            )
-          )
-        })
       )
-    );
+    )
   }
 });
 var TopGames = React.createClass({
   displayName: "TopGames",
 
   getGames: function() {
-    var classInstance = this;
+    var elemInstance = this;
     ajax({
       url: "https://api.twitch.tv/kraken/games/top?limit=12",
       success: function(data) {
-        classInstance.setState({games: JSON.parse(data.target.response)});
+        elemInstance.setState({games: JSON.parse(data.target.response)});
         console.log("Top Games", JSON.parse(data.target.response));
       },
       error: function(data) {
@@ -175,51 +229,54 @@ var TopGames = React.createClass({
     if(!this.state.games.top) {
       return false;
     }
-    return React.createElement(
-      "ul",
-      { "id" : "games-list", "className" : "" },
-      this.state.games.top.map(function(item, ind) {
-        return React.createElement(
-          "li",
-          { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1" },
-          React.createElement(
-            "img",
-            { "src" : item.game.box.large }
-          ),
-          React.createElement(
-            "h1",
-            { "className" : "title" },
-            `${item.game.name}`
-          ),
-          React.createElement(
-            "span",
-            { "className" : "stats" },
+    return pageWrap(
+      null,
+      React.createElement(
+        "ul",
+        { "id" : "games-list", "className" : "" },
+        this.state.games.top.map(function(item, ind) {
+          return React.createElement(
+            "li",
+            { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1" },
             React.createElement(
-              "span",
-              null,
-              `Viewers: ${item.viewers}`
+              "img",
+              { "src" : item.game.box.large }
             ),
-            smallSeparator,
+            React.createElement(
+              "h1",
+              { "className" : "title" },
+              `${item.game.name}`
+            ),
             React.createElement(
               "span",
-              null,
-              `Channels: ${item.channels}`
+              { "className" : "stats" },
+              React.createElement(
+                "span",
+                null,
+                `Viewers: ${item.viewers}`
+              ),
+              smallSeparator,
+              React.createElement(
+                "span",
+                null,
+                `Channels: ${item.channels}`
+              )
             )
           )
-        )
-      })
-    );
+        })
+      )
+    )
   }
 });
 var FeaturedStreams = React.createClass({
   displayName: "FeaturedStreams",
 
   getStreams: function() {
-    var classInstance = this;
+    var elemInstance = this;
     ajax({
       url: "https://api.twitch.tv/kraken/streams/featured?limit=6",
       success: function(data) {
-        classInstance.setState({streams: JSON.parse(data.target.response)});
+        elemInstance.setState({streams: JSON.parse(data.target.response)});
         console.log("Top Streams", JSON.parse(data.target.response));
       },
       error: function(data) {
@@ -240,34 +297,37 @@ var FeaturedStreams = React.createClass({
     if(!this.state.streams.featured) {
       return false;
     }
-    return React.createElement(
-      "ul",
-      { "id" : "featured-streams-list", "className" : "" },
-      this.state.streams.featured.map(function(item, ind) {
-        return React.createElement(
-          "li",
-          { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-3-2-1" },
-          React.createElement(
-            "img",
-            { "src" : item.stream.preview.large }
-          ),
-          React.createElement(
-            "h1",
-            { "className" : "title"},
-            `${item.title}`
-          ),
-          React.createElement(
-            "span",
-            { "className" : "stats" },
+    return pageWrap(
+      null,
+      React.createElement(
+        "ul",
+        { "id" : "featured-streams-list", "className" : "" },
+        this.state.streams.featured.map(function(item, ind) {
+          return React.createElement(
+            "li",
+            { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-3-2-1" },
+            React.createElement(
+              "img",
+              { "src" : item.stream.preview.large }
+            ),
+            React.createElement(
+              "h1",
+              { "className" : "title"},
+              `${item.title}`
+            ),
             React.createElement(
               "span",
-              null,
-              `${item.stream.viewers} viewers on ${item.stream.channel.display_name}`
+              { "className" : "stats" },
+              React.createElement(
+                "span",
+                null,
+                `${item.stream.viewers} viewers on ${item.stream.channel.display_name}`
+              )
             )
           )
-        )
-      })
-    );
+        })
+      )
+    )
   }
 });
 
