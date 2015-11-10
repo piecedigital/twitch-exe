@@ -27,6 +27,7 @@ html {
 /* arrows */
 
 /* colors */
+$purple: #6441a5;
 
 /* column styles */
 .col-6-5-4-3-2-1 {
@@ -90,7 +91,7 @@ html {
 /*///////////////////////// content styling /////////////////////////*/
 /* body ----------------------------*/
 body {
-	background-color: #6441a5;
+	background-color: white;
 	color: rgba(40, 40, 40, 1);
 	padding: 0;
 	margin: 0;
@@ -103,7 +104,7 @@ body {
 }
 .separator {
 	height: .2*$em;
-	margin: .5*$em 0;
+	margin: 1*$em 0;
 }
 .small-separator {
 	height: .1*$em;
@@ -125,7 +126,7 @@ body {
 
 .section-title {
 	margin: 0 0 1*$em;
-	padding: 1*$em 1*$em 0;
+	padding: 0;
 }
 #top-streams {
 	position: relative;
@@ -250,7 +251,7 @@ body {
 	#top-streams {
 		& .top-streams-viewer {
 			width: 30*$em;
-			height: 21*$em;
+			height: 19*$em;
 		}
 		& .top-streams-info {
 			max-width: 13*$em;
@@ -280,7 +281,7 @@ body {
 		& .top-streams-viewer {
 			position: initial;
 			width: 100%;
-			height: 21*$em;
+			height: 27*$em;
 			margin: 0 0 1*$em;
 		}
 		& .top-streams-info {

@@ -24,11 +24,6 @@ var HomePage = React.createClass({
     return React.createElement(
       "div",
       { "id" : "front-page" },
-      React.createElement(
-        "h1",
-        { className : "section-title" },
-        "Top Streams"
-      ),
       React.createElement(TopStreams),
       separator,
       React.createElement(
