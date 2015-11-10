@@ -189,7 +189,11 @@ body {
       padding: 8px; }
       #top-streams #top-streams-list li img {
         max-width: 100%;
-        max-height: 100%; }
+        max-height: 100%;
+        box-shadow: 0 0 0 1.6px white;
+        opacity: .5; }
+      #top-streams #top-streams-list li.selected img {
+        opacity: 1; }
 
 #games-list, #featured-streams-list {
   padding: 0;

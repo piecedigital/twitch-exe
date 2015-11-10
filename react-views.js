@@ -52,6 +52,7 @@ var TopStreams = React.createClass({
   displayName: "TopStreams",
 
   getStreams: function() {
+    // sets variable to access the class object
     var classInstance = this;
     ajax({
       url: "https://api.twitch.tv/kraken/streams/featured?limit=6",
@@ -65,7 +66,7 @@ var TopStreams = React.createClass({
     });
   },
   getInitialState: function() {
-    return { "streams" : {}, "index" : 1 };
+    return { "streams" : {}, "index" : 0 };
   },
   componentDidMount: function() {
     this.getStreams();
@@ -77,6 +78,8 @@ var TopStreams = React.createClass({
     if(!this.state.streams.featured) {
       return false;
     }
+    // sets variable to access the class object
+    var classInstance = this;
 
     return React.createElement(
       "div",
@@ -137,7 +140,7 @@ var TopStreams = React.createClass({
         this.state.streams.featured.map(function(item, ind) {
           return React.createElement(
             "li",
-            { "key" : "top-stream-item" + ind, "className" : "top-stream-item col-6-5-4-3-2-1" },
+            { "key" : "top-stream-item" + ind, "className" : `${(ind === classInstance.state.index) ? "selected" : ""} top-stream-item col-6-5-4-3-2-1` },
             React.createElement(
               "img",
               { "src" : item.stream.preview.medium }
