@@ -45,6 +45,10 @@ html {
 	display: inline-block;
 	width: 33.3333333%;
 }
+.col-2 {
+	display: inline-block;
+	width: 50%;
+}
 
 /* width styles */
 
@@ -124,12 +128,53 @@ body {
 	padding: 1*$em 1*$em 0;
 }
 #top-streams {
-	padding: 1*$em 10*$em 1*$em 1*$em;
-	background-color: rgba(60, 60, 60, 1);
+	position: relative;
+	padding: 1*$em 1*$em 1*$em;
+	background-color: rgba(20, 20, 20, 1);
+	text-align: right;
 	& .top-streams-viewer {
-		max-width: 100%;
+		position: absolute;
+		top: 1*$em;
+		left: 1*$em;
+		width: 34*$em;
+		height: 21*$em;
 		& .video {
-			width: 100%;
+			border: none;
+		}
+	}
+	& .top-streams-info {
+		display: inline-block;
+		max-width: 23*$em;
+		min-height: 22*$em;
+		color: white;
+		margin: 0 0 1*$em;
+		& p {
+			margin: 0;
+		}
+		& .top-stream-channel {
+			& .image-div {
+				display: inline-block;
+				& img {
+					width: 64px;
+					padding: 0 .5*$em 0 0;
+				}
+			}
+			& .details-div {
+				display: inline-block;
+				vertical-align: top;
+			}
+		}
+	}
+	& #top-streams-list {
+		padding: 0;
+		margin: 0;
+		text-align: center;
+		& li {
+			padding: .5*$em;
+			& img {
+				max-width: 100%;
+				max-height: 100%;
+			}
 		}
 	}
 }
@@ -178,6 +223,15 @@ body {
 	}
 	/* header ----------------------------*/
 	/* body ----------------------------*/
+	#top-streams {
+		& .top-streams-viewer {
+			width: 34*$em;
+			height: 21*$em;
+		}
+		& .top-streams-info {
+			max-width: 16*$em;
+		}
+	}
 	/* footer ----------------------------*/
 	/* hover events ----------------------------*/
 }
@@ -188,6 +242,15 @@ body {
 	}
 	/* header ----------------------------*/
 	/* body ----------------------------*/
+	#top-streams {
+		& .top-streams-viewer {
+			width: 30*$em;
+			height: 21*$em;
+		}
+		& .top-streams-info {
+			max-width: 13*$em;
+		}
+	}
 	/* footer ----------------------------*/
 	/* hover events ----------------------------*/
 }
@@ -207,6 +270,19 @@ body {
 	}
 	/* header ----------------------------*/
 	/* body ----------------------------*/
+	#top-streams {
+		text-align: left;
+		& .top-streams-viewer {
+			position: initial;
+			width: 100%;
+			height: 21*$em;
+			margin: 0 0 1*$em;
+		}
+		& .top-streams-info {
+			max-width: 100%;
+			min-height: auto;
+		}
+	}
 	/* footer ----------------------------*/
 	/* hover events ----------------------------*/
 }

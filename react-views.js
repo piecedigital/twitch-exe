@@ -77,6 +77,7 @@ var TopStreams = React.createClass({
     if(!this.state.streams.featured) {
       return false;
     }
+
     return React.createElement(
       "div",
       { "id" : "top-streams" },
@@ -85,7 +86,7 @@ var TopStreams = React.createClass({
         { "className" : "top-streams-viewer" },
         React.createElement(
           "iframe",
-          { "className" : "video", "src" : `${this.state.streams.featured[this.state.index].stream.channel.url}/embed`, "width" : "100%", "height" : "100%" }
+          { "className" : "video", "src" : `${this.state.streams.featured[this.state.index].stream.channel.url}/embed`, "width" : "100%", "height" : "100%", "frameBorder" : "0" }
         )
       ),
       React.createElement(
@@ -95,13 +96,29 @@ var TopStreams = React.createClass({
           "div",
           { "className" : "top-stream-channel" },
           React.createElement(
-            "img",
-            { "className" : "", "src" : this.state.streams.featured[this.state.index].stream.channel.logo }
+            "div",
+            { "className" : "image-div" },
+            React.createElement(
+              "img",
+              { "className" : "", "src" : this.state.streams.featured[this.state.index].stream.channel.logo }
+            )
           ),
           React.createElement(
-            "span",
-            { "className" : "" },
-            `${this.state.streams.featured[this.state.index].stream.channel.display_name}<br>playing ${this.state.streams.featured[this.state.index].stream.game}`
+            "div",
+            { "className" : "details-div" },
+            React.createElement(              "span",
+              { "className" : "" },
+              `${this.state.streams.featured[this.state.index].stream.channel.display_name}`
+            ),
+            React.createElement(
+              "br",
+              null
+            ),
+            React.createElement(
+              "span",
+              null,
+              `playing ${this.state.streams.featured[this.state.index].stream.game}`
+            )
           )
         ),
         React.createElement(
@@ -109,7 +126,10 @@ var TopStreams = React.createClass({
           { "className" : "section-title" },
           this.state.streams.featured[this.state.index].title
         ),
-        this.state.streams.featured[this.state.index].text
+        React.createElement(
+          "p",
+          { "dangerouslySetInnerHTML" : { "__html" : this.state.streams.featured[this.state.index].text.replace(/<br>[\n]*.*/gi, "") } }
+        )
       ),
       React.createElement(
         "ul",

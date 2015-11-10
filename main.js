@@ -15,3 +15,11 @@ var ajax = function(optionsObj) {
   httpRequest.open((optionsObj.type || "GET"), optionsObj.url);
   httpRequest.send((optionsObj.data || null));
 }
+
+var parseHTML = function(text) {
+  var el = document.createElement("p");
+  el.innerHTML = text;
+  console.log(el)
+  console.log(el.querySelector("p"))
+  return el
+}

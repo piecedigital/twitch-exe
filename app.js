@@ -18,13 +18,13 @@ app.on('window-all-closed', function() {
     app.quit();
   }
 });
-console.log(__dirname)
+
 // pepper flash
 // Specify flash path.
 // On Windows, it might be /path/to/pepflashplayer.dll
 // On OS X, /path/to/PepperFlashPlayer.plugin
 // On Linux, /path/to/libpepflashplayer.so
-app.commandLine.appendSwitch('ppapi-flash-path', '' + __dirname + '/flash/pepflashplayer.dll');
+app.commandLine.appendSwitch('ppapi-flash-path', __dirname + '/flash/pepflashplayer.dll');
 
 // Specify flash version
 app.commandLine.appendSwitch('ppapi-flash-version', '19.0.0.226');
