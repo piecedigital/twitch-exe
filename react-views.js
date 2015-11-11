@@ -44,9 +44,10 @@ var ViewParent = React.createClass({
   displayName: "ViewParent",
 
   getInitialState: function() {
-    return { "page" : HomePage, "streamer" : null };
+    return { "page" : "HomePage", "streamer" : null };
   },
   changeView: function(e) {
+    console.log(e.target)
     this.setState({ "page" : e.target.attributes["data-page-link"].value});
   },
   viewStream: function(e) {
@@ -80,7 +81,7 @@ var ViewParent = React.createClass({
     {
       var streamer = e.target.attributes["data-stream-link"].value;
 
-      var src = `http://twitch.tv/${streamer.toLowerCase()}/`;
+      var src = `http://twitch.tv/${streamer}/`;
       var videoSrc = `${src}embed`;
       var chatSrc = `${src}chat`;
       var viewer = document.querySelector("#stream-viewer");
@@ -95,7 +96,7 @@ var ViewParent = React.createClass({
     return React.createElement(
       "div",
       { "id" : "view-parent" },
-      React.createElement(this.state.page),
+      React.createElement(window[this.state.page]),
       React.createElement(
         "div",
         { "id" : "stream-viewer" },
@@ -205,13 +206,24 @@ var HomePage = React.createClass({
     );
   }
 });
+var GameListPage = React.createClass({
+  displayName: "GameListPage",
+
+  render: function render() {
+    return React.createElement(
+      "div",
+      { "id" : "game-list-page" },
+      "game page"
+    );
+  }
+});
 var StreamListPage = React.createClass({
   displayName: "StreamListPage",
 
   render: function render() {
     return React.createElement(
       "div",
-      { "id" : "home-page" },
+      { "id" : "stream-list-page" },
       "new page"
     );
   }
@@ -321,7 +333,7 @@ var TopStreams = React.createClass({
             ),
             React.createElement(
               "a",
-              { "href" : "#", "className" : "stream-link", "data-stream-link" : this.state.streams.featured[this.state.index].stream.channel.display_name, "onClick" : accessView.viewStream },
+              { "href" : "#", "className" : "stream-link", "data-stream-link" : this.state.streams.featured[this.state.index].stream.channel.name, "onClick" : accessView.viewStream },
               "watch this stream"
             )
           )
@@ -381,7 +393,7 @@ var TopGames = React.createClass({
         this.state.games.top.map(function(item, ind) {
           return React.createElement(
             "li",
-            { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1" },
+            { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1", "data-page-link" : "GameListPage", "onClick" : accessView.changeView },
             React.createElement(
               "img",
               { "src" : item.game.box.large }
