@@ -256,11 +256,11 @@ var TopStreams = React.createClass({
     this.getStreams();
   },
   setStream: function(e) {
-    //console.log(accessView.changeView());
-
-    this.setState({ "index" : e.target.parentNode.attributes["data-item-index"].value });
-    document.querySelector(".top-stream-item.selected").className = document.querySelector(".top-stream-item.selected").className.replace(/selected/gi, "");
-    e.target.parentNode.className = e.target.parentNode.className + " selected";
+    if(!e.target.parentNode.className.match(/selected/gi)) {
+      this.setState({ "index" : e.target.parentNode.attributes["data-item-index"].value });
+      document.querySelector(".top-stream-item.selected").removeClass("selected");
+      e.target.parentNode.addClass("selected");
+    }
   },
   render: function render() {
     if(!this.state.streams.featured) {
