@@ -44,19 +44,25 @@ var ViewParent = React.createClass({
   displayName: "ViewParent",
 
   getInitialState: function() {
-    return { "page" : HomePage };
+    return { "page" : HomePage, "streamer" : null };
   },
   changeView: function(e) {
     this.setState({ "page" : e.target.attributes["data-page-link"].value});
   },
-  changeView: function(e) {
-    this.setState({ "page" : e.target.attributes["data-stream-link"].value});
+  viewStream: function(e) {
+    this.setState({ "streamer" : e.target.attributes["data-stream-link"].value});
+    document.querySelector("#stream-viewer").addClass("open");
   },
   render: function render() {
     return React.createElement(
       "div",
-      { "id" : "view-page" },
-      React.createElement(this.state.page)
+      { "id" : "view-parent" },
+      React.createElement(this.state.page),
+      React.createElement(
+        "div",
+        { "id" : "stream-viewer" },
+        "streams stuff"
+      )
     )
   }
 });
@@ -71,6 +77,7 @@ var StreamViewer = React.createClass({
     );
   }
 });
+
 // react views
 //////////////////////////////
 var HomePage = React.createClass({
@@ -241,7 +248,7 @@ var TopStreams = React.createClass({
             ),
             React.createElement(
               "a",
-              { "href" : "#", "className" : "stream-link", "data-stream-link" : this.state.streams.featured[this.state.index].stream.channel.display_name, "onClick" : accessView.changeView },
+              { "href" : "#", "className" : "stream-link", "data-stream-link" : this.state.streams.featured[this.state.index].stream.channel.display_name, "onClick" : accessView.viewStream },
               "watch this stream"
             )
           )
