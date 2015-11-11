@@ -34,7 +34,7 @@ app.commandLine.appendSwitch('ppapi-flash-version', '19.0.0.226');
 app.on('ready', function() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    "width" : 700,
+    "width" : 1327,
     "height" : 700,
     "node-integration" : "iframe",
     "web-preferences" : {

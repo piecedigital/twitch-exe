@@ -1,8 +1,21 @@
 //////////////////////////////
 // app ///////////////////////
 //////////////////////////////
-var pageWrap = function(attrs, content) {
+var pageWrapSmall = function(attrs, content) {
   var initAttrs = { "className" : "page-wrap-960" };
+
+  for(var key in attrs) {
+    initAttrs[key] = (initAttrs[key]) ? `${initAttrs[key]} ${attrs[key]}` : `${attrs[key]}`;
+  };
+
+  return React.createElement(
+    "div",
+    initAttrs,
+    content
+  );
+};
+var pageWrapNormal = function(attrs, content) {
+  var initAttrs = { "className" : "page-wrap-1200" };
 
   for(var key in attrs) {
     initAttrs[key] = (initAttrs[key]) ? `${initAttrs[key]} ${attrs[key]}` : `${attrs[key]}`;
@@ -22,9 +35,9 @@ var section = function(attrs, content) {
   );
 };
 
-var separator = React.createElement(
+var normalSeparator = React.createElement(
   "span",
-  { className : "separator" },
+  { className : "normal-separator" },
   React.createElement(
     "span",
     null
@@ -141,17 +154,6 @@ var ViewParent = React.createClass({
   }
 });
 
-// stream views
-//////////////////////////////
-var StreamViewer = React.createClass({
-  displayName: "StreamViewer",
-
-  render: function render() {
-    return React.createElement(
-    );
-  }
-});
-
 // react views
 //////////////////////////////
 var HomePage = React.createClass({
@@ -165,13 +167,13 @@ var HomePage = React.createClass({
         { "className" : "off-black" },
         React.createElement(TopStreams)
       ),
-      pageWrap(
+      pageWrapSmall(
         null,
-        separator
+        normalSeparator
       ),
       section(
         null,
-        pageWrap(
+        pageWrapSmall(
           null,
           React.createElement(
             "h1",
@@ -184,13 +186,13 @@ var HomePage = React.createClass({
         null,
         React.createElement(TopGames)
       ),
-      pageWrap(
+      pageWrapSmall(
         null,
-        separator
+        normalSeparator
       ),
       section(
         null,
-        pageWrap(
+        pageWrapSmall(
           null,
           React.createElement(
             "h1",
@@ -206,26 +208,41 @@ var HomePage = React.createClass({
     );
   }
 });
-var GameListPage = React.createClass({
-  displayName: "GameListPage",
+var GamesListPage = React.createClass({
+  displayName: "GamesListPage",
 
   render: function render() {
     return React.createElement(
       "div",
-      { "id" : "game-list-page" },
-      "game page"
+      { "id" : "games-list-page" },
+      "new page"
     );
   }
 });
-var StreamListPage = React.createClass({
-  displayName: "StreamListPage",
+var StreamsListPage = React.createClass({
+  displayName: "StreamsListPage",
 
   render: function render() {
     return React.createElement(
       "div",
-      { "id" : "stream-list-page" },
-      "new page"
-    );
+      { "id" : "streams-page" },
+      pageWrapNormal(
+        null,
+        React.createElement(
+          "h1",
+          { "className" : "section-title" },
+          "Live Streams"
+        )
+      ),
+      pageWrapNormal(
+        null,
+        normalSeparator
+      ),
+      section(
+        null,
+        React.createElement(StreamsPage)
+      )
+    )
   }
 });
 
@@ -269,7 +286,7 @@ var TopStreams = React.createClass({
     // sets variable to access the class object
     var elemInstance = this;
 
-    return pageWrap(
+    return pageWrapSmall(
       { "className" : "" },
       React.createElement(
         "div",
@@ -385,41 +402,45 @@ var TopGames = React.createClass({
     if(!this.state.games.top) {
       return false;
     }
-    return pageWrap(
+    return pageWrapSmall(
       null,
       React.createElement(
-        "ul",
-        { "id" : "games-list", "className" : "" },
-        this.state.games.top.map(function(item, ind) {
-          return React.createElement(
-            "li",
-            { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1", "data-page-link" : "GameListPage", "onClick" : accessView.changeView },
-            React.createElement(
-              "img",
-              { "src" : item.game.box.large }
-            ),
-            React.createElement(
-              "h1",
-              { "className" : "title" },
-              `${item.game.name}`
-            ),
-            React.createElement(
-              "span",
-              { "className" : "stats" },
+        "div",
+        { "id" : "top-games" },
+        React.createElement(
+          "ul",
+          { "id" : "games-list", "className" : "" },
+          this.state.games.top.map(function(item, ind) {
+            return React.createElement(
+              "li",
+              { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1", "data-page-link" : "GamesListPage", "onClick" : accessView.changeView },
               React.createElement(
-                "span",
-                null,
-                `Viewers: ${item.viewers}`
+                "img",
+                { "src" : item.game.box.large }
               ),
-              smallSeparator,
+              React.createElement(
+                "h1",
+                { "className" : "title" },
+                `${item.game.name}`
+              ),
               React.createElement(
                 "span",
-                null,
-                `Channels: ${item.channels}`
+                { "className" : "stats" },
+                React.createElement(
+                  "span",
+                  null,
+                  `Viewers: ${item.viewers}`
+                ),
+                smallSeparator,
+                React.createElement(
+                  "span",
+                  null,
+                  `Channels: ${item.channels}`
+                )
               )
             )
-          )
-        })
+          })
+        )
       )
     )
   }
@@ -453,15 +474,96 @@ var FeaturedStreams = React.createClass({
     if(!this.state.streams.featured) {
       return false;
     }
-    return pageWrap(
+    return pageWrapSmall(
+      null,
+      React.createElement(
+        "div",
+        { "id" : "featured-streams" },
+        React.createElement(
+          "ul",
+          { "id" : "featured-streams-list", "className" : "" },
+          this.state.streams.featured.map(function(item, ind) {
+            return React.createElement(
+              "li",
+              { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-3-2-1", "data-stream-link" : item.stream.channel.name, "onClick" : accessView.viewStream },
+              React.createElement(
+                "img",
+                { "src" : item.stream.preview.large }
+              ),
+              React.createElement(
+                "h1",
+                { "className" : "title"},
+                `${item.title}`
+              ),
+              React.createElement(
+                "span",
+                { "className" : "stats" },
+                React.createElement(
+                  "span",
+                  null,
+                  `${item.stream.viewers} viewers on `,
+                  React.createElement(
+                    "span",
+                    { "className" : "bold" },
+                    `${item.stream.channel.display_name}`
+                  )
+                )
+              )
+            )
+          })
+        ),
+        React.createElement(
+          "div",
+          { "className" : "right-justify" },
+          React.createElement(
+            "div",
+            { "className" : "pointer link bold", "data-page-link" : "StreamsListPage", "onClick" : accessView.changeView },
+            "View all streams"
+          )
+        )
+      )
+    )
+  }
+});
+
+/* streams page */
+var StreamsPage = React.createClass({
+  "displayName": "StreamsPage",
+
+  getStreams: function() {
+    // sets variable to access the class object
+    var elemInstance = this;
+    ajax({
+      url: `https://api.twitch.tv/kraken/streams/featured?limit=${elemInstance.state.limit}&offset=${elemInstance.state.limit * elemInstance.state.offset}`,
+      success: function(data) {
+        elemInstance.setState({ streams: (JSON.parse(data.target.response)).featured, "offset" : elemInstance.state.offset+1 });
+        console.log("Streams", (JSON.parse(data.target.response)).featured);
+      },
+      error: function(data) {
+        console.log(data)
+      }
+    });
+  },
+  getInitialState: function() {
+    return { "streams" : [], "limit" : 5*5, "offset" : 0 };
+  },
+  componentDidMount: function() {
+    this.getStreams();
+  },
+
+  render: function render() {
+    if(!this.state.streams) {
+      return false;
+    }
+    return pageWrapNormal(
       null,
       React.createElement(
         "ul",
         { "id" : "featured-streams-list", "className" : "" },
-        this.state.streams.featured.map(function(item, ind) {
+        this.state.streams.map(function(item, ind) {
           return React.createElement(
             "li",
-            { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-3-2-1" },
+            { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-5-4-3-2-1", "data-stream-link" : item.stream.channel.name, "onClick" : accessView.viewStream },
             React.createElement(
               "img",
               { "src" : item.stream.preview.large }
@@ -477,7 +579,12 @@ var FeaturedStreams = React.createClass({
               React.createElement(
                 "span",
                 null,
-                `${item.stream.viewers} viewers on ${item.stream.channel.display_name}`
+                `${item.stream.viewers} viewers on `,
+                React.createElement(
+                  "span",
+                  { "className" : "bold" },
+                  `${item.stream.channel.display_name}`
+                )
               )
             )
           )

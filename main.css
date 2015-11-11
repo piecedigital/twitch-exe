@@ -13,6 +13,15 @@
 html {
   font-size: 16px; }
 
+.unset {
+  margin: 0;
+  padding: 0; }
+
+.page-wrap-1200 {
+  display: block;
+  max-width: 1200px;
+  margin: auto; }
+
 .page-wrap-960 {
   display: block;
   max-width: 960px;
@@ -126,6 +135,26 @@ a {
   color: #a68ed2;
   text-decoration: none; }
 
+.bold {
+  font-weight: bold; }
+
+.pointer {
+  cursor: pointer; }
+
+.link {
+  color: #6441a5; }
+  .link:hover {
+    color: #7656B1; }
+
+.left-justify {
+  text-align: left; }
+
+.center-justify {
+  text-align: center; }
+
+.right-justify {
+  text-align: right; }
+
 /* body ----------------------------*/
 body {
   background-color: white;
@@ -138,7 +167,7 @@ body {
   background-color: #fafafa;
   margin: auto; }
 
-.separator {
+.normal-separator {
   height: 3.2px;
   margin: 16px 0; }
 
@@ -146,12 +175,12 @@ body {
   height: 1.6px;
   margin: 1.6px 0; }
 
-.separator, .small-separator {
+.normal-separator, .small-separator {
   display: block;
   width: 100%;
   padding: 0 48px;
   border-radius: 5px; }
-  .separator span, .small-separator span {
+  .normal-separator span, .small-separator span {
     display: block;
     width: 100%;
     height: 100%;
