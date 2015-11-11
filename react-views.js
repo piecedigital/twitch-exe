@@ -80,7 +80,7 @@ var ViewParent = React.createClass({
     {
       var streamer = e.target.attributes["data-stream-link"].value;
 
-      var src = `http://twitch.tv/${streamer}/`;
+      var src = `http://twitch.tv/${streamer.toLowerCase()}/`;
       var videoSrc = `${src}embed`;
       var chatSrc = `${src}chat`;
       var viewer = document.querySelector("#stream-viewer");
