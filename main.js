@@ -33,10 +33,18 @@ HTMLElement.prototype.addClass = function() {
 
 HTMLElement.prototype.removeClass = function() {
   if(this.className.match(arguments[0])) {
-    var match = new RegExp("(\s)?" + arguments[0] + "", g);
+    var match = new RegExp("(\s)?" + arguments[0] + "", "g");
 
     this.className = this.className.replace(match, "");
 
     match = null;
+  }
+};
+
+HTMLElement.prototype.toggleClass = function() {
+  if(this.className.match(arguments[0])) {
+    this.removeClass(arguments[0]);
+  } else {
+    this.addClass(arguments[0]);
   }
 };

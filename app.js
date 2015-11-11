@@ -33,10 +33,23 @@ app.commandLine.appendSwitch('ppapi-flash-version', '19.0.0.226');
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({ "width" : 700, "height" : 700, "web-preferences" : { "plugins" : true }, "frame" : true, "icon" : __dirname + "/icon.png", "toolbar" : false, "auto-hide-menu-bar" : false, "title" :"Guide Cyberclub Chat" });
+  mainWindow = new BrowserWindow({
+    "width" : 700,
+    "height" : 700,
+    "node-integration" : "iframe",
+    "web-preferences" : {
+      "plugins" : true,
+      "web-security" : false
+    },
+    "frame" : true,
+    "icon" : __dirname + "/icon.png",
+    "toolbar" : false,
+    "auto-hide-menu-bar" : false,
+    "title" :"Guide Cyberclub Chat"
+  });
 
   // and load the index.html of the app.
-  mainWindow.loadUrl('file://' + __dirname + '/index.html');
+  mainWindow.loadUrl(/*'file://' + */__dirname + '/index.html');
 
   mainWindow.on("close", function(e) {
     console.log('I do not want to be closed');

@@ -50,10 +50,37 @@ var ViewParent = React.createClass({
     this.setState({ "page" : e.target.attributes["data-page-link"].value});
   },
   viewStream: function(e) {
-    if(!e.target.className.match("close-stream")) {
-      this.setState({ "streamer" : e.target.attributes["data-stream-link"].value});
+    // event for closing the viewer
+    if(e.target.className.match("close")) {
+      var viewer = document.querySelector("#stream-viewer");
 
-      var src = `http://twitch.tv/${this.state.streamer}/`;
+      viewer.removeClass("open");
+      viewer.querySelector("#video-embed iframe").src = "";
+      viewer.querySelector("#chat-embed iframe").src = "";
+      document.body.style.overflow = "";
+    } else
+    // event for changing the display of the viewer
+    if(e.target.className.match("display")) {
+      var viewer = document.querySelector("#stream-viewer");
+
+      viewer.toggleClass("hide");
+      if(document.body.style.overflow) {
+        document.body.style.overflow = "";
+      } else {
+        document.body.style.overflow = "hidden";
+      }
+    } else
+    // event for changing the display of the chat
+    if(e.target.className.match("chat")) {
+      var viewer = document.querySelector("#stream-viewer");
+
+      viewer.toggleClass("hidden-chat");
+    } else
+    // default event for opening streams
+    {
+      var streamer = e.target.attributes["data-stream-link"].value;
+
+      var src = `http://twitch.tv/${streamer}/`;
       var videoSrc = `${src}embed`;
       var chatSrc = `${src}chat`;
       var viewer = document.querySelector("#stream-viewer");
@@ -61,6 +88,7 @@ var ViewParent = React.createClass({
       viewer.addClass("open");
       viewer.querySelector("#video-embed iframe").src = videoSrc;
       viewer.querySelector("#chat-embed iframe").src = chatSrc;
+      document.body.style.overflow = "hidden";
     }
   },
   render: function render() {
@@ -76,10 +104,26 @@ var ViewParent = React.createClass({
           { "id" : "embed-area"},
           React.createElement(
             "div",
+            { "id" : "viewer-controls"},
+            React.createElement(
+              "div",
+              { "className" : "close", "onClick" : this.viewStream }
+            ),
+            React.createElement(
+              "div",
+              { "className" : "display", "onClick" : this.viewStream }
+            ),
+            React.createElement(
+              "div",
+              { "className" : "chat", "onClick" : this.viewStream }
+            )
+          ),
+          React.createElement(
+            "div",
             { "id" : "video-embed"},
             React.createElement(
               "iframe",
-              { "src" : "" }
+              { "src" : "", "frameBorder" : "0" }
             )
           ),
           React.createElement(
@@ -87,7 +131,7 @@ var ViewParent = React.createClass({
             { "id" : "chat-embed"},
             React.createElement(
               "iframe",
-              { "src" : "" }
+              { "src" : "", "frameBorder" : "0" }
             )
           )
         )

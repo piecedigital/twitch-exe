@@ -240,13 +240,72 @@ body {
   left: 0;
   width: 0;
   height: 0;
-  padding: 16px 400px 0 0;
   background-color: #6441a5;
   overflow: hidden;
   /* states */ }
   #stream-viewer.open {
     width: 100%;
     height: 100%; }
+    #stream-viewer.open.hide {
+      width: 96px;
+      height: 32px; }
+  #stream-viewer #embed-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 32px 400px 0 0; }
+    #stream-viewer #embed-area #viewer-controls {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 32px; }
+      #stream-viewer #embed-area #viewer-controls div {
+        width: 32px;
+        height: 100%;
+        display: inline-block;
+        color: white;
+        vertical-align: top;
+        box-shadow: inset -.1em -.1em 0 0 black;
+        cursor: pointer; }
+        #stream-viewer #embed-area #viewer-controls div:hover {
+          background-color: #7656B1; }
+        #stream-viewer #embed-area #viewer-controls div.close:after {
+          content: "\2716";
+          position: relative;
+          top: .4em;
+          left: .6em; }
+        #stream-viewer #embed-area #viewer-controls div.display:after {
+          content: "\2795";
+          position: relative;
+          top: .4em;
+          left: .6em; }
+        #stream-viewer #embed-area #viewer-controls div.chat:after {
+          content: "\2971";
+          position: relative;
+          top: .4em;
+          left: .6em; }
+    #stream-viewer #embed-area #video-embed {
+      width: 100%;
+      height: 100%; }
+      #stream-viewer #embed-area #video-embed iframe {
+        width: 100%;
+        height: 100%; }
+    #stream-viewer #embed-area #chat-embed {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 400px;
+      height: 100%;
+      padding: 32px 0 0;
+      pointer-events: none; }
+      #stream-viewer #embed-area #chat-embed iframe {
+        width: 100%;
+        height: 100%;
+        pointer-events: auto; }
+  #stream-viewer.hidden-chat #embed-area {
+    padding-right: 0; }
+    #stream-viewer.hidden-chat #embed-area #chat-embed {
+      width: 0; }
 
 /* hover events ----------------------------*/
 /*///////////////////////// responsive styling /////////////////////////*/

@@ -31,4 +31,4 @@ gulp.task("serve", function() {
 	//gulp.watch(["*.html", "*.css"]).on("change", reload);
 });
 
-gulp.task("default", ["start", "serve"]);
+gulp.task("default", ["serve"]);
