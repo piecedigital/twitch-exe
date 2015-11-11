@@ -39,13 +39,33 @@ var smallSeparator = React.createElement(
   )
 );
 
+// view parent
+var ViewParent = React.createClass({
+  displayName: "ViewParent",
+
+  getInitialState: function() {
+    return { "page" : HomePage };
+  },
+  changeView: function() {
+    return this.state;
+  },
+  render: function render() {
+    return React.createElement(
+      "div",
+      { "id" : "view-page" },
+      React.createElement(this.state.page)
+    )
+  }
+});
+
+// react views
 var HomePage = React.createClass({
   displayName: "HomePage",
 
   render: function render() {
     return React.createElement(
       "div",
-      { "id" : "front-page" },
+      { "id" : "home-page" },
       section(
         { "className" : "off-black" },
         React.createElement(TopStreams)
@@ -116,6 +136,8 @@ var TopStreams = React.createClass({
     this.getStreams();
   },
   setStream: function(e) {
+    console.log(this.refs["viewparent"].changeView());
+
     this.setState({ "index" : e.target.parentNode.attributes["data-item-index"].value });
     document.querySelector(".top-stream-item.selected").className = document.querySelector(".top-stream-item.selected").className.replace(/selected/gi, "");
     e.target.parentNode.className = e.target.parentNode.className + " selected";
@@ -179,7 +201,21 @@ var TopStreams = React.createClass({
           ),
           React.createElement(
             "p",
-            { "dangerouslySetInnerHTML" : { "__html" : this.state.streams.featured[this.state.index].text.replace(/<br>[\n]*.*/gi, "") } }
+            null,
+            this.state.streams.featured[this.state.index].text.replace(/<br>[\n]*.*/gi, "").replace(/<(\/)?p>/gi, ""),
+            React.createElement(
+              "br",
+              null
+            ),
+            React.createElement(
+              "br",
+              null
+            ),
+            React.createElement(
+              "a",
+              { "href" : "#", "className" : "stream-link", "data-stream-link" : this.state.streams.featured[this.state.index].stream.channel.display_name },
+              "watch this stream"
+            )
           )
         ),
         React.createElement(
@@ -331,4 +367,8 @@ var FeaturedStreams = React.createClass({
   }
 });
 
-ReactDOM.render(React.createElement(HomePage, null), document.getElementById("main-content"));
+ReactDOM.render(React.createElement(ViewParent, null), document.getElementById("main-content"));
+
+setTimeout(function(){
+  //console.log(ViewParent())
+}, 1000);

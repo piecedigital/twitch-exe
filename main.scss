@@ -30,6 +30,8 @@ html {
 
 /* colors */
 $purple: #6441a5;
+$hoverPurple: #7656B1;
+$linkPurple: #a68ed2;
 $offBlack: rgba(20, 20, 20, 1);
 
 /* column styles */
@@ -95,6 +97,10 @@ $offBlack: rgba(20, 20, 20, 1);
 /* prereqs */
 .off-black {
 	background-color: $offBlack;
+}
+a {
+	color: $linkPurple;
+	text-decoration: none;
 }
 /* body ----------------------------*/
 body {

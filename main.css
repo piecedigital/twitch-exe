@@ -122,6 +122,10 @@ html {
 .off-black {
   background-color: #141414; }
 
+a {
+  color: #a68ed2;
+  text-decoration: none; }
+
 /* body ----------------------------*/
 body {
   background-color: white;
