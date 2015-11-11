@@ -50,8 +50,18 @@ var ViewParent = React.createClass({
     this.setState({ "page" : e.target.attributes["data-page-link"].value});
   },
   viewStream: function(e) {
-    this.setState({ "streamer" : e.target.attributes["data-stream-link"].value});
-    document.querySelector("#stream-viewer").addClass("open");
+    if(!e.target.className.match("close-stream")) {
+      this.setState({ "streamer" : e.target.attributes["data-stream-link"].value});
+
+      var src = `http://twitch.tv/${this.state.streamer}/`;
+      var videoSrc = `${src}embed`;
+      var chatSrc = `${src}chat`;
+      var viewer = document.querySelector("#stream-viewer");
+
+      viewer.addClass("open");
+      viewer.querySelector("#video-embed iframe").src = videoSrc;
+      viewer.querySelector("#chat-embed iframe").src = chatSrc;
+    }
   },
   render: function render() {
     return React.createElement(
@@ -61,7 +71,26 @@ var ViewParent = React.createClass({
       React.createElement(
         "div",
         { "id" : "stream-viewer" },
-        "streams stuff"
+        React.createElement(
+          "div",
+          { "id" : "embed-area"},
+          React.createElement(
+            "div",
+            { "id" : "video-embed"},
+            React.createElement(
+              "iframe",
+              { "src" : "" }
+            )
+          ),
+          React.createElement(
+            "div",
+            { "id" : "chat-embed"},
+            React.createElement(
+              "iframe",
+              { "src" : "" }
+            )
+          )
+        )
       )
     )
   }
