@@ -155,11 +155,14 @@ a {
 .right-justify {
   text-align: right; }
 
+.inline-block {
+  display: inline-block; }
+
 /* body ----------------------------*/
 body {
   background-color: white;
   color: #282828;
-  padding: 0;
+  padding: 0 0 16px;
   margin: 0; }
 
 #main-content {

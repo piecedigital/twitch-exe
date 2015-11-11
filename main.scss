@@ -132,11 +132,14 @@ a {
 .right-justify {
 	text-align: right;
 }
+.inline-block {
+	display: inline-block;
+}
 /* body ----------------------------*/
 body {
 	background-color: white;
 	color: rgba(40, 40, 40, 1);
-	padding: 0;
+	padding: 0 0 1*$em;
 	margin: 0;
 }
 #main-content {

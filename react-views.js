@@ -517,7 +517,7 @@ var FeaturedStreams = React.createClass({
           { "className" : "right-justify" },
           React.createElement(
             "div",
-            { "className" : "pointer link bold", "data-page-link" : "StreamsListPage", "onClick" : accessView.changeView },
+            { "className" : "pointer link bold inline-block", "data-page-link" : "StreamsListPage", "onClick" : accessView.changeView },
             "View all streams"
           )
         )
