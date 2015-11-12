@@ -289,14 +289,6 @@ body {
 
 	overflow: hidden;
 	/* states */
-	&.open {
-		width: 100%;
-		height: 100%;
-		&.hide {
-			width: 6*$em;
-			height: 2*$em;
-		}
-	}
 	& #embed-area {
 		position: relative;
 		width: 100%;
@@ -360,6 +352,20 @@ body {
 				height: 100%;
 
 				pointer-events: auto;
+			}
+		}
+	}
+	&.open {
+		width: 100%;
+		height: 100%;
+		&.hide {
+			width: 12*$em;
+			height: 13*$em;
+			& #embed-area {
+				padding: 0;
+				& #chat-embed {
+					width: 0;
+				}
 			}
 		}
 	}
