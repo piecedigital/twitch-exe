@@ -57,11 +57,13 @@ var ViewParent = React.createClass({
   displayName: "ViewParent",
 
   getInitialState: function() {
-    return { "page" : "HomePage", "streamer" : null, "search" : null };
+    return { "streamer" : null, "search" : null, "history" : ["HomePage"] };
   },
   changeView: function(e) {
     console.log(e.target)
-    this.setState({ "page" : e.target.attributes["data-page-link"].value, "search" : (e.target.attributes["data-search"].value || null) });
+    this.state.history.push(e.target.attributes["data-page-link"].value);
+
+    this.setState({ "history" : this.state.history, "search" : ((e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : null) });
   },
   getSearch: function() {
     return this.state.search;
@@ -109,10 +111,11 @@ var ViewParent = React.createClass({
     }
   },
   render: function render() {
+    console.log( this.state.history )
     return React.createElement(
       "div",
       { "id" : "view-parent" },
-      React.createElement(window[this.state.page]),
+      React.createElement(window[this.state.history[this.state.history.length-1]]),
       React.createElement(
         "div",
         { "id" : "stream-viewer" },
@@ -152,11 +155,27 @@ var ViewParent = React.createClass({
             )
           )
         )
-      )
+      ),
+      React.createElement(OptionsBar)
     )
   }
 });
 
+// options - nav, search, login/out
+var OptionsBar = React.createClass({
+  "displayName": "OptionsBar",
+
+  getInitialState: function() {
+    return { "history" : [] }
+  },
+  render: function render() {
+    return React.createElement(
+      "div",
+      { "id" : "options-bar"},
+      "options bar"
+    )
+  }
+});
 // react views
 //////////////////////////////
 var HomePage = React.createClass({
@@ -218,7 +237,10 @@ var GamesListPage = React.createClass({
     return React.createElement(
       "div",
       { "id" : "games-list-page" },
-      "new page"
+      section(
+        null,
+        React.createElement(GamesPage)
+      )
     );
   }
 });
@@ -535,8 +557,13 @@ var GamesPage = React.createClass({
     ajax({
       url: `https://api.twitch.tv/kraken/games/top?limit=${elemInstance.state.limit}&offset=${elemInstance.state.limit * elemInstance.state.offset}`,
       success: function(data) {
-        elemInstance.setState({ games: (JSON.parse(data.target.response)), "offset" : elemInstance.state.offset+1 });
-        console.log("Top Games", JSON.parse(data.target.response));
+        console.log("Top Games", JSON.parse(data.target.response).top);
+        JSON.parse(data.target.response).top.map(function(gameData) {
+          elemInstance.state.games.push(gameData);
+          console.log("game data")
+        });
+
+        elemInstance.setState({ games: elemInstance.state.games, "offset" : elemInstance.state.offset+1 });
       },
       error: function(data) {
         console.log(data)
@@ -553,7 +580,7 @@ var GamesPage = React.createClass({
     //console.log(nextState)
   },
   render: function render() {
-    if(!this.state.games.top) {
+    if(!this.state.games) {
       return false;
     }
     return pageWrapSmall(
@@ -564,7 +591,7 @@ var GamesPage = React.createClass({
         React.createElement(
           "ul",
           { "id" : "games-list", "className" : "" },
-          this.state.games.top.map(function(item, ind) {
+          this.state.games.map(function(item, ind) {
             return React.createElement(
               "li",
               { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1", "data-page-link" : "StreamsListPage", "data-search": item.game.name, "onClick" : accessView.changeView },
@@ -621,8 +648,12 @@ var StreamsPage = React.createClass({
     ajax({
       url: url,
       success: function(data) {
-        elemInstance.setState({ "streams": (JSON.parse(data.target.response)).streams, "offset" : elemInstance.state.offset+1 });
-        console.log("Streams", (JSON.parse(data.target.response)).streams);
+        console.log("Streams", (JSON.parse(data.target.response)));
+        JSON.parse(data.target.response)[(elemInstance.search) ? "streams" : "featured"].map(function(streamData) {
+          elemInstance.state.streams.push(streamData);
+        });
+
+        elemInstance.setState({ "streams": elemInstance.state.streams, "offset" : elemInstance.state.offset+1 });
       },
       error: function(data) {
         console.log(data)
@@ -641,6 +672,7 @@ var StreamsPage = React.createClass({
       return false;
     }
     var elemInstance = this;
+    console.log(this.state)
     return pageWrapNormal(
       null,
       React.createElement(
