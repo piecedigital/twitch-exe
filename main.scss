@@ -41,6 +41,7 @@ html {
 $purple: #6441a5;
 $hoverPurple: #7656B1;
 $linkPurple: #a68ed2;
+$darkPurple: #211042;
 $offBlack: rgba(20, 20, 20, 1);
 
 /* column styles */
@@ -375,6 +376,60 @@ body {
 			& #chat-embed {
 				width: 0;
 			}
+		}
+	}
+}
+
+#options-bar {
+	position: fixed;
+	top: 0;
+	right: 0;
+	background-color: $purple;
+	& .nav {
+		display: inline-block;
+		min-width: 2*$em;
+		height: 2*$em;
+		color: white;
+		box-shadow: inset .1em -.1em 0 0 black;
+		vertical-align: top;
+		&:hover {
+			background-color: $hoverPurple;
+		}
+		&.prev:after {
+			content: "\2716";
+			position: relative;
+	    top: .4em;
+	    left: .6em;
+		}
+		&.next:after {
+			content: "\2795";
+			position: relative;
+	    top: .4em;
+	    left: .6em;
+		}
+		&.search {
+			width: 10*$em;
+			& input {
+				max-width: 8*$em;
+				height: 100%;
+				border: none;
+				color: white;
+				box-shadow: inset 0 -.1em 0 0 black;
+				&[type="text"] {
+					background-color: $darkPurple;
+					padding: 0 .5*$em 0;
+				}
+				&[type="submit"] {
+					background-color: $purple;
+					&:hover {
+						background-color: $hoverPurple;
+					}
+				}
+			}
+		}
+		&.log {
+			padding: .5*$em 0;
+			text-align: center;
 		}
 	}
 }

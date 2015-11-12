@@ -60,10 +60,12 @@ var ViewParent = React.createClass({
     return { "streamer" : null, "search" : null, "history" : ["HomePage"] };
   },
   changeView: function(e) {
-    console.log(e.target)
-    this.state.history.push(e.target.attributes["data-page-link"].value);
+    var searchText = (typeof e === "string") ? { "value" : e } : e.target.attributes["data-search"];
+    var searchPage = (typeof e === "string") ? "StreamsListPage" : e.target.attributes["data-page-link"].value;
 
-    this.setState({ /*"history" : this.state.history, */"search" : ((e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : null) });
+    this.state.history.push(searchPage);
+
+    this.setState({ "search" : ((searchText) ? searchText.value : null) });
   },
   getSearch: function() {
     return this.state.search;
@@ -164,11 +166,41 @@ var ViewParent = React.createClass({
 var OptionsBar = React.createClass({
   "displayName": "OptionsBar",
 
+  componentDidMount: function() {
+    document.querySelector(".nav.search").addEventListener("submit", function(e) {
+      e.preventDefault();
+      accessView.changeView(e.target[0].value)
+    });
+  },
   render: function render() {
     return React.createElement(
       "div",
-      { "id" : "options-bar"}/*,
-      React.*/
+      { "id" : "options-bar"},
+      React.createElement(
+        "div",
+        { "className" : "nav prev" }
+      ),
+      React.createElement(
+        "div",
+        { "className" : "nav next" }
+      ),
+      React.createElement(
+        "form",
+        { "className" : "nav search" },
+        React.createElement(
+          "input",
+          { "type" : "text", "name" : "search", "min" : "1", "placeholder" : "Search..." }
+        ),
+        React.createElement(
+          "input",
+          { "type" : "submit", "value" : "GO" }
+        )
+      ),
+      React.createElement(
+        "div",
+        { "className" : "nav log"},
+        "Log"
+      )
     )
   }
 });

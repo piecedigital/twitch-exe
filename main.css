@@ -350,6 +350,49 @@ body {
     #stream-viewer.hidden-chat #embed-area #chat-embed {
       width: 0; }
 
+#options-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #6441a5; }
+  #options-bar .nav {
+    display: inline-block;
+    min-width: 32px;
+    height: 32px;
+    color: white;
+    box-shadow: inset .1em -.1em 0 0 black;
+    vertical-align: top; }
+    #options-bar .nav:hover {
+      background-color: #7656B1; }
+    #options-bar .nav.prev:after {
+      content: "\2716";
+      position: relative;
+      top: .4em;
+      left: .6em; }
+    #options-bar .nav.next:after {
+      content: "\2795";
+      position: relative;
+      top: .4em;
+      left: .6em; }
+    #options-bar .nav.search {
+      width: 160px; }
+      #options-bar .nav.search input {
+        max-width: 128px;
+        height: 100%;
+        border: none;
+        color: white;
+        box-shadow: inset 0 -.1em 0 0 black; }
+        #options-bar .nav.search input[type="text"] {
+          background-color: #211042;
+          padding: 0 8px 0; }
+        #options-bar .nav.search input[type="submit"] {
+          background-color: #6441a5; }
+          #options-bar .nav.search input[type="submit"]:hover {
+            background-color: #7656B1; }
+    #options-bar .nav.log {
+      padding: 8px 0;
+      text-align: center; }
+
 /* hover events ----------------------------*/
 /*///////////////////////// responsive styling /////////////////////////*/
 @media screen and (max-width: 950px) {
