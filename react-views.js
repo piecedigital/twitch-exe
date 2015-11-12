@@ -67,6 +67,12 @@ var ViewParent = React.createClass({
 
     this.setState({ "search" : ((searchText) ? searchText.value : null) });
   },
+  changeViewPrev: function(e) {
+    if(this.state.history.length > 1) {
+      this.state.history.pop();
+      this.setState({});
+    }
+  },
   getSearch: function() {
     return this.state.search;
   },
@@ -171,6 +177,10 @@ var OptionsBar = React.createClass({
       e.preventDefault();
       accessView.changeView(e.target[0].value)
     });
+    document.querySelector(".nav.prev").addEventListener("click", function() {
+      console.log("clicked prev")
+      accessView.changeViewPrev()
+    });
   },
   render: function render() {
     return React.createElement(
@@ -179,10 +189,6 @@ var OptionsBar = React.createClass({
       React.createElement(
         "div",
         { "className" : "nav prev" }
-      ),
-      React.createElement(
-        "div",
-        { "className" : "nav next" }
       ),
       React.createElement(
         "form",

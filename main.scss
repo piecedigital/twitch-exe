@@ -396,16 +396,11 @@ body {
 			background-color: $hoverPurple;
 		}
 		&.prev:after {
-			content: "\2716";
+			content: "<";
+			font-weight: bold;
 			position: relative;
-	    top: .4em;
-	    left: .6em;
-		}
-		&.next:after {
-			content: "\2795";
-			position: relative;
-	    top: .4em;
-	    left: .6em;
+	    top: .5em;
+	    left: .7em;
 		}
 		&.search {
 			width: 10*$em;

@@ -365,15 +365,11 @@ body {
     #options-bar .nav:hover {
       background-color: #7656B1; }
     #options-bar .nav.prev:after {
-      content: "\2716";
+      content: "<";
+      font-weight: bold;
       position: relative;
-      top: .4em;
-      left: .6em; }
-    #options-bar .nav.next:after {
-      content: "\2795";
-      position: relative;
-      top: .4em;
-      left: .6em; }
+      top: .5em;
+      left: .7em; }
     #options-bar .nav.search {
       width: 160px; }
       #options-bar .nav.search input {
