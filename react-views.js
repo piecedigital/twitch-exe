@@ -63,7 +63,7 @@ var ViewParent = React.createClass({
     console.log(e.target)
     this.state.history.push(e.target.attributes["data-page-link"].value);
 
-    this.setState({ "history" : this.state.history, "search" : ((e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : null) });
+    this.setState({ /*"history" : this.state.history, */"search" : ((e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : null) });
   },
   getSearch: function() {
     return this.state.search;
@@ -99,9 +99,8 @@ var ViewParent = React.createClass({
     {
       var streamer = e.target.attributes["data-stream-link"].value;
 
-      var src = `http://twitch.tv/${streamer}/`;
-      var videoSrc = `${src}embed`;
-      var chatSrc = `${src}chat`;
+      var videoSrc = `http://player.twitch.tv/?channel=${streamer}`;
+      var chatSrc = `http://twitch.tv/${streamer}/chat`;
       var viewer = document.querySelector("#stream-viewer");
 
       viewer.addClass("open");
@@ -165,14 +164,11 @@ var ViewParent = React.createClass({
 var OptionsBar = React.createClass({
   "displayName": "OptionsBar",
 
-  getInitialState: function() {
-    return { "history" : [] }
-  },
   render: function render() {
     return React.createElement(
       "div",
-      { "id" : "options-bar"},
-      "options bar"
+      { "id" : "options-bar"}/*,
+      React.*/
     )
   }
 });
@@ -309,7 +305,7 @@ var TopStreams = React.createClass({
           { "className" : "top-streams-viewer" },
           React.createElement(
             "iframe",
-            { "className" : "video", "src" : `${this.state.streams.featured[this.state.index].stream.channel.url}/embed`, "width" : "100%", "height" : "100%", "frameBorder" : "0" }
+            { "className" : "video", "src" : `http://player.twitch.tv?channel=${this.state.streams.featured[this.state.index].stream.channel.name}`, "width" : "100%", "height" : "100%", "frameBorder" : "0" }
           )
         ),
         React.createElement(
@@ -560,10 +556,9 @@ var GamesPage = React.createClass({
         console.log("Top Games", JSON.parse(data.target.response).top);
         JSON.parse(data.target.response).top.map(function(gameData) {
           elemInstance.state.games.push(gameData);
-          console.log("game data")
         });
 
-        elemInstance.setState({ games: elemInstance.state.games, "offset" : elemInstance.state.offset+1 });
+        elemInstance.setState({ "offset" : elemInstance.state.offset+1 });
       },
       error: function(data) {
         console.log(data)
@@ -653,7 +648,7 @@ var StreamsPage = React.createClass({
           elemInstance.state.streams.push(streamData);
         });
 
-        elemInstance.setState({ "streams": elemInstance.state.streams, "offset" : elemInstance.state.offset+1 });
+        elemInstance.setState({ "offset" : elemInstance.state.offset+1 });
       },
       error: function(data) {
         console.log(data)
