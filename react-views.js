@@ -3,6 +3,8 @@ Twitch.init({clientId: '1xb1e12mtrfjt0r0p805cu00bu6x4xn'}, function(error, statu
 //////////////////////////////
 // app ///////////////////////
 //////////////////////////////
+
+// page wrap and section element components
 var pageWrapSmall = function(attrs, content) {
   var initAttrs = { "className" : "page-wrap-960" };
 
@@ -55,18 +57,21 @@ var smallSeparator = React.createElement(
 );
 
 // view parent
+// renders every part of the app
 var ViewParent = React.createClass({
   displayName: "ViewParent",
 
   getInitialState: function() {
     return { "streamer" : null, "search" : null, "history" : ["HomePage"], "searchResults" : [], "limit" : 6*4, "offset" : 0 };
   },
+  // go back in history
   changeViewPrev: function(e) {
     if(this.state.history.length > 1) {
       this.state.history.pop();
       this.setState({});
     }
   },
+  // ajax for streams data and update the requestResults in the state
   searchForStreamData: function(offset) {
     // sets variable to access the class object
     var elemInstance = this;
@@ -88,6 +93,7 @@ var ViewParent = React.createClass({
       }
     });
   },
+  // ajax for games data and update the requestResults in the state
   searchForGameData: function(offset) {
     var elemInstance = this;
     ajax({
@@ -105,6 +111,7 @@ var ViewParent = React.createClass({
       }
     });
   },
+  // search function for feeding data to "searchForStreamData" and "searchForGameData"
   pingForData: function(e) {
     console.log(this.state)
     var searchText = (e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : null;
@@ -125,9 +132,7 @@ var ViewParent = React.createClass({
       this.searchForGameData()
     }
   },
-  getSearch: function() {
-    return this.state.search;
-  },
+  // opens up the stream viewer
   viewStream: function(e) {
     // event for closing the viewer
     if(e.target.className.match("close")) {
@@ -174,7 +179,9 @@ var ViewParent = React.createClass({
     return React.createElement(
       "div",
       { "id" : "view-parent" },
+      // render component for the main section of the page
       React.createElement(window[this.state.history[this.state.history.length-1]]),
+      // render component for the stream viewer (top-left corner)
       React.createElement(
         "div",
         { "id" : "stream-viewer" },
@@ -215,6 +222,7 @@ var ViewParent = React.createClass({
           )
         )
       ),
+      // render component for the options bar (top-right corner)
       React.createElement(OptionsBar)
     )
   }
@@ -225,8 +233,10 @@ var OptionsBar = React.createClass({
   "displayName": "OptionsBar",
 
   componentDidMount: function() {
+    // eleminstance in any declaration is so that scoped variables still have access to "this"
     var elemInstance = this;
 
+    // event listeners for option elements
     document.querySelector(".nav.search").addEventListener("submit", function(e) {
       e.preventDefault();
       accessView.pingForData({
@@ -245,24 +255,23 @@ var OptionsBar = React.createClass({
     document.querySelector(".nav.prev").addEventListener("click", function() {
       accessView.changeViewPrev()
     });
-    Twitch.getStatus({ "force" : true }, function(err, status) {
-      if(err) throw err;
 
-      remote.getCurrentWebContents().session.cookies.get({
-        "name": "name"
-      }, function(err, cookies) {
-        console.log(cookies);
-        if(cookies.length > 0) {
-          document.querySelector(".nav.log").addClass("hide");
-        }
-      });
+    remote.getCurrentWebContents().session.cookies.get({
+      "name": "name"
+    }, function(err, cookies) {
+      console.log(cookies);
+      if(cookies.length > 0) {
+        document.querySelector(".nav.log").addClass("hide");
+      }
     });
   },
+  // function to log the user in
   loginUser: function(e) {
     Twitch.login({
       scope: ["user_blocks_edit", "user_blocks_read", "user_follows_edit", "channel_read", "channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", "chat_login"]
     });
   },
+  // function to log the user out
   logoutUser: function() {
     Twitch.logout(function() {
       remote.getCurrentWebContents().session.clearStorageData({
