@@ -229,8 +229,18 @@ var OptionsBar = React.createClass({
 
     document.querySelector(".nav.search").addEventListener("submit", function(e) {
       e.preventDefault();
-      elemInstance.searchForData({ "offset" : 0 });
-      //accessView.changeView(e.target[0].value)
+      accessView.pingForData({
+        "target": {
+          "attributes": {
+            "data-search": {
+              "value": e.target[0].value
+            },
+            "data-page-link": {
+              "value": "StreamsListPage"
+            }
+          }
+        }
+      });
     });
     document.querySelector(".nav.prev").addEventListener("click", function() {
       accessView.changeViewPrev()
