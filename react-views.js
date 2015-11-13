@@ -187,10 +187,14 @@ var OptionsBar = React.createClass({
     Twitch.getStatus({ "force" : true }, function(err, status) {
       if(err) throw err;
 
-      console.log(status)
-      if(status.authenticated) {
-        document.querySelector(".nav.log").addClass("hide");
-      }
+      remote.getCurrentWebContents().session.cookies.get({
+        "name": "name"
+      }, function(err, cookies) {
+        console.log(cookies);
+        if(cookies.length > 0) {
+          document.querySelector(".nav.log").addClass("hide");
+        }
+      });
     });
   },
   loginUser: function(e) {
@@ -202,7 +206,8 @@ var OptionsBar = React.createClass({
     Twitch.logout(function() {
       //window.sessionStorage.removeItem("twitch_oauth_session")
       remote.getCurrentWebContents().session.clearStorageData({
-        storages: ["appcache", "cookies", "localstorage", "filesystem", "sessionstorage"]
+        storages: ["appcache", "cookies", "localstorage", "filesystem"],
+        quotas: ["temporary", "persistent", "syncable"]
       }, function(err) {
         if(err) throw err;
 
