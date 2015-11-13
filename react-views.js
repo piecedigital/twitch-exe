@@ -204,10 +204,8 @@ var OptionsBar = React.createClass({
   },
   logoutUser: function() {
     Twitch.logout(function() {
-      //window.sessionStorage.removeItem("twitch_oauth_session")
       remote.getCurrentWebContents().session.clearStorageData({
-        storages: ["appcache", "cookies", "localstorage", "filesystem"],
-        quotas: ["temporary", "persistent", "syncable"]
+        storages: ["cookies"]
       }, function(err) {
         if(err) throw err;
 
