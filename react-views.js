@@ -59,7 +59,7 @@ var ViewParent = React.createClass({
   displayName: "ViewParent",
 
   getInitialState: function() {
-    return { "streamer" : null, "search" : null, "history" : ["HomePage"], "searchResults" : [], "limit" : 5*5, "offset" : 0 };
+    return { "streamer" : null, "search" : null, "history" : ["HomePage"], "searchResults" : [], "limit" : 6*4, "offset" : 0 };
   },
   changeViewPrev: function(e) {
     if(this.state.history.length > 1) {
@@ -98,7 +98,7 @@ var ViewParent = React.createClass({
           elemInstance.state.searchResults.push(gameData);
         });
 
-        elemInstance.setState({ "offset" : (offset || elemInstance.state.offset+1) });
+        elemInstance.setState({ "offset" : elemInstance.state.offset+1 });
       },
       error: function(data) {
         console.log(data)
@@ -106,19 +106,23 @@ var ViewParent = React.createClass({
     });
   },
   pingForData: function(e) {
-    console.log(e)
+    console.log(this.state)
     var searchText = (e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : null;
     var searchPage = e.target.attributes["data-page-link"].value;
 
-    this.state.history.push(searchPage);
+    
+    if(this.state.history[this.state.history.length-1] !== searchPage) {
+      this.state.history.push(searchPage);
+    }
     this.state.search = searchText || null;
     this.state.searchResults = [];
+    this.state.offset = 0;
 
     if(searchPage === "StreamsListPage") {
-      this.searchForStreamData(0)
+      this.searchForStreamData()
     }
     if(searchPage === "GamesListPage") {
-      this.searchForGameData(0)
+      this.searchForGameData()
     }
   },
   getSearch: function() {
@@ -684,16 +688,7 @@ var FeaturedStreams = React.createClass({
 var GamesPage = React.createClass({
   displayName: "TopGames",
 
-  getInitialState: function() {
-    return { games : [], "limit" : 6*5, "offset" : 0 };
-  },
-  componentWillUpdate: function(nextProps, nextState) {
-    //console.log(nextState)
-  },
   render: function render() {
-    if(!this.state.games) {
-      return false;
-    }
     return pageWrapSmall(
       null,
       React.createElement(
@@ -738,7 +733,7 @@ var GamesPage = React.createClass({
           { "className" : "right-justify" },
           React.createElement(
             "div",
-            { "className" : "pointer link bold inline-block", "onClick" : this.searchForGameData },
+            { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForGameData },
             "Load more games"
           )
         )
@@ -771,7 +766,7 @@ var StreamsPage = React.createClass({
           accessView.state.searchResults.map(function(item, ind) {
             return React.createElement(
               "li",
-              { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-5-4-3-2-1", "data-stream-link" : ((!accessView.state.search) ? item.stream.channel.name : item.channel.name), "onClick" : accessView.viewStream },
+              { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : ((!accessView.state.search) ? item.stream.channel.name : item.channel.name), "onClick" : accessView.viewStream },
               React.createElement(
                 "img",
                 { "src" : ((!accessView.state.search) ? item.stream.preview.large : item.preview.large) }
