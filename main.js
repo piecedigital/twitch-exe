@@ -1,3 +1,7 @@
+window.$ = module.exports;
+window.jQuery = module.exports;
+var remote = require("remote");
+
 var ajax = function(optionsObj) {
   optionsObj = optionsObj || {};
 

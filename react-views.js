@@ -1,3 +1,5 @@
+Twitch.init({clientId: '1xb1e12mtrfjt0r0p805cu00bu6x4xn'}, function(error, status) {
+});
 //////////////////////////////
 // app ///////////////////////
 //////////////////////////////
@@ -173,13 +175,50 @@ var OptionsBar = React.createClass({
   "displayName": "OptionsBar",
 
   componentDidMount: function() {
+    var elemInstance = this;
+
     document.querySelector(".nav.search").addEventListener("submit", function(e) {
       e.preventDefault();
       accessView.changeView(e.target[0].value)
     });
     document.querySelector(".nav.prev").addEventListener("click", function() {
-      console.log("clicked prev")
       accessView.changeViewPrev()
+    });
+    Twitch.getStatus({ "force" : true }, function(err, status) {
+      if(err) throw err;
+
+      console.log(status)
+      if(status.authenticated) {
+        document.querySelector(".nav.log").addClass("hide");
+      }
+    });
+  },
+  loginUser: function(e) {
+    Twitch.login({
+      scope: ["user_blocks_edit", "user_blocks_read", "user_follows_edit", "channel_read", "channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", "chat_login"]
+    });
+  },
+  logoutUser: function() {
+    Twitch.logout(function() {
+      //window.sessionStorage.removeItem("twitch_oauth_session")
+      remote.getCurrentWebContents().session.clearStorageData({
+        storages: ["appcache", "cookies", "localstorage", "filesystem", "sessionstorage"]
+      }, function(err) {
+        if(err) throw err;
+
+        console.log("storage data cleared")
+      });
+      console.log("user logged out");
+    });
+    Twitch.getStatus({ "force" : true }, function(err, status) {
+      if(err) throw err;
+
+      console.log(status)
+      if(status.authenticated) {
+        document.querySelector(".nav.log").addClass("hide");
+      } else {
+        document.querySelector(".nav.log").removeClass("hide");
+      }
     });
   },
   render: function render() {
@@ -204,8 +243,17 @@ var OptionsBar = React.createClass({
       ),
       React.createElement(
         "div",
-        { "className" : "nav log"},
-        "Log"
+        { "className" : "nav log"
+        },
+        React.createElement(
+          "img",
+          { "src" : "http://ttv-api.s3.amazonaws.com/assets/connect_dark.png", "className" : "twitch-connect", href : "#", "onClick" : this.loginUser }
+        ),
+        React.createElement(
+          "span",
+           { "onClick" : this.logoutUser },
+          "Logout"
+        )
       )
     )
   }

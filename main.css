@@ -158,6 +158,9 @@ a {
 .inline-block {
   display: inline-block; }
 
+.hide {
+  display: none; }
+
 /* body ----------------------------*/
 body {
   background-color: white;
@@ -385,9 +388,21 @@ body {
           background-color: #6441a5; }
           #options-bar .nav.search input[type="submit"]:hover {
             background-color: #7656B1; }
-    #options-bar .nav.log {
-      padding: 8px 0;
-      text-align: center; }
+    #options-bar .nav.log span {
+      padding: 8px 8px;
+      text-align: center;
+      cursor: pointer;
+      display: none; }
+    #options-bar .nav.log.hide img {
+      display: none; }
+    #options-bar .nav.log.hide span {
+      display: block; }
+
+#login {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); }
 
 /* hover events ----------------------------*/
 /*///////////////////////// responsive styling /////////////////////////*/
