@@ -16,5 +16,75 @@
     <script src="https://ttv-api.s3.amazonaws.com/twitch.min.js"></script>
 
     <script src="react-views.js"></script>
+    <script src="tutopop.js"></script>
+    <script>
+    var optionsTutorial = [
+      {
+        dialogX: $("#options-bar").offset().left + 50,
+        dialogY: $("#options-bar").offset().top + 110,
+        highlightX: $("#options-bar").offset().left + 100,
+        highlightY: $("#options-bar").offset().top,
+        highlightRadius: 5,
+        highlightWidth: $("#options-bar").width() + 20,
+        highlightHeight: $("#options-bar").height(),
+        msg: "In this options bar you can go back to the previous page, search for streams, and login/out!",
+        side: "top"
+      }
+    ];
+    var viewerTutorial = [
+      {
+        dialogX: $("#viewer-controls").offset().left,
+        dialogY: $("#viewer-controls").offset().top + 110,
+        highlightX: $("#viewer-controls").offset().left + 25,
+        highlightY: $("#viewer-controls").offset().top,
+        highlightRadius: 5,
+        highlightWidth: $("#viewer-controls").width() + 20,
+        highlightHeight: $("#viewer-controls").height(),
+        msg: "In this viewer you have the options to close the stream, shrink it, and hide the chat!",
+        side: "top"
+      }
+    ];
+    
+    remote.require("./handle-con-data").loadConcurrentData(function(data) {
+      var newUserData = JSON.parse(data);
+
+      var setViewerTutTrue = function() {
+        newUserData.wentThroughTut.viewer = true;
+
+        remote.require("./handle-con-data").saveConcurrentData(newUserData);
+      }
+      var setOptionsTutTrue = function() {
+        newUserData.wentThroughTut.options = true;
+
+        remote.require("./handle-con-data").saveConcurrentData(newUserData);
+      }
+
+      if(typeof newUserData === "object") {
+        if(!newUserData.wentThroughTut.viewer) {
+          var openTut = function() {
+            //console.log("OMG\r\n\r\nCLIKED\r\n\r\n")
+            tutoPop(viewerTutorial, ["#6441a5", "white"], null, setViewerTutTrue, setViewerTutTrue).timeline({
+              highlight: true,
+              opacity: .5,
+              color: "black"
+            });
+            $(document).off("click", ".featured-stream-item");
+            $(document).off("click", ".stream-link");
+          }
+          $(document).on("click", ".featured-stream-item", openTut);
+          $(document).on("click", ".stream-link", openTut);
+        }
+        if(!newUserData.wentThroughTut.options) {
+          tutoPop(optionsTutorial, ["#6441a5", "white"], null, setOptionsTutTrue, setOptionsTutTrue).timeline({
+            highlight: true,
+            opacity: .5,
+            color: "black"
+          });
+        }
+      } else {
+        console.log(newUserData)
+      }
+    });
+    </script>
   </body>
 </html>
