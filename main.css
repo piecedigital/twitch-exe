@@ -341,12 +341,12 @@ body {
   #stream-viewer.open {
     width: 100%;
     height: 100%; }
-    #stream-viewer.open.hide {
+    #stream-viewer.open.shrink {
       width: 192px;
       height: 208px; }
-      #stream-viewer.open.hide #embed-area {
+      #stream-viewer.open.shrink #embed-area {
         padding: 0; }
-        #stream-viewer.open.hide #embed-area #chat-embed {
+        #stream-viewer.open.shrink #embed-area #chat-embed {
           width: 0; }
   #stream-viewer.hidden-chat #embed-area {
     padding-right: 0; }

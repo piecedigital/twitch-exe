@@ -1,6 +1,6 @@
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
-var debug = require("debug")
+//var debug = require("debug")
 
 // Report crashes to our server.
 require('crash-reporter').start();

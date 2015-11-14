@@ -19,9 +19,7 @@
     "url": "http://piecedigital.github.io"
   },
   "devDependencies": {
-    "browser-sync": "^2.9.12",
     "gulp": "^3.9.0",
-    "gulp-run": "^1.6.11",
     "node-sass": "^3.4.1"
   }
 }

@@ -1,7 +1,4 @@
 var gulp = require("gulp");
-//var browserSync = require("browser-sync").create();
-var run = require("gulp-run");
-//var reload = browserSync.reload;
 var sass = require('node-sass');
 var fs = require("fs");
 
@@ -21,10 +18,6 @@ function renderSass() {
 		});
 	});
 }
-
-gulp.task("start", function() {
-	run("electron .").exec();
-});
 
 gulp.task("serve", function() {
 	gulp.watch(["*.scss"]).on("change", renderSass);

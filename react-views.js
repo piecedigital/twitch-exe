@@ -1,5 +1,6 @@
 Twitch.init({clientId: '1xb1e12mtrfjt0r0p805cu00bu6x4xn'}, function(error, status) {
 });
+var twitchToken;
 //////////////////////////////
 // app ///////////////////////
 //////////////////////////////
@@ -147,7 +148,7 @@ var ViewParent = React.createClass({
     if(e.target.className.match("display")) {
       var viewer = document.querySelector("#stream-viewer");
 
-      viewer.toggleClass("hide");
+      viewer.toggleClass("shrink");
       if(document.body.style.overflow) {
         document.body.style.overflow = "";
       } else {
@@ -252,16 +253,21 @@ var OptionsBar = React.createClass({
         }
       });
     });
+
+    // click event for back navigation
     document.querySelector(".nav.prev").addEventListener("click", function() {
       accessView.changeViewPrev()
     });
 
+    // check for user login data
     remote.getCurrentWebContents().session.cookies.get({
       "name": "name"
     }, function(err, cookies) {
       console.log(cookies);
       if(cookies.length > 0) {
+        // if user is logged in, hide connect button
         document.querySelector(".nav.log").addClass("hide");
+        twitchToken = Twitch.getToken();
       }
     });
   },
@@ -286,7 +292,7 @@ var OptionsBar = React.createClass({
     Twitch.getStatus({ "force" : true }, function(err, status) {
       if(err) throw err;
 
-      console.log(status)
+      //console.log(status)
       if(status.authenticated) {
         document.querySelector(".nav.log").addClass("hide");
       } else {
