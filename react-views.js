@@ -391,7 +391,7 @@ var OptionsBar = React.createClass({
     )
   }
 });
-// react views
+// react pages
 //////////////////////////////
 var HomePage = React.createClass({
   displayName: "HomePage",
