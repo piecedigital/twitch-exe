@@ -175,6 +175,11 @@ var ViewParent = React.createClass({
       document.body.style.overflow = "hidden";
     }
   },
+  loginUser: function() {
+    Twitch.login({
+      scope: ["user_blocks_edit", "user_blocks_read", "user_follows_edit", "channel_read", "channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", "chat_login"]
+    });
+  },
   render: function render() {
     console.log( this.state.history )
     return React.createElement(
@@ -216,6 +221,10 @@ var ViewParent = React.createClass({
           React.createElement(
             "div",
             { "id" : "chat-embed"},
+            React.createElement(
+              "div",
+              { "id" : "chat-cover", "onClick" : this.loginUser }
+            ),
             React.createElement(
               "iframe",
               { "src" : "", "frameBorder" : "0" }
@@ -260,6 +269,14 @@ var OptionsBar = React.createClass({
     });
 
     // check for user login data
+    /*Twitch.getStatus(function(err, status) {
+      if(err) throw err;
+      if(status.authenticated) {
+        document.querySelector(".nav.log").addClass("hide");
+        document.querySelector("#chat-cover").addClass("hide");
+        twitchToken = Twitch.getToken();
+      }
+    });*/
     remote.getCurrentWebContents().session.cookies.get({
       "name": "name"
     }, function(err, cookies) {
@@ -295,8 +312,10 @@ var OptionsBar = React.createClass({
       //console.log(status)
       if(status.authenticated) {
         document.querySelector(".nav.log").addClass("hide");
+        document.querySelector("#chat-cover").addClass("hide");
       } else {
         document.querySelector(".nav.log").removeClass("hide");
+        document.querySelector("#chat-cover").removeClass("hide");
       }
     });
   },

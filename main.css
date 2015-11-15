@@ -215,6 +215,7 @@ body {
     margin: 0 0 16px;
     text-align: left; }
     #top-streams .top-streams-info p {
+      word-wrap: word-break;
       margin: 0; }
     #top-streams .top-streams-info .top-stream-channel .image-div {
       display: inline-block; }
@@ -329,11 +330,32 @@ body {
         width: 100%;
         height: 100%; }
     #stream-viewer #embed-area #chat-embed {
+      position: relative;
       width: 336px;
       height: 100%;
-      padding: 32px 0 0;
-      pointer-events: none;
       flex-shrink: 0; }
+      #stream-viewer #embed-area #chat-embed #chat-cover {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 112px;
+        background-color: #6441a5;
+        opacity: .5;
+        cursor: pointer; }
+        #stream-viewer #embed-area #chat-embed #chat-cover:after {
+          content: "Connect with Twitch to chat";
+          position: absolute;
+          bottom: 24px;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-weight: bold;
+          color: white;
+          opacity: 0; }
+        #stream-viewer #embed-area #chat-embed #chat-cover:hover {
+          opacity: 1; }
+          #stream-viewer #embed-area #chat-embed #chat-cover:hover:after {
+            opacity: 1; }
       #stream-viewer #embed-area #chat-embed iframe {
         width: 100%;
         height: 100%;
@@ -364,7 +386,8 @@ body {
     height: 32px;
     color: white;
     box-shadow: inset .1em -.1em 0 0 black;
-    vertical-align: top; }
+    vertical-align: top;
+    cursor: pointer; }
     #options-bar .nav:hover {
       background-color: #7656B1; }
     #options-bar .nav.prev:after {
@@ -374,7 +397,8 @@ body {
       top: .5em;
       left: .7em; }
     #options-bar .nav.search {
-      width: 160px; }
+      width: 160px;
+      cursor: default; }
       #options-bar .nav.search input {
         max-width: 128px;
         height: 100%;
@@ -385,6 +409,7 @@ body {
           background-color: #211042;
           padding: 0 8px 0; }
         #options-bar .nav.search input[type="submit"] {
+          cursor: pointer;
           background-color: #6441a5; }
           #options-bar .nav.search input[type="submit"]:hover {
             background-color: #7656B1; }
