@@ -466,7 +466,7 @@ body {
 				text-align: center;
 				cursor: pointer;
 				display: none;
-				box-shadow: inset 0 -.1*$em 0 0 black;
+				box-shadow: inset -.1*$em -.1*$em 0 0 black;
 			}
 			&.hide {
 				& img {

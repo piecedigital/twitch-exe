@@ -136,6 +136,8 @@ var ViewParent = React.createClass({
     }
     if(searchPage === "GamesListPage") {
       this.searchForGameData()
+    } else {
+      this.setState({});
     }
   },
   // opens up the stream viewer
@@ -238,7 +240,7 @@ var ViewParent = React.createClass({
         )
       ),
       // render component for the options bar (top-right corner)
-      React.createElement(OptionsBar)
+      React.createElement(OptionsBar, { "parentAPI" : this })
     )
   }
 });
@@ -248,6 +250,8 @@ var OptionsBar = React.createClass({
   "displayName": "OptionsBar",
 
   componentDidMount: function() {
+    //console.log(this.props)
+
     // eleminstance in any declaration is so that scoped variables still have access to "this"
     var elemInstance = this;
 
@@ -286,7 +290,7 @@ var OptionsBar = React.createClass({
     remote.getCurrentWebContents().session.cookies.get({
       "name": "name"
     }, function(err, cookies) {
-      console.log(cookies);
+      //console.log(cookies);
       if(cookies.length > 0) {
         // if user is logged in, hide connect button
         document.querySelector(".nav.log").addClass("hide");
@@ -345,6 +349,7 @@ var OptionsBar = React.createClass({
     });
   },
   render: function render() {
+    var eleminstance = this;
     return React.createElement(
       "div",
       { "id" : "options-bar"},
@@ -379,7 +384,7 @@ var OptionsBar = React.createClass({
         ),
         React.createElement(
           "span",
-           { "data-page-link" : "AccountInfoPage", "onClick" : this.pingForData },
+           { "data-page-link" : "AccountInfoPage", "onClick" : this.props.parentAPI.pingForData },
           "Account"
         )
       )
@@ -910,7 +915,7 @@ var AccountPage = React.createClass({
           React.createElement(
             "h1",
             { "className" : "section-title" },
-            `Account Info of ${this.state.username}`
+            `Account Info of ${concurrentData.username}`
           )
         )
       )

@@ -419,7 +419,7 @@ body {
       text-align: center;
       cursor: pointer;
       display: none;
-      box-shadow: inset 0 -1.6px 0 0 black; }
+      box-shadow: inset -1.6px -1.6px 0 0 black; }
     #options-bar .nav.log.hide img {
       display: none; }
     #options-bar .nav.log.hide span {
