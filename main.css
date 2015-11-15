@@ -379,13 +379,14 @@ body {
   position: fixed;
   top: 0;
   right: 0;
-  background-color: #6441a5; }
+  background-color: #6441a5;
+  overflow: hidden; }
   #options-bar .nav {
     display: inline-block;
     min-width: 32px;
     height: 32px;
     color: white;
-    box-shadow: inset .1em -.1em 0 0 black;
+    box-shadow: inset 1.6px -1.6px 0 0 black;
     vertical-align: top;
     cursor: pointer; }
     #options-bar .nav:hover {
@@ -394,8 +395,8 @@ body {
       content: "<";
       font-weight: bold;
       position: relative;
-      top: .5em;
-      left: .7em; }
+      top: 8px;
+      left: 11.2px; }
     #options-bar .nav.search {
       width: 160px;
       cursor: default; }
@@ -404,7 +405,7 @@ body {
         height: 100%;
         border: none;
         color: white;
-        box-shadow: inset 0 -.1em 0 0 black; }
+        box-shadow: inset 1.6px -1.6px 0 0 black; }
         #options-bar .nav.search input[type="text"] {
           background-color: #211042;
           padding: 0 8px 0; }
@@ -417,11 +418,12 @@ body {
       padding: 8px 8px;
       text-align: center;
       cursor: pointer;
-      display: none; }
+      display: none;
+      box-shadow: inset 0 -1.6px 0 0 black; }
     #options-bar .nav.log.hide img {
       display: none; }
     #options-bar .nav.log.hide span {
-      display: block; }
+      display: inline-block; }
 
 #login {
   position: fixed;

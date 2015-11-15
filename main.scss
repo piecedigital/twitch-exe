@@ -419,12 +419,13 @@ body {
 	top: 0;
 	right: 0;
 	background-color: $purple;
+	overflow: hidden;
 	& .nav {
 		display: inline-block;
 		min-width: 2*$em;
 		height: 2*$em;
 		color: white;
-		box-shadow: inset .1em -.1em 0 0 black;
+		box-shadow: inset .1*$em -.1*$em 0 0 black;
 		vertical-align: top;
 		cursor: pointer;
 		&:hover {
@@ -434,8 +435,8 @@ body {
 			content: "<";
 			font-weight: bold;
 			position: relative;
-	    top: .5em;
-	    left: .7em;
+	    top: .5*$em;
+	    left: .7*$em;
 		}
 		&.search {
 			width: 10*$em;
@@ -445,7 +446,7 @@ body {
 				height: 100%;
 				border: none;
 				color: white;
-				box-shadow: inset 0 -.1em 0 0 black;
+				box-shadow: inset .1*$em -.1*$em 0 0 black;
 				&[type="text"] {
 					background-color: $darkPurple;
 					padding: 0 .5*$em 0;
@@ -465,13 +466,14 @@ body {
 				text-align: center;
 				cursor: pointer;
 				display: none;
+				box-shadow: inset 0 -.1*$em 0 0 black;
 			}
 			&.hide {
 				& img {
 					display: none;
 				}
 				& span {
-					display: block;
+					display: inline-block;
 				}
 			}
 		}

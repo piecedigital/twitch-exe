@@ -1,6 +1,11 @@
-Twitch.init({clientId: '1xb1e12mtrfjt0r0p805cu00bu6x4xn'}, function(error, status) {
+var clientId = "1xb1e12mtrfjt0r0p805cu00bu6x4xn";
+Twitch.init({ "clientId" : clientId }, function(error, status) {
 });
 var twitchToken;
+var concurrentData = {};
+remote.require("./handle-con-data").loadConcurrentData(function(data) {
+  concurrentData = JSON.parse(data);
+});
 //////////////////////////////
 // app ///////////////////////
 //////////////////////////////
@@ -82,8 +87,8 @@ var ViewParent = React.createClass({
     ajax({
       url: url,
       success: function(data) {
-        console.log("Streams", (JSON.parse(data.target.response)));
-        JSON.parse(data.target.response)[(accessView.state.search) ? "streams" : "featured"].map(function(streamData) {
+        console.log("Streams", (JSON.parse(data)));
+        JSON.parse(data)[(accessView.state.search) ? "streams" : "featured"].map(function(streamData) {
           elemInstance.state.searchResults.push(streamData);
         });
 
@@ -100,8 +105,8 @@ var ViewParent = React.createClass({
     ajax({
       url: `https://api.twitch.tv/kraken/games/top?limit=${elemInstance.state.limit}&offset=${elemInstance.state.limit * elemInstance.state.offset}`,
       success: function(data) {
-        console.log("Top Games", JSON.parse(data.target.response).top);
-        JSON.parse(data.target.response).top.map(function(gameData) {
+        console.log("Top Games", JSON.parse(data).top);
+        JSON.parse(data).top.map(function(gameData) {
           elemInstance.state.searchResults.push(gameData);
         });
 
@@ -277,6 +282,7 @@ var OptionsBar = React.createClass({
         twitchToken = Twitch.getToken();
       }
     });*/
+    var eleminstance = twitchToken;
     remote.getCurrentWebContents().session.cookies.get({
       "name": "name"
     }, function(err, cookies) {
@@ -285,6 +291,22 @@ var OptionsBar = React.createClass({
         // if user is logged in, hide connect button
         document.querySelector(".nav.log").addClass("hide");
         twitchToken = Twitch.getToken();
+        // sets the current user name if it doesn't exist
+        if(!concurrentData.username) {
+          ajax({
+            url: `https://api.twitch.tv/kraken/channel?oauth_token=${twitchToken}`,
+            success: function(data) {
+              data = JSON.parse(data);
+              console.log(data);
+              concurrentData.username = data.display_name;
+              concurrentData.links = data._links;
+              remote.require("./handle-con-data").saveConcurrentData(concurrentData);
+            },
+            error: function(data) {
+              console.log(data)
+            }
+          });
+        }
       }
     });
   },
@@ -302,8 +324,11 @@ var OptionsBar = React.createClass({
       }, function(err) {
         if(err) throw err;
 
-        console.log("storage data cleared")
+        console.log("storage data cleared");
       });
+      twitchToken = null;
+      concurrentData.username = null;
+      concurrentData.links = null;
       console.log("user logged out");
     });
     Twitch.getStatus({ "force" : true }, function(err, status) {
@@ -351,6 +376,11 @@ var OptionsBar = React.createClass({
           "span",
            { "onClick" : this.logoutUser },
           "Logout"
+        ),
+        React.createElement(
+          "span",
+           { "data-page-link" : "AccountInfoPage", "onClick" : this.pingForData },
+          "Account"
         )
       )
     )
@@ -438,6 +468,20 @@ var StreamsListPage = React.createClass({
     )
   }
 });
+var AccountInfoPage = React.createClass({
+  displayName: "AccountInfoPage",
+
+  render: function render() {
+    return React.createElement(
+      "div",
+      { "id" : "account-page" },
+      section(
+        null,
+        React.createElement(AccountPage)
+      )
+    )
+  }
+});
 
 // page components
 //////////////////////////////
@@ -451,8 +495,8 @@ var TopStreams = React.createClass({
     ajax({
       url: "https://api.twitch.tv/kraken/streams/featured?limit=6",
       success: function(data) {
-        elemInstance.setState({streams: JSON.parse(data.target.response)});
-        console.log("Top Streams", JSON.parse(data.target.response));
+        elemInstance.setState({streams: JSON.parse(data)});
+        console.log("Top Streams", JSON.parse(data));
       },
       error: function(data) {
         console.log(data)
@@ -574,8 +618,8 @@ var TopGames = React.createClass({
     ajax({
       url: "https://api.twitch.tv/kraken/games/top?limit=12",
       success: function(data) {
-        elemInstance.setState({games: JSON.parse(data.target.response)});
-        console.log("Top Games", JSON.parse(data.target.response));
+        elemInstance.setState({games: JSON.parse(data)});
+        console.log("Top Games", JSON.parse(data));
       },
       error: function(data) {
         console.log(data)
@@ -655,8 +699,8 @@ var FeaturedStreams = React.createClass({
     ajax({
       url: "https://api.twitch.tv/kraken/streams/featured?limit=6",
       success: function(data) {
-        elemInstance.setState({streams: JSON.parse(data.target.response)});
-        console.log("Top Streams", JSON.parse(data.target.response));
+        elemInstance.setState({streams: JSON.parse(data)});
+        console.log("Top Streams", JSON.parse(data));
       },
       error: function(data) {
         console.log(data)
@@ -728,7 +772,7 @@ var FeaturedStreams = React.createClass({
   }
 });
 
-/* streams page */
+/* pages page */
 var GamesPage = React.createClass({
   displayName: "TopGames",
 
@@ -785,6 +829,7 @@ var GamesPage = React.createClass({
     )
   }
 });
+/* streams page */
 var StreamsPage = React.createClass({
   "displayName": "StreamsPage",
 
@@ -844,6 +889,28 @@ var StreamsPage = React.createClass({
             "div",
             { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForStreamData },
             "Load more streams"
+          )
+        )
+      )
+    )
+  }
+});
+/* account page */
+var AccountPage = React.createClass({
+  "displayName": "StreamsPage",
+
+  render: function render() {
+    return pageWrapNormal(
+      null,
+      React.createElement(
+        "div",
+        { "id" : "top-streams" },
+        pageWrapNormal(
+          null,
+          React.createElement(
+            "h1",
+            { "className" : "section-title" },
+            `Account Info of ${this.state.username}`
           )
         )
       )

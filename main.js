@@ -9,9 +9,12 @@ var ajax = function(optionsObj) {
   httpRequest.onreadystatechange = function(data) {
   	if(httpRequest.readyState === 4) {
   		if(httpRequest.status < 400) {
-        optionsObj.success(data);
+        optionsObj.success(data.target.response);
   		} else {
-        optionsObj.error(data);
+        optionsObj.error({
+          "status": data.target.status,
+          "message": data.target.statusText
+        });
       }
   	}
   }

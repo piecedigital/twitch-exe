@@ -5,7 +5,6 @@ exports.loadConcurrentData = function(func) {
 		if(err) {
 			if(err.errno == "-4058") {
 				var userData = {
-					username: "",
 					wentThroughTut: {
 						options: false,
 						viewer: false
