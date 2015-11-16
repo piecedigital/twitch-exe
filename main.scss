@@ -242,12 +242,12 @@ body {
 	}
 }
 
-#games-list, #featured-streams-list {
+#games-list, #featured-streams-list, #following-streams-list, #followers-streams-list {
 	padding: 0;
 	margin: 0;
 	padding: 1*$em;
 	text-align: center;
-	& .game-item, .featured-stream-item {
+	& .game-item, .featured-stream-item, .following-stream-item, .followers-stream-item {
 		display: inline-block;
 		position: relative;
 		vertical-align: top;
@@ -256,12 +256,14 @@ body {
 		transform: scale(1);
     box-shadow: 0 0 0em 0 black;
     cursor: pointer;
+    background-color: white;
     & * {
     	pointer-events: none;
     }
 		&:hover {
 			transform: scale(1.1);
     	box-shadow: 0 0 .2em 0 black;
+    	z-index: 1;
 		}
 		& img {
 			max-width: 100%;
@@ -277,11 +279,18 @@ body {
 			display: block;
 			font-size: .7*$em;
 			color: rgba(100, 100, 100, 1);
+			& .online {
+				color: green;
+			}
+			& .offline {
+				color: red;
+			}
 		}
 	}
 }
 
 #stream-viewer {
+	z-index: 3;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -415,6 +424,7 @@ body {
 }
 
 #options-bar {
+	z-index: 4;
 	position: fixed;
 	top: 0;
 	right: 0;

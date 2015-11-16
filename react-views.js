@@ -294,6 +294,7 @@ var OptionsBar = React.createClass({
       if(cookies.length > 0) {
         // if user is logged in, hide connect button
         document.querySelector(".nav.log").addClass("hide");
+        document.querySelector("#chat-cover").addClass("hide");
         twitchToken = Twitch.getToken();
         // sets the current user name if it doesn't exist
         if(!concurrentData.username) {
@@ -904,18 +905,173 @@ var StreamsPage = React.createClass({
 var AccountPage = React.createClass({
   "displayName": "StreamsPage",
 
+  getInitialState: function() {
+    return { "following" : [], "followingOffset" : 1, "followers" : [], "followersOffset" : 1 }
+  },
+  componentDidMount: function() {
+    var eleminstance = this;
+
+    // get list of streams the current user is following
+    ajax({
+      url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels`,
+      success: function(data) {
+        data = JSON.parse(data);
+        console.log(data)
+
+        // check the live status of each stream
+        data.follows.map(function(elem) {
+          ajax({
+            url: `https://api.twitch.tv/kraken/streams/${elem.channel.name}`,
+            success: function(dataToCheckLive) {
+              dataToCheckLive = JSON.parse(dataToCheckLive)
+
+              // sets a key value to online or offline, depending on the status of the stream
+              elem.stream = dataToCheckLive.stream;
+
+              // push the stream object to the array
+              eleminstance.state.following.push(elem);
+
+              // refresh the state-dependent components
+              eleminstance.setState({});
+            },
+            error: function(err) {
+              console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+            }
+          });
+        });
+      },
+      error: function(err) {
+        console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+      }
+    });
+
+    // get list of user following the current user
+    ajax({
+      url: concurrentData.links.follows,
+      success: function(data) {
+        data = JSON.parse(data);
+        data.follows.map(function(elem) {
+          eleminstance.state.followers.push(elem);
+        });
+        eleminstance.setState({});
+      },
+      error: function(err) {
+        console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+      }
+    });
+  },
   render: function render() {
+    var eleminstance = this;
+
     return pageWrapNormal(
       null,
       React.createElement(
         "div",
         { "id" : "top-streams" },
+        // page title
         pageWrapNormal(
           null,
           React.createElement(
             "h1",
             { "className" : "section-title" },
             `Account Info of ${concurrentData.username}`
+          )
+        ),
+        // separator
+        pageWrapSmall(
+          null,
+          normalSeparator
+        ),
+        // section title
+        pageWrapNormal(
+          null,
+          React.createElement(
+            "h1",
+            { "className" : "section-title" },
+            `Streams you follow`
+          )
+        ),
+        // section
+        React.createElement(
+          "ul",
+          { "id" : "following-streams-list", "className" : "" },
+          this.state.following.map(function(item, ind) {
+            return React.createElement(
+              "li",
+              { "key" : "following-stream-item" + ind, "className" : "following-stream-item col-6-5-4-3-2-1", "data-stream-link" : item.channel.name, "onClick" : accessView.viewStream },
+              React.createElement(
+                "img",
+                { "src" : item.channel.logo }
+              ),
+              React.createElement(
+                "h1",
+                { "className" : "title"},
+                `${item.channel.display_name}`
+              ),
+              React.createElement(
+                "span",
+                { "className" : "stats" },
+                React.createElement(
+                  "span",
+                  { "className" : `bold${(item.stream) ? " online" : " offline"}` },
+                  `${(item.stream) ? `Online playing ${item.channel.game}` : "Offline" }`
+                )
+              )
+            )
+          })
+        ),
+        // section manual pagination
+        React.createElement(
+          "div",
+          { "className" : "right-justify" },
+          React.createElement(
+            "div",
+            { "className" : "pointer link bold inline-block", "onClick" : () => console.log("would load more followings") },
+            "Load more streams"
+          )
+        ),
+        // separator
+        pageWrapSmall(
+          null,
+          normalSeparator
+        ),
+        // section title
+        pageWrapNormal(
+          null,
+          React.createElement(
+            "h1",
+            { "className" : "section-title" },
+            `Users that follow you`
+          )
+        ),
+        // section
+        React.createElement(
+          "ul",
+          { "id" : "followers-streams-list", "className" : "" },
+          this.state.followers.map(function(item, ind) {
+            return React.createElement(
+              "li",
+              { "key" : "followers-stream-item" + ind, "className" : "followers-stream-item col-6-5-4-3-2-1"/*, "data-stream-link" : (item.user.name), "onClick" : accessView.viewStream*/ },
+              React.createElement(
+                "img",
+                { "src" : item.user.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
+              ),
+              React.createElement(
+                "h1",
+                { "className" : "title"},
+                `${item.user.display_name}`
+              )
+            )
+          })
+        ),
+        // section manual pagination
+        React.createElement(
+          "div",
+          { "className" : "right-justify" },
+          React.createElement(
+            "div",
+            { "className" : "pointer link bold inline-block", "onClick" : () => console.log("would load more followers") },
+            "Load more users"
           )
         )
       )
