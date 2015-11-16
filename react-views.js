@@ -168,6 +168,40 @@ var ViewParent = React.createClass({
 
       viewer.toggleClass("hidden-chat");
     } else
+    // event for following the current channel
+    if(e.target.className.match(/^follow$/i)) {
+      console.log(e)
+      var streamer = e.target.attributes["data-streamer"].value
+
+      ajax({
+        url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels/${streamer}?notifications=true&oauth_token=${twitchToken}`,
+        type: "PUT",
+        success: function(data) {
+          document.querySelector(".follow").addClass("hide");
+          document.querySelector(".unfollow").removeClass("hide");
+        },
+        error: function(err) {
+          console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+        }
+      });
+    } else
+    // event for unfollowing the current channel
+    if(e.target.className.match("unfollow")) {
+      console.log(e)
+      var streamer = e.target.attributes["data-streamer"].value
+
+      ajax({
+        url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels/${streamer}?notifications=true&oauth_token=${twitchToken}`,
+        type: "DELETE",
+        success: function(data) {
+          document.querySelector(".unfollow").addClass("hide");
+          document.querySelector(".follow").removeClass("hide");
+        },
+        error: function(err) {
+          console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+        }
+      });
+    } else
     // default event for opening streams
     {
       var streamer = e.target.attributes["data-stream-link"].value;
@@ -175,6 +209,20 @@ var ViewParent = React.createClass({
       var videoSrc = `http://player.twitch.tv/?channel=${streamer}`;
       var chatSrc = `http://twitch.tv/${streamer}/chat`;
       var viewer = document.querySelector("#stream-viewer");
+      document.querySelector(".follow").dataset.streamer = streamer;
+      document.querySelector(".unfollow").dataset.streamer = streamer;
+
+      ajax({
+        url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels/${streamer}`,
+        type: "GET",
+        success: function(data) {
+          document.querySelector(".follow").addClass("hide");
+        },
+        error: function(err) {
+          document.querySelector(".unfollow").addClass("hide");            
+          console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+        }
+      });
 
       viewer.addClass("open");
       viewer.querySelector("#video-embed iframe").src = videoSrc;
@@ -215,6 +263,16 @@ var ViewParent = React.createClass({
             React.createElement(
               "div",
               { "className" : "chat", "onClick" : this.viewStream }
+            ),
+            React.createElement(
+              "div",
+              { "className" : "follow", "onClick" : this.viewStream },
+              "Follow"
+            ),
+            React.createElement(
+              "div",
+              { "className" : "unfollow", "onClick" : this.viewStream },
+              "Unfollow"
             )
           ),
           React.createElement(
@@ -295,6 +353,8 @@ var OptionsBar = React.createClass({
         // if user is logged in, hide connect button
         document.querySelector(".nav.log").addClass("hide");
         document.querySelector("#chat-cover").addClass("hide");
+
+        // set the token
         twitchToken = Twitch.getToken();
         // sets the current user name if it doesn't exist
         if(!concurrentData.username) {

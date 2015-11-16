@@ -315,7 +315,7 @@ body {
 			left: 0;
 			height: 2*$em;
 			& div {
-				width: 2*$em;
+				min-width: 2*$em;
 				height: 100%;
 				display: inline-block;
 				color: white;
@@ -323,6 +323,9 @@ body {
 				vertical-align: top;
 				box-shadow: inset -.1em -.1em 0 0 black;
     		cursor: pointer;
+    		&.hide {
+    			display: none;
+    		}
     		&:hover {
     			background-color: $hoverPurple;
     		}
@@ -343,6 +346,9 @@ body {
 					position: relative;
 			    top: .4em;
 			    left: .6em;
+				}
+				&.follow, &.unfollow {
+					padding: .5*$em;
 				}
 			}
 		}
