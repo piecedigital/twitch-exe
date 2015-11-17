@@ -305,7 +305,7 @@ var OptionsBar = React.createClass({
   "displayName": "OptionsBar",
 
   componentDidMount: function() {
-    //console.log(this.props)
+    console.log(this.props)
 
     // eleminstance in any declaration is so that scoped variables still have access to "this"
     var elemInstance = this;
@@ -380,6 +380,8 @@ var OptionsBar = React.createClass({
   },
   // function to log the user out
   logoutUser: function() {
+    var eleminstance = this;
+
     Twitch.logout(function() {
       remote.getCurrentWebContents().session.clearStorageData({
         storages: ["cookies"]
@@ -392,6 +394,12 @@ var OptionsBar = React.createClass({
       concurrentData.username = null;
       concurrentData.links = null;
       console.log("user logged out");
+      var newHistory = eleminstance.props.parentAPI.state.history.filter(function(elem) {
+        if( !elem.match(/AccountInfoPage/i) ) {
+          return elem;
+        }
+      });
+      eleminstance.props.parentAPI.setState({ "history" : newHistory });
     });
     Twitch.getStatus({ "force" : true }, function(err, status) {
       if(err) throw err;
@@ -983,7 +991,6 @@ var AccountPage = React.createClass({
 
               // sets a key value to online or offline, depending on the status of the stream
               elem.stream = dataToCheckLive.stream;
-              if(elem.channel.name === "vernnotice") elem.stream = null;
 
               // push the stream object to the array
               eleminstance.state.following.push(elem);
