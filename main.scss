@@ -172,6 +172,18 @@ body {
 		
 	}
 }
+.btn {
+  height: 2*$em;
+  background-color: $purple;
+  color: white;
+  display: inline-block;
+  padding: .5*$em;
+  box-shadow: 0 0 0 .2*$em black;
+  cursor: pointer;
+  &:hover {
+  	background-color: $hoverPurple;
+  }
+}
 
 .section-title {
 	margin: 0 0 1*$em;
@@ -478,11 +490,15 @@ body {
 		}
 		&.log {
 			& span {
-				padding: .5*$em .5*$em;
+				padding: .45*$em .5*$em;
 				text-align: center;
 				cursor: pointer;
 				display: none;
-				box-shadow: inset -.1*$em -.1*$em 0 0 black;
+				box-shadow: inset .1*$em -.1*$em 0 0 black;
+				background-color: $purple;
+				&:hover {
+					background-color: $hoverPurple;
+				}
 			}
 			&.hide {
 				& img {

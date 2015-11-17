@@ -170,7 +170,6 @@ var ViewParent = React.createClass({
     } else
     // event for following the current channel
     if(e.target.className.match(/^follow$/i)) {
-      console.log(e)
       var streamer = e.target.attributes["data-streamer"].value
 
       ajax({
@@ -187,7 +186,6 @@ var ViewParent = React.createClass({
     } else
     // event for unfollowing the current channel
     if(e.target.className.match("unfollow")) {
-      console.log(e)
       var streamer = e.target.attributes["data-streamer"].value
 
       ajax({
@@ -236,7 +234,6 @@ var ViewParent = React.createClass({
     });
   },
   render: function render() {
-    console.log( this.state.history )
     return React.createElement(
       "div",
       { "id" : "view-parent" },
@@ -976,7 +973,6 @@ var AccountPage = React.createClass({
       url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels`,
       success: function(data) {
         data = JSON.parse(data);
-        console.log(data)
 
         // check the live status of each stream
         data.follows.map(function(elem) {
@@ -987,6 +983,7 @@ var AccountPage = React.createClass({
 
               // sets a key value to online or offline, depending on the status of the stream
               elem.stream = dataToCheckLive.stream;
+              if(elem.channel.name === "vernnotice") elem.stream = null;
 
               // push the stream object to the array
               eleminstance.state.following.push(elem);
@@ -1020,6 +1017,30 @@ var AccountPage = React.createClass({
       }
     });
   },
+  refreshStreams: function(e) {
+    var eleminstance = this;
+
+    if(e.target.attributes["data-section"].value === "following") {
+      this.state.following.map(function(elem, ind) {
+        ajax({
+          url: `https://api.twitch.tv/kraken/streams/${elem.channel.name}`,
+          success: function(dataToCheckLive) {
+            dataToCheckLive = JSON.parse(dataToCheckLive)
+
+            // sets a key value to online or offline, depending on the status of the stream
+            eleminstance.state.following[ind].stream = dataToCheckLive.stream;
+            // console.log(eleminstance.state.following[ind])
+
+            // refresh the state-dependent components
+            eleminstance.setState({ "following" : eleminstance.state.following });
+          },
+          error: function(err) {
+            console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+          }
+        });
+      });
+    }
+  },
   render: function render() {
     var eleminstance = this;
 
@@ -1046,9 +1067,26 @@ var AccountPage = React.createClass({
         pageWrapNormal(
           null,
           React.createElement(
-            "h1",
-            { "className" : "section-title" },
-            `Streams you follow`
+            "div",
+            null,
+            React.createElement(
+              "div",
+              { "className" : "col-2 left-justify" },
+              React.createElement(
+                "h1",
+                { "className" : "section-title" },
+                `Streams you follow`
+              )
+            ),
+            React.createElement(
+              "div",
+              { "className" : "col-2 right-justify" },
+              React.createElement(
+                "div",
+                { "className" : "btn", "data-section" : "following", "onClick" : this.refreshStreams },
+                `Refresh streams`
+              )
+            )
           )
         ),
         // section
@@ -1073,7 +1111,7 @@ var AccountPage = React.createClass({
                 { "className" : "stats" },
                 React.createElement(
                   "span",
-                  { "className" : `bold${(item.stream) ? " online" : " offline"}` },
+                  { "className" : `bold${(item.stream) ? " online" : " offline"} ` },
                   `${(item.stream) ? `Online playing ${item.channel.game}` : "Offline" }`
                 )
               )
@@ -1086,7 +1124,7 @@ var AccountPage = React.createClass({
           { "className" : "right-justify" },
           React.createElement(
             "div",
-            { "className" : "pointer link bold inline-block", "onClick" : () => console.log("would load more followings") },
+            { "className" : "pointer link bold inline-block", "data-section" : "following", "onClick" : () => console.log("would load more followings") },
             "Load more streams"
           )
         ),
@@ -1130,7 +1168,7 @@ var AccountPage = React.createClass({
           { "className" : "right-justify" },
           React.createElement(
             "div",
-            { "className" : "pointer link bold inline-block", "onClick" : () => console.log("would load more followers") },
+            { "className" : "pointer link bold inline-block", "data-section" : "followers", "onClick" : () => console.log("would load more followers") },
             "Load more users"
           )
         )
