@@ -178,11 +178,21 @@ body {
   color: white;
   display: inline-block;
   padding: .5*$em;
-  box-shadow: 0 0 0 .2*$em black;
+  box-shadow: 0 0 0 .1*$em black;
   cursor: pointer;
   &:hover {
   	background-color: $hoverPurple;
   }
+}
+.btn-spaced {
+	margin: 0 .2*$em;
+}
+.btn-selected {
+	background-color: white;
+	color: black;
+	&:hover {
+		background-color: rgba(230, 230, 230, 1);
+	}
 }
 
 .section-title {
@@ -296,6 +306,15 @@ body {
 			}
 			& .offline {
 				color: red;
+			}
+		}
+	}
+}
+#following-streams-list {
+	&.filter-online {
+		& .following-stream-item {
+			&.offline {
+				display: none;
 			}
 		}
 	}

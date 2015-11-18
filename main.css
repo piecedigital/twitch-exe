@@ -198,10 +198,19 @@ body {
   color: white;
   display: inline-block;
   padding: 8px;
-  box-shadow: 0 0 0 3.2px black;
+  box-shadow: 0 0 0 1.6px black;
   cursor: pointer; }
   .btn:hover {
     background-color: #7656B1; }
+
+.btn-spaced {
+  margin: 0 3.2px; }
+
+.btn-selected {
+  background-color: white;
+  color: black; }
+  .btn-selected:hover {
+    background-color: #e6e6e6; }
 
 .section-title {
   margin: 0 0 16px;
@@ -293,6 +302,9 @@ body {
         color: green; }
       #games-list .game-item .stats .offline, #games-list .featured-stream-item .stats .offline, #games-list .following-stream-item .stats .offline, #games-list .followers-stream-item .stats .offline, #featured-streams-list .game-item .stats .offline, #featured-streams-list .featured-stream-item .stats .offline, #featured-streams-list .following-stream-item .stats .offline, #featured-streams-list .followers-stream-item .stats .offline, #following-streams-list .game-item .stats .offline, #following-streams-list .featured-stream-item .stats .offline, #following-streams-list .following-stream-item .stats .offline, #following-streams-list .followers-stream-item .stats .offline, #followers-streams-list .game-item .stats .offline, #followers-streams-list .featured-stream-item .stats .offline, #followers-streams-list .following-stream-item .stats .offline, #followers-streams-list .followers-stream-item .stats .offline {
         color: red; }
+
+#following-streams-list.filter-online .following-stream-item.offline {
+  display: none; }
 
 #stream-viewer {
   z-index: 3;

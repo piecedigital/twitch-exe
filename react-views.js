@@ -971,14 +971,26 @@ var AccountPage = React.createClass({
   "displayName": "StreamsPage",
 
   getInitialState: function() {
-    return { "following" : [], "followingOffset" : 1, "followers" : [], "followersOffset" : 1 }
+    return { "following" : [], "followingLimit" : 6*4, "followingOffset" : 0, "followers" : [], "followersLimit" : 6*4, "followersOffset" : 0, "filter" : "all" };
   },
   componentDidMount: function() {
-    var eleminstance = this;
+    var elemInstance = this;
+
+    // get list of streams the current user is following
+    this.loadFollowingChannels();
+
+    // get list of user following the current user
+    this.loadFollowerChannels();
+  },
+  loadFollowingChannels: function(offset) {
+    if(typeof offset !== "number") {
+      offset = this.state.followingOffset+1;
+    }
+    var elemInstance = this;
 
     // get list of streams the current user is following
     ajax({
-      url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels`,
+      url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels?offset=${elemInstance.state.followingOffset * elemInstance.state.followingLimit}&limit=${elemInstance.state.followingLimit}`,
       success: function(data) {
         data = JSON.parse(data);
 
@@ -993,10 +1005,10 @@ var AccountPage = React.createClass({
               elem.stream = dataToCheckLive.stream;
 
               // push the stream object to the array
-              eleminstance.state.following.push(elem);
+              elemInstance.state.following.push(elem);
 
               // refresh the state-dependent components
-              eleminstance.setState({});
+              elemInstance.setState({ "followingOffset" : offset });
             },
             error: function(err) {
               console.log(`Status: ${err.status}`, `Message: ${err.message}`)
@@ -1008,16 +1020,22 @@ var AccountPage = React.createClass({
         console.log(`Status: ${err.status}`, `Message: ${err.message}`)
       }
     });
+  },
+  loadFollowerChannels: function(offset) {
+    if(typeof offset !== "number") {
+      offset = this.state.followingOffset+1;
+    }
+    var elemInstance = this;
 
     // get list of user following the current user
     ajax({
-      url: concurrentData.links.follows,
+      url: `${concurrentData.links.follows}?offset=${elemInstance.state.followersOffset * elemInstance.state.followersLimit}&limit=${elemInstance.state.followersLimit}`,
       success: function(data) {
         data = JSON.parse(data);
         data.follows.map(function(elem) {
-          eleminstance.state.followers.push(elem);
+          elemInstance.state.followers.push(elem);
         });
-        eleminstance.setState({});
+        elemInstance.setState({ "followersOffset" : offset });
       },
       error: function(err) {
         console.log(`Status: ${err.status}`, `Message: ${err.message}`)
@@ -1025,7 +1043,7 @@ var AccountPage = React.createClass({
     });
   },
   refreshStreams: function(e) {
-    var eleminstance = this;
+    var elemInstance = this;
 
     if(e.target.attributes["data-section"].value === "following") {
       this.state.following.map(function(elem, ind) {
@@ -1035,11 +1053,11 @@ var AccountPage = React.createClass({
             dataToCheckLive = JSON.parse(dataToCheckLive)
 
             // sets a key value to online or offline, depending on the status of the stream
-            eleminstance.state.following[ind].stream = dataToCheckLive.stream;
-            // console.log(eleminstance.state.following[ind])
+            elemInstance.state.following[ind].stream = dataToCheckLive.stream;
+            // console.log(elemInstance.state.following[ind])
 
             // refresh the state-dependent components
-            eleminstance.setState({ "following" : eleminstance.state.following });
+            elemInstance.setState({ "following" : elemInstance.state.following });
           },
           error: function(err) {
             console.log(`Status: ${err.status}`, `Message: ${err.message}`)
@@ -1048,8 +1066,13 @@ var AccountPage = React.createClass({
       });
     }
   },
+  filterList: function(e) {
+    var filter = e.target.attributes["data-filter"].value;
+
+    this.setState({ "filter" : filter });
+  },
   render: function render() {
-    var eleminstance = this;
+    var elemInstance = this;
 
     return pageWrapNormal(
       null,
@@ -1090,7 +1113,17 @@ var AccountPage = React.createClass({
               { "className" : "col-2 right-justify" },
               React.createElement(
                 "div",
-                { "className" : "btn", "data-section" : "following", "onClick" : this.refreshStreams },
+                { "className" : `btn btn-spaced${(this.state.filter === "all") ? " btn-selected" : "" }`, "data-section" : "following", "data-filter" : "all", "onClick" : this.filterList },
+                `Show All`
+              ),
+              React.createElement(
+                "div",
+                { "className" : `btn btn-spaced${(this.state.filter === "online") ? " btn-selected" : "" }`, "data-section" : "following", "data-filter" : "online", "onClick" : this.filterList },
+                `Show Online`
+              ),
+              React.createElement(
+                "div",
+                { "className" : `btn btn-spaced`, "data-section" : "following", "onClick" : this.refreshStreams },
                 `Refresh streams`
               )
             )
@@ -1099,14 +1132,14 @@ var AccountPage = React.createClass({
         // section
         React.createElement(
           "ul",
-          { "id" : "following-streams-list", "className" : "" },
+          { "id" : "following-streams-list", "className" : `filter-${this.state.filter}` },
           this.state.following.map(function(item, ind) {
             return React.createElement(
               "li",
-              { "key" : "following-stream-item" + ind, "className" : "following-stream-item col-6-5-4-3-2-1", "data-stream-link" : item.channel.name, "onClick" : accessView.viewStream },
+              { "key" : "following-stream-item" + ind, "className" : `following-stream-item col-6-5-4-3-2-1${(item.stream) ? "" : " offline" }`, "data-stream-link" : item.channel.name, "onClick" : accessView.viewStream },
               React.createElement(
                 "img",
-                { "src" : item.channel.logo }
+                { "src" : item.channel.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
               ),
               React.createElement(
                 "h1",
@@ -1131,7 +1164,7 @@ var AccountPage = React.createClass({
           { "className" : "right-justify" },
           React.createElement(
             "div",
-            { "className" : "pointer link bold inline-block", "data-section" : "following", "onClick" : () => console.log("would load more followings") },
+            { "className" : "pointer link bold inline-block", "data-section" : "following", "onClick" : elemInstance.loadFollowingChannels },
             "Load more streams"
           )
         ),
@@ -1175,7 +1208,7 @@ var AccountPage = React.createClass({
           { "className" : "right-justify" },
           React.createElement(
             "div",
-            { "className" : "pointer link bold inline-block", "data-section" : "followers", "onClick" : () => console.log("would load more followers") },
+            { "className" : "pointer link bold inline-block", "data-section" : "followers", "onClick": elemInstance.loadFollowerChannels },
             "Load more users"
           )
         )
