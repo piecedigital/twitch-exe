@@ -222,7 +222,7 @@ var ViewParent = React.createClass({
         }
       });
 
-      viewer.addClass("open");
+      viewer.addClass("open").removeClass("shrink");
       viewer.querySelector("#video-embed iframe").src = videoSrc;
       viewer.querySelector("#chat-embed iframe").src = chatSrc;
       document.body.style.overflow = "hidden";
@@ -968,7 +968,7 @@ var StreamsPage = React.createClass({
 });
 /* account page */
 var AccountPage = React.createClass({
-  "displayName": "StreamsPage",
+  "displayName": "AccountPage",
 
   getInitialState: function() {
     return { "following" : [], "followingLimit" : 6*4, "followingOffset" : 0, "followers" : [], "followersLimit" : 6*4, "followersOffset" : 0, "filter" : "all" };
@@ -1070,6 +1070,203 @@ var AccountPage = React.createClass({
     var filter = e.target.attributes["data-filter"].value;
 
     this.setState({ "filter" : filter });
+  },
+  render: function render() {
+    var elemInstance = this;
+
+    return pageWrapNormal(
+      null,
+      React.createElement(
+        "div",
+        { "id" : "top-streams" },
+        // page title
+        pageWrapNormal(
+          null,
+          React.createElement(
+            "h1",
+            { "className" : "section-title" },
+            `Account Info of ${concurrentData.username}`
+          )
+        ),
+        // separator
+        pageWrapSmall(
+          null,
+          normalSeparator
+        ),
+        // section title
+        pageWrapNormal(
+          null,
+          React.createElement(
+            "div",
+            null,
+            React.createElement(
+              "div",
+              { "className" : "col-2 left-justify" },
+              React.createElement(
+                "h1",
+                { "className" : "section-title" },
+                `Streams you follow`
+              )
+            ),
+            React.createElement(
+              "div",
+              { "className" : "col-2 right-justify" },
+              React.createElement(
+                "div",
+                { "className" : `btn btn-spaced${(this.state.filter === "all") ? " btn-selected" : "" }`, "data-section" : "following", "data-filter" : "all", "onClick" : this.filterList },
+                `Show All`
+              ),
+              React.createElement(
+                "div",
+                { "className" : `btn btn-spaced${(this.state.filter === "online") ? " btn-selected" : "" }`, "data-section" : "following", "data-filter" : "online", "onClick" : this.filterList },
+                `Show Online`
+              ),
+              React.createElement(
+                "div",
+                { "className" : `btn btn-spaced`, "data-section" : "following", "onClick" : this.refreshStreams },
+                `Refresh streams`
+              )
+            )
+          )
+        ),
+        // section
+        React.createElement(
+          "ul",
+          { "id" : "following-streams-list", "className" : `filter-${this.state.filter}` },
+          this.state.following.map(function(item, ind) {
+            return React.createElement(
+              "li",
+              { "key" : "following-stream-item" + ind, "className" : `following-stream-item col-6-5-4-3-2-1${(item.stream) ? "" : " offline" }`, "data-stream-link" : item.channel.name, "onClick" : accessView.viewStream },
+              React.createElement(
+                "img",
+                { "src" : item.channel.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
+              ),
+              React.createElement(
+                "h1",
+                { "className" : "title"},
+                `${item.channel.display_name}`
+              ),
+              React.createElement(
+                "span",
+                { "className" : "stats" },
+                React.createElement(
+                  "span",
+                  { "className" : `bold${(item.stream) ? " online" : " offline"} ` },
+                  `${(item.stream) ? `Online playing ${item.channel.game}` : "Offline" }`
+                )
+              )
+            )
+          })
+        ),
+        // section manual pagination
+        React.createElement(
+          "div",
+          { "className" : "right-justify" },
+          React.createElement(
+            "div",
+            { "className" : "pointer link bold inline-block", "data-section" : "following", "onClick" : elemInstance.loadFollowingChannels },
+            "Load more streams"
+          )
+        ),
+        // separator
+        pageWrapSmall(
+          null,
+          normalSeparator
+        ),
+        // section title
+        pageWrapNormal(
+          null,
+          React.createElement(
+            "h1",
+            { "className" : "section-title" },
+            `Users that follow you`
+          )
+        ),
+        // section
+        React.createElement(
+          "ul",
+          { "id" : "followers-streams-list", "className" : "" },
+          this.state.followers.map(function(item, ind) {
+            return React.createElement(
+              "li",
+              { "key" : "followers-stream-item" + ind, "className" : "followers-stream-item col-6-5-4-3-2-1"/*, "data-stream-link" : (item.user.name), "onClick" : accessView.viewStream*/ },
+              React.createElement(
+                "img",
+                { "src" : item.user.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
+              ),
+              React.createElement(
+                "h1",
+                { "className" : "title"},
+                `${item.user.display_name}`
+              )
+            )
+          })
+        ),
+        // section manual pagination
+        React.createElement(
+          "div",
+          { "className" : "right-justify" },
+          React.createElement(
+            "div",
+            { "className" : "pointer link bold inline-block", "data-section" : "followers", "onClick": elemInstance.loadFollowerChannels },
+            "Load more users"
+          )
+        )
+      )
+    )
+  }
+});
+/* streamer videos page */
+var StreamerVideosPage = React.createClass({
+  "displayName": "StreamsVideosPage",
+
+  getInitialState: function() {
+    return { "videos" : [] };
+  },
+  componentDidMount: function() {
+    var elemInstance = this;
+
+    // get list of streams the current user is following
+    this.loadFollowingChannels();
+  },
+  loadFollowingChannels: function(offset) {
+    if(typeof offset !== "number") {
+      offset = this.state.followingOffset+1;
+    }
+    var elemInstance = this;
+
+    // get list of streams the current user is following
+    ajax({
+      url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels?offset=${elemInstance.state.followingOffset * elemInstance.state.followingLimit}&limit=${elemInstance.state.followingLimit}`,
+      success: function(data) {
+        data = JSON.parse(data);
+
+        // check the live status of each stream
+        data.follows.map(function(elem) {
+          ajax({
+            url: `https://api.twitch.tv/kraken/streams/${elem.channel.name}`,
+            success: function(dataToCheckLive) {
+              dataToCheckLive = JSON.parse(dataToCheckLive)
+
+              // sets a key value to online or offline, depending on the status of the stream
+              elem.stream = dataToCheckLive.stream;
+
+              // push the stream object to the array
+              elemInstance.state.following.push(elem);
+
+              // refresh the state-dependent components
+              elemInstance.setState({ "followingOffset" : offset });
+            },
+            error: function(err) {
+              console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+            }
+          });
+        });
+      },
+      error: function(err) {
+        console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+      }
+    });
   },
   render: function render() {
     var elemInstance = this;

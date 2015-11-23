@@ -24,28 +24,41 @@ var ajax = function(optionsObj) {
 }
 
 HTMLElement.prototype.addClass = function() {
-  var arr = [];
+  console.log("ADD CLASS");
+  var classNameArr = (this.className || "").split(" ");
+  console.log("classNameArr", classNameArr);
 
-  for(var i in arguments) {
-    if(!this.className.match(arguments[i])) {
-      arr[i] = arguments[i];
+  for(var i = 0; i < arguments.length; i++) {
+    if( classNameArr.indexOf(arguments[i] < 0) ) {
+      classNameArr.push(arguments[i]);
     }
   }
 
-  if(arr.length > 0) {
-    this.className += ( ((this.className) ? " " : "") + arr.join(" ") );
-  }
-  arr = null;
+  console.log("className", this.className);
+  this.className = classNameArr.join(" ");
+  console.log("className", this.className);
+
+  classNameArr = null;
+
+  return this;
 };
 
 HTMLElement.prototype.removeClass = function() {
-  if(this.className.match(arguments[0])) {
-    var match = new RegExp("(\s)?" + arguments[0] + "", "g");
+  console.log("REMOVE CLASS");
+  var classNameArr = this.className.split(" ") || [];
+  console.log("classNameArr", classNameArr);
 
-    this.className = this.className.replace(match, "");
-
-    match = null;
+  if( classNameArr.indexOf(arguments[0]) >= 0 ) {
+    classNameArr.splice( classNameArr.indexOf(arguments[0]), 1 );
   }
+
+  console.log("className", this.className);  
+  this.className = classNameArr.join(" ");
+  console.log("className", this.className);
+
+  classNameArr = null;
+
+  return this;
 };
 
 HTMLElement.prototype.toggleClass = function() {
@@ -54,4 +67,5 @@ HTMLElement.prototype.toggleClass = function() {
   } else {
     this.addClass(arguments[0]);
   }
+  return this;
 };
