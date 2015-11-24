@@ -142,28 +142,27 @@ var ViewParent = React.createClass({
   // search function for feeding data to "searchForStreamData" and "searchForGameData"
   pingForData: function(e) {
     console.log(this.state)
-    var searchText = (e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : null;
-    var searchPage = e.target.attributes["data-page-link"].value;
+    var searchText = (e) ? ( (e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : this.state.search ) : this.state.search;
+    var searchPage = (e) ? e.target.attributes["data-page-link"].value : this.state.history[this.state.history.length-1];
 
-    
     if(this.state.history[this.state.history.length-1] !== searchPage) {
       this.state.history.push(searchPage);
     }
-    this.state.search = searchText || null;
+    this.state.search = searchText || this.state.search;
     this.state.streamSearchResults = [];
     this.state.channelSearchResults = [];
     this.state.streamOffset = 0;
     this.state.channelOffset = 0;
     this.state.gameOffset = 0;
 
-    if(searchPage === "StreamsListPage") {
+    if(this.state.history[this.state.history.length-1] === "StreamsListPage") {
       this.searchForStreamData();
       if(this.state.search) {
         this.searchForChannelData();
       }
     }
-    if(searchPage === "GamesListPage") {
-      this.searchForGameData()
+    if(this.state.history[this.state.history.length-1] === "GamesListPage") {
+      this.searchForGameData();
     } else {
       this.setState({});
     }
@@ -266,7 +265,7 @@ var ViewParent = React.createClass({
       "div",
       { "id" : "view-parent" },
       // render component for the main section of the page
-      React.createElement(window[this.state.history[this.state.history.length-1]]),
+      React.createElement(window[this.state.history[this.state.history.length-1]], { "parentAPI" : this }),
       // render component for the stream viewer (top-left corner)
       React.createElement(
         "div",
@@ -353,6 +352,8 @@ var OptionsBar = React.createClass({
           }
         }
       });
+
+      e.target[0].value = "";
     });
 
     // click event for back navigation
@@ -542,6 +543,9 @@ var HomePage = React.createClass({
 var GamesListPage = React.createClass({
   displayName: "GamesListPage",
 
+  componentDidMount: function() {
+    this.props.parentAPI.searchForGameData();
+  },
   render: function render() {
     return React.createElement(
       "div",
@@ -556,6 +560,10 @@ var GamesListPage = React.createClass({
 var StreamsListPage = React.createClass({
   displayName: "StreamsListPage",
 
+  componentDidMount: function() {
+    this.props.parentAPI.searchForStreamData();
+    this.props.parentAPI.searchForChannelData();
+  },
   render: function render() {
     return React.createElement(
       "div",
@@ -1023,7 +1031,7 @@ var StreamsPage = React.createClass({
               React.createElement(
                 "h1",
                 { "className" : "title"},
-                `${item.status}`
+                `${item.display_name}`
               )
             )
           })
