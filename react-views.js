@@ -362,14 +362,6 @@ var OptionsBar = React.createClass({
     });
 
     // check for user login data
-    /*Twitch.getStatus(function(err, status) {
-      if(err) throw err;
-      if(status.authenticated) {
-        document.querySelector(".nav.log").addClass("hide");
-        document.querySelector("#chat-cover").addClass("hide");
-        twitchToken = Twitch.getToken();
-      }
-    });*/
     var eleminstance = twitchToken;
     remote.getCurrentWebContents().session.cookies.get({
       "name": "name"
