@@ -68,7 +68,7 @@ var ViewParent = React.createClass({
   displayName: "ViewParent",
 
   getInitialState: function() {
-    return { "streamer" : null, "search" : null, "history" : ["HomePage"], "searchResults" : [], "limit" : 6*4, "offset" : 0 };
+    return { "streamer" : null, "search" : null, "history" : ["HomePage"], "streamSearchResults" : [], "channelSearchResults" : [], "limit" : 6*4, "streamOffset" : 0, "channelOffset" : 0, "gameOffset" : 0 };
   },
   // go back in history
   changeViewPrev: function(e) {
@@ -82,17 +82,38 @@ var ViewParent = React.createClass({
     // sets variable to access the class object
     var elemInstance = this;
     console.log(this.state.search)
-    var url = (this.state.search) ? `https://api.twitch.tv/kraken/search/streams?limit=${this.state.limit}&offset=${this.state.limit * this.state.offset}&q=${this.state.search.toLowerCase()}` : `https://api.twitch.tv/kraken/streams/featured?limit=${this.state.limit}&offset=${this.state.limit * this.state.offset}`;
+    var url = (this.state.search) ? `https://api.twitch.tv/kraken/search/streams?limit=${this.state.limit}&offset=${this.state.limit * this.state.streamOffset}&q=${this.state.search.toLowerCase()}` : `https://api.twitch.tv/kraken/streams/featured?limit=${this.state.limit}&offset=${this.state.limit * this.state.streamOffset}`;
 
     ajax({
       url: url,
       success: function(data) {
         console.log("Streams", (JSON.parse(data)));
-        JSON.parse(data)[(accessView.state.search) ? "streams" : "featured"].map(function(streamData) {
-          elemInstance.state.searchResults.push(streamData);
+        JSON.parse(data).streams.map(function(streamData) {
+          elemInstance.state.streamSearchResults.push(streamData);
         });
 
-        elemInstance.setState({ "offset" : (offset || elemInstance.state.offset+1) });
+        elemInstance.setState({ "streamOffset" : (offset || elemInstance.state.streamOffset+1) });
+      },
+      error: function(data) {
+        console.log(data)
+      }
+    });
+  },
+  searchForChannelData: function(offset) {
+    // sets variable to access the class object
+    var elemInstance = this;
+    console.log(this.state.search)
+    var url = (this.state.search) ? `https://api.twitch.tv/kraken/search/channels?limit=${this.state.limit}&offset=${this.state.limit * this.state.channelOffset}&q=${this.state.search.toLowerCase()}` : `https://api.twitch.tv/kraken/channels/featured?limit=${this.state.limit}&offset=${this.state.limit * this.state.channelOffset}`;
+
+    ajax({
+      url: url,
+      success: function(data) {
+        console.log("Channels", (JSON.parse(data)));
+        JSON.parse(data).channels.map(function(channelData) {
+          elemInstance.state.channelSearchResults.push(channelData);
+        });
+
+        elemInstance.setState({ "channelOffset" : (offset || elemInstance.state.channelOffset+1) });
       },
       error: function(data) {
         console.log(data)
@@ -103,20 +124,21 @@ var ViewParent = React.createClass({
   searchForGameData: function(offset) {
     var elemInstance = this;
     ajax({
-      url: `https://api.twitch.tv/kraken/games/top?limit=${elemInstance.state.limit}&offset=${elemInstance.state.limit * elemInstance.state.offset}`,
+      url: `https://api.twitch.tv/kraken/games/top?limit=${elemInstance.state.limit}&offset=${elemInstance.state.limit * elemInstance.state.gameOffset}`,
       success: function(data) {
         console.log("Top Games", JSON.parse(data).top);
         JSON.parse(data).top.map(function(gameData) {
-          elemInstance.state.searchResults.push(gameData);
+          elemInstance.state.streamSearchResults.push(gameData);
         });
 
-        elemInstance.setState({ "offset" : elemInstance.state.offset+1 });
+        elemInstance.setState({ "gameOffset" : elemInstance.state.gameOffset+1 });
       },
       error: function(data) {
         console.log(data)
       }
     });
   },
+
   // search function for feeding data to "searchForStreamData" and "searchForGameData"
   pingForData: function(e) {
     console.log(this.state)
@@ -128,11 +150,17 @@ var ViewParent = React.createClass({
       this.state.history.push(searchPage);
     }
     this.state.search = searchText || null;
-    this.state.searchResults = [];
-    this.state.offset = 0;
+    this.state.streamSearchResults = [];
+    this.state.channelSearchResults = [];
+    this.state.streamOffset = 0;
+    this.state.channelOffset = 0;
+    this.state.gameOffset = 0;
 
     if(searchPage === "StreamsListPage") {
-      this.searchForStreamData()
+      this.searchForStreamData();
+      if(this.state.search) {
+        this.searchForChannelData();
+      }
     }
     if(searchPage === "GamesListPage") {
       this.searchForGameData()
@@ -856,7 +884,7 @@ var GamesPage = React.createClass({
         React.createElement(
           "ul",
           { "id" : "games-list", "className" : "" },
-          accessView.state.searchResults.map(function(item, ind) {
+          accessView.state.streamSearchResults.map(function(item, ind) {
             return React.createElement(
               "li",
               { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1", "data-page-link" : "StreamsListPage", "data-search": item.game.name, "onClick" : accessView.pingForData },
@@ -906,12 +934,14 @@ var StreamsPage = React.createClass({
 
   render: function render() {
     var elemInstance = this;
-    console.log(accessView.state.searchResults)
+    console.log(accessView.state.streamSearchResults);
+    console.log(accessView.state.channelSearchResults);
     return pageWrapNormal(
       null,
       React.createElement(
         "div",
         { "id" : "top-streams" },
+        /* section title */
         pageWrapNormal(
           null,
           React.createElement(
@@ -920,10 +950,11 @@ var StreamsPage = React.createClass({
             `Live Streams ${(accessView.state.search) ? `for "${accessView.state.search}"` : ""}`
           )
         ),
+        /* section */
         React.createElement(
           "ul",
           { "id" : "featured-streams-list", "className" : "" },
-          accessView.state.searchResults.map(function(item, ind) {
+          accessView.state.streamSearchResults.map(function(item, ind) {
             return React.createElement(
               "li",
               { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : ((!accessView.state.search) ? item.stream.channel.name : item.channel.name), "onClick" : accessView.viewStream },
@@ -953,12 +984,57 @@ var StreamsPage = React.createClass({
             )
           })
         ),
+        /* section manual pagination */
         React.createElement(
           "div",
           { "className" : "right-justify" },
           React.createElement(
             "div",
             { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForStreamData },
+            "Load more streams"
+          )
+        ),
+        /* separator */
+        pageWrapSmall(
+          null,
+          normalSeparator
+        ),
+        /* section title */
+        pageWrapNormal(
+          null,
+          React.createElement(
+            "h1",
+            { "className" : "section-title" },
+            `Channel results ${(accessView.state.search) ? `for "${accessView.state.search}"` : ""}`
+          )
+        ),
+        /* section */
+        React.createElement(
+          "ul",
+          { "id" : "featured-streams-list", "className" : "" },
+          accessView.state.channelSearchResults.map(function(item, ind) {
+            return React.createElement(
+              "li",
+              { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : item.name, "onClick" : accessView.viewStream },
+              React.createElement(
+                "img",
+                { "src" : item.logo }
+              ),
+              React.createElement(
+                "h1",
+                { "className" : "title"},
+                `${item.status}`
+              )
+            )
+          })
+        ),
+        /* section manual pagination */
+        React.createElement(
+          "div",
+          { "className" : "right-justify" },
+          React.createElement(
+            "div",
+            { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForChannelData },
             "Load more streams"
           )
         )
@@ -1217,7 +1293,7 @@ var AccountPage = React.createClass({
   }
 });
 /* streamer videos page */
-var StreamerVideosPage = React.createClass({
+/*var StreamerVideosPage = React.createClass({
   "displayName": "StreamsVideosPage",
 
   getInitialState: function() {
@@ -1386,7 +1462,7 @@ var StreamerVideosPage = React.createClass({
           this.state.followers.map(function(item, ind) {
             return React.createElement(
               "li",
-              { "key" : "followers-stream-item" + ind, "className" : "followers-stream-item col-6-5-4-3-2-1"/*, "data-stream-link" : (item.user.name), "onClick" : accessView.viewStream*/ },
+              { "key" : "followers-stream-item" + ind, "className" : "followers-stream-item col-6-5-4-3-2-1" },
               React.createElement(
                 "img",
                 { "src" : item.user.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
@@ -1412,6 +1488,6 @@ var StreamerVideosPage = React.createClass({
       )
     )
   }
-});
+});*/
 
 var accessView = ReactDOM.render(React.createElement(ViewParent, null), document.getElementById("main-content"));
