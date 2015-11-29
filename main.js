@@ -24,84 +24,102 @@ var ajax = function(optionsObj) {
 }
 
 HTMLElement.prototype.addClass = function() {
-  console.log("ADD CLASS");
-  var classNameArr = (this.className || "").split(" ");
-  console.log("classNameArr", classNameArr);
+  if(this) {
+    console.log("ADD CLASS");
+    var classNameArr = (this.className || "").split(" ");
+    console.log("classNameArr", classNameArr);
 
-  for(var i = 0; i < arguments.length; i++) {
-    if( classNameArr.indexOf(arguments[i] < 0) ) {
-      classNameArr.push(arguments[i]);
+    for(var i = 0; i < arguments.length; i++) {
+      if(!this.className.match(arguments[i])) {
+        classNameArr.push(arguments[i]);
+      }
     }
+
+    console.log("className", this.className);
+    this.className = classNameArr.join(" ");
+    console.log("className", this.className);
+
+    classNameArr = null;
+
+    return this;
   }
-
-  console.log("className", this.className);
-  this.className = classNameArr.join(" ");
-  console.log("className", this.className);
-
-  classNameArr = null;
-
-  return this;
 };
 
 HTMLElement.prototype.removeClass = function() {
-  console.log("REMOVE CLASS");
-  var classNameArr = this.className.split(" ") || [];
-  console.log("classNameArr", classNameArr);
+  if(this) {
+    console.log("REMOVE CLASS");
+    var classNameArr = this.className.split(" ") || [];
+    console.log("classNameArr", classNameArr);
 
-  if( classNameArr.indexOf(arguments[0]) >= 0 ) {
-    classNameArr.splice( classNameArr.indexOf(arguments[0]), 1 );
+    if( classNameArr.indexOf(arguments[0]) >= 0 ) {
+      classNameArr.splice( classNameArr.indexOf(arguments[0]), 1 );
+    }
+
+    console.log("className", this.className);  
+    this.className = classNameArr.join(" ");
+    console.log("className", this.className);
+
+    classNameArr = null;
+
+    return this;
   }
-
-  console.log("className", this.className);  
-  this.className = classNameArr.join(" ");
-  console.log("className", this.className);
-
-  classNameArr = null;
-
-  return this;
 };
 
 HTMLElement.prototype.toggleClass = function() {
-  if(this.className.match(arguments[0])) {
-    this.removeClass(arguments[0]);
-  } else {
-    this.addClass(arguments[0]);
+  if(this) {
+    if(this.className.match(arguments[0])) {
+      this.removeClass(arguments[0]);
+    } else {
+      this.addClass(arguments[0]);
+    }
+    return this;
   }
-  return this;
 };
 
 HTMLElement.prototype.hasClass = function(className) {
-  console.log("HAS CLASS");
-  if(typeof className === "object") {
-    var classNameArr = className;
-  } else {
-    var classNameArr = [className];
-  }
-  var result = false;
-
-  for(var i in classNameArr) {
-    if(this.className.match(classNameArr[i])) {
-      result = true;
+  if(this) {
+    console.log("HAS CLASS");
+    if(typeof className === "object") {
+      var classNameArr = className;
+    } else {
+      var classNameArr = [className];
     }
+    var result = false;
+
+    for(var i in classNameArr) {
+      if(this.className.match(classNameArr[i])) {
+        result = true;
+      }
+    }
+
+    console.log("result", result);
+
+    return result;
   }
-
-  console.log("result", result);
-
-  return result;
 };
 
 HTMLElement.prototype.css = function(property, value) {
-  console.log("APPLY CSS");
+  if(this) {
+    console.log("APPLY CSS");
 
-  if(typeof property === "string") {
-    this.style[property] = value;
-  } else {
-    for(var prop in property) {
-      this.style[prop] = property[prop];
+    if(typeof property === "string") {
+      this.style[property] = value;
+    } else {
+      for(var prop in property) {
+        this.style[prop] = property[prop];
+      }
     }
+
+    console.log("style", this.style);
+
+    return this;
   }
+};
 
-  console.log("style", this.style);
+HTMLElement.prototype.parent = function(property, value) {
+  if(this) {
+    console.log("RETURN PARENT");
 
-  return this;
+    return (this.parentNode) ? this.parentNode : this.target.parentNode;
+  }
 };

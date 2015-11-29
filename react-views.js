@@ -138,7 +138,6 @@ var ViewParent = React.createClass({
       }
     });
   },
-
   // search function for feeding data to "searchForStreamData" and "searchForGameData"
   pingForData: function(e) {
     console.log(this.state)
@@ -177,6 +176,7 @@ var ViewParent = React.createClass({
       viewer.querySelector("#video-embed iframe").src = "";
       viewer.querySelector("#embed-area iframe").src = "";
       document.body.style.overflow = "";
+      this.setState({ "streamers" : [] })
     } else
     // event for changing the display of the viewer
     if(e.target.className.match("display")) {
@@ -266,9 +266,10 @@ var ViewParent = React.createClass({
       scope: ["user_blocks_edit", "user_blocks_read", "user_follows_edit", "channel_read", "channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", "chat_login"]
     });
   },
-  appendStreamer: function(e) {
+  appendStreamer: function() {
     if(this.state.streamers.length < 4) {
       this.state.streamers.push(this.state.hoveredStreamer);
+      document.querySelector("#stream-viewer").addClass("open").removeClass("shrink");
       this.setState({});
     }
   },
@@ -276,10 +277,14 @@ var ViewParent = React.createClass({
     var eleminstance = this;
 
     document.addEventListener("mousedown", function(e) {
+      console.log(e);
       if(e.button === 0) {
+        if(e.target.hasClass("streamer-opt")) {
+          eleminstance.appendStreamer()
+        }
         document.querySelector("#context-menu.streamer-options").addClass("hide");
       } else
-      if(e.button === 3) {
+      if(e.button === 2) {
         if(e.target.hasClass(["featured-stream-item", "following-stream-item", "followers-stream-item"])) {
           eleminstance.state.hoveredStreamer = event.target.attributes["data-stream-link"].value;
           document.querySelector("#context-menu.streamer-options").removeClass("hide");
@@ -340,27 +345,27 @@ var ViewParent = React.createClass({
               )
             })
           ),
-          this.state.streamers.map(function(streamer, ind) {
-            return React.createElement(
-              "div",
-              { "className" : `video-embed`, "key" : `video-embed${ind}` },
-              React.createElement(
+          React.createElement(
+            "div",
+            { "className" : `video-embed` },
+            this.state.streamers.map(function(streamer, ind) {
+              return React.createElement(
                 "div",
-                { "className" : `video embed-size-${eleminstance.state.streamers.length}` },
+                { "className" : `video embed-size-${eleminstance.state.streamers.length}`, "key" : `video${ind}` },
                 React.createElement(
                   "iframe",
                   { "src" : `http://player.twitch.tv/?channel=${streamer}`, "frameBorder" : "0" }
                 )
               )
-            )
-          }),
+            })
+          ),
           this.state.streamers.map(function(streamer, ind) {
             return React.createElement(
               "div",
-              { "className" : `chat-embed`, "key" : `chat-embed${ind}` },
+              { "className" : `chat-embed${(ind === eleminstance.state.streamerInView) ? "" : " hide"}`, "key" : `chat-embed${ind}` },
               React.createElement(
                 "div",
-                { "className" : `chat-${ind}${(ind === eleminstance.state.streamerInView) ? "" : " hide"}` },
+                { "className" : `chat-${ind}` },
                 React.createElement(
                   "div",
                   { "className" : "chat-cover", "onClick" : eleminstance.loginUser }
@@ -381,7 +386,7 @@ var ViewParent = React.createClass({
         { "id" : "context-menu", "className" : "streamer-options hide" },
         React.createElement(
           "li",
-          { "onClick" : this.appendStreamer },
+          { "className" : "streamer-opt" },
           "Add Streamer To View"
         )
       )
