@@ -315,48 +315,47 @@ body {
   height: 0;
   background-color: #6441a5;
   overflow: hidden;
-  text-align: center;
-  /* states */ }
+  text-align: center; }
+  #stream-viewer #viewer-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 32px;
+    overflow: hidden; }
+    #stream-viewer #viewer-controls .ctrl {
+      min-width: 32px;
+      height: 100%;
+      display: inline-block;
+      color: white;
+      vertical-align: top;
+      box-shadow: inset -1.6px -1.6px 0 0 black;
+      cursor: pointer; }
+      #stream-viewer #viewer-controls .ctrl.hide {
+        display: none; }
+      #stream-viewer #viewer-controls .ctrl:hover {
+        background-color: #7656B1; }
+      #stream-viewer #viewer-controls .ctrl.close:after {
+        content: "\2716";
+        position: relative;
+        top: 6.4px;
+        left: 0px; }
+      #stream-viewer #viewer-controls .ctrl.display:after {
+        content: "\2795";
+        position: relative;
+        top: 6.4px;
+        left: 0px; }
+      #stream-viewer #viewer-controls .ctrl.chat:after {
+        content: "\2971";
+        position: relative;
+        top: 8.8px;
+        left: 0px; }
+      #stream-viewer #viewer-controls .ctrl.follow, #stream-viewer #viewer-controls .ctrl.unfollow, #stream-viewer #viewer-controls .ctrl.toggle-chat {
+        padding: 8px; }
   #stream-viewer #embed-area {
     width: 100%;
     height: 100%;
     padding: 32px 0 0;
     display: inline-flex; }
-    #stream-viewer #embed-area #viewer-controls {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 32px;
-      overflow: hidden; }
-      #stream-viewer #embed-area #viewer-controls .ctrl {
-        min-width: 32px;
-        height: 100%;
-        display: inline-block;
-        color: white;
-        vertical-align: top;
-        box-shadow: inset -1.6px -1.6px 0 0 black;
-        cursor: pointer; }
-        #stream-viewer #embed-area #viewer-controls .ctrl.hide {
-          display: none; }
-        #stream-viewer #embed-area #viewer-controls .ctrl:hover {
-          background-color: #7656B1; }
-        #stream-viewer #embed-area #viewer-controls .ctrl.close:after {
-          content: "\2716";
-          position: relative;
-          top: 6.4px;
-          left: 0px; }
-        #stream-viewer #embed-area #viewer-controls .ctrl.display:after {
-          content: "\2795";
-          position: relative;
-          top: 6.4px;
-          left: 0px; }
-        #stream-viewer #embed-area #viewer-controls .ctrl.chat:after {
-          content: "\2971";
-          position: relative;
-          top: 8.8px;
-          left: 0px; }
-        #stream-viewer #embed-area #viewer-controls .ctrl.follow, #stream-viewer #embed-area #viewer-controls .ctrl.unfollow, #stream-viewer #embed-area #viewer-controls .ctrl.toggle-chat {
-          padding: 8px; }
     #stream-viewer #embed-area .video-embed {
       width: 100%;
       height: 100%;

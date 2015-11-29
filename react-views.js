@@ -328,6 +328,15 @@ var ViewParent = React.createClass({
             "top": `${e.clientY}px`,
             "left": `${e.clientX}px`
           });
+        } else
+        if(e.target.hasClass("toggle-chat")) {
+          if(eleminstance.state.streamers.length > 1) {
+            eleminstance.state.streamers.splice( parseInt(e.target.attributes["data-chat"].value), 1 );
+            if(parseInt(e.target.attributes["data-chat"].value) > eleminstance.state.streamers.length-1) {
+              eleminstance.state.streamerInView = eleminstance.state.streamers.length-1;
+            }
+            eleminstance.setState({});
+          }
         } else {
           document.querySelector("#context-menu.streamer-options").addClass("hide");
         }
@@ -347,40 +356,40 @@ var ViewParent = React.createClass({
         { "id" : "stream-viewer" },
         React.createElement(
           "div",
-          { "id" : `embed-area`},
+          { "id" : "viewer-controls"},
           React.createElement(
             "div",
-            { "id" : "viewer-controls"},
-            React.createElement(
-              "div",
-              { "className" : "ctrl close", "onClick" : this.viewStream }
-            ),
-            React.createElement(
-              "div",
-              { "className" : "ctrl display", "onClick" : this.viewStream }
-            ),
-            React.createElement(
-              "div",
-              { "className" : "ctrl chat", "onClick" : this.viewStream }
-            ),
-            React.createElement(
-              "div",
-              { "className" : "ctrl follow", "data-streamer" : `${this.state.streamers[this.state.streamerInView]}`, "onClick" : this.viewStream },
-              `Follow ${this.state.streamers[this.state.streamerInView]}`
-            ),
-            React.createElement(
-              "div",
-              { "className" : "ctrl unfollow", "data-streamer" : `${this.state.streamers[this.state.streamerInView]}`, "onClick" : this.viewStream },
-              `Unfollow ${this.state.streamers[this.state.streamerInView]}`
-            ),
-            this.state.streamers.map(function(streamer, ind) {
-              return React.createElement(
-                "div",
-                { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : eleminstance.toggleChat, "key" : `toggle${ind}` },
-                `Chat ${ind}`
-              )
-            })
+            { "className" : "ctrl close", "onClick" : this.viewStream }
           ),
+          React.createElement(
+            "div",
+            { "className" : "ctrl display", "onClick" : this.viewStream }
+          ),
+          React.createElement(
+            "div",
+            { "className" : "ctrl chat", "onClick" : this.viewStream }
+          ),
+          React.createElement(
+            "div",
+            { "className" : "ctrl follow", "data-streamer" : `${this.state.streamers[this.state.streamerInView]}`, "onClick" : this.viewStream },
+            `Follow ${this.state.streamers[this.state.streamerInView]}`
+          ),
+          React.createElement(
+            "div",
+            { "className" : "ctrl unfollow", "data-streamer" : `${this.state.streamers[this.state.streamerInView]}`, "onClick" : this.viewStream },
+            `Unfollow ${this.state.streamers[this.state.streamerInView]}`
+          ),
+          this.state.streamers.map(function(streamer, ind) {
+            return React.createElement(
+              "div",
+              { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : eleminstance.toggleChat, "key" : `toggle${ind}` },
+              `Chat ${ind}`
+            )
+          })
+        ),
+        React.createElement(
+          "div",
+          { "id" : `embed-area`},
           React.createElement(
             "div",
             { "className" : `video-embed` },

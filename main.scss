@@ -333,7 +333,51 @@ body {
 
 	overflow: hidden;
 	text-align: center;
-	/* states */
+
+	& #viewer-controls {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 2*$em;
+		overflow: hidden;
+		& .ctrl {
+			min-width: 2*$em;
+			height: 100%;
+			display: inline-block;
+			color: white;
+
+			vertical-align: top;
+			box-shadow: inset -.1*$em -.1*$em 0 0 black;
+  		cursor: pointer;
+  		&.hide {
+  			display: none;
+  		}
+  		&:hover {
+  			background-color: $hoverPurple;
+  		}
+			&.close:after {
+				content: "\2716";
+				position: relative;
+		    top: .4*$em;
+		    left: 0*$em;
+			}
+			&.display:after {
+				content: "\2795";
+				position: relative;
+		    top: .4*$em;
+		    left: 0*$em;
+			}
+			&.chat:after {
+				content: "\2971";
+				position: relative;
+		    top: .55*$em;
+		    left: 0*$em;
+			}
+			&.follow, &.unfollow, &.toggle-chat {
+				padding: .5*$em;
+			}
+		}
+	}
 	& #embed-area {
 		//position: relative;
 		// padding: 2*$em 25*$em 0 0;
@@ -341,50 +385,6 @@ body {
 		height: 100%;
 		padding: 2*$em 0 0;
 		display: inline-flex;
-		& #viewer-controls {
-			position: absolute;
-			top: 0;
-			left: 0;
-			height: 2*$em;
-			overflow: hidden;
-			& .ctrl {
-				min-width: 2*$em;
-				height: 100%;
-				display: inline-block;
-				color: white;
-
-				vertical-align: top;
-				box-shadow: inset -.1*$em -.1*$em 0 0 black;
-    		cursor: pointer;
-    		&.hide {
-    			display: none;
-    		}
-    		&:hover {
-    			background-color: $hoverPurple;
-    		}
-				&.close:after {
-					content: "\2716";
-					position: relative;
-			    top: .4*$em;
-			    left: 0*$em;
-				}
-				&.display:after {
-					content: "\2795";
-					position: relative;
-			    top: .4*$em;
-			    left: 0*$em;
-				}
-				&.chat:after {
-					content: "\2971";
-					position: relative;
-			    top: .55*$em;
-			    left: 0*$em;
-				}
-				&.follow, &.unfollow, &.toggle-chat {
-					padding: .5*$em;
-				}
-			}
-		}
 		& .video-embed {
 			width: 100%;
 			height: 100%;
