@@ -371,7 +371,12 @@ body {
         #stream-viewer #embed-area .video-embed .video.embed-size-2 {
           width: 100%;
           height: 50%; }
-        #stream-viewer #embed-area .video-embed .video.embed-size-3, #stream-viewer #embed-area .video-embed .video.embed-size-4 {
+        #stream-viewer #embed-area .video-embed .video.embed-size-3 {
+          width: 50%;
+          height: 50%; }
+          #stream-viewer #embed-area .video-embed .video.embed-size-3:last-child {
+            width: 100%; }
+        #stream-viewer #embed-area .video-embed .video.embed-size-4 {
           width: 50%;
           height: 50%; }
         #stream-viewer #embed-area .video-embed .video iframe {

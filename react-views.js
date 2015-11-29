@@ -173,8 +173,8 @@ var ViewParent = React.createClass({
       var viewer = document.querySelector("#stream-viewer");
 
       viewer.removeClass("open");
-      viewer.querySelector("#video-embed iframe").src = "";
-      viewer.querySelector("#embed-area iframe").src = "";
+      //viewer.querySelector("#video-embed iframe").src = "";
+      //viewer.querySelector("#embed-area iframe").src = "";
       document.body.style.overflow = "";
       this.setState({ "streamers" : [] })
     } else
@@ -231,13 +231,69 @@ var ViewParent = React.createClass({
     {
       var streamer = e.target.attributes["data-stream-link"].value;
       this.state.streamers = [streamer];
-      this.setState({});
+      this.setState({ "streamerInView" : 0 });
       //var videoSrc = `http://player.twitch.tv/?channel=${streamer}`;
       //var chatSrc = `http://twitch.tv/${streamer}/chat`;
       var viewer = document.querySelector("#stream-viewer");
-      document.querySelector(".follow").dataset.streamer = streamer;
-      document.querySelector(".unfollow").dataset.streamer = streamer;
+      //document.querySelector(".follow").dataset.streamer = streamer;
+      //document.querySelector(".unfollow").dataset.streamer = streamer;
 
+      ajax({
+        url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels/${streamer}`,
+        type: "GET",
+        success: function(data) {
+          document.querySelector(".follow").addClass("hide");
+          document.querySelector(".unfollow").removeClass("hide");
+        },
+        error: function(err) {
+          document.querySelector(".follow").removeClass("hide");
+          document.querySelector(".unfollow").addClass("hide");
+          console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+        }
+      });
+
+      viewer.addClass("open").removeClass("shrink");
+      //viewer.querySelector("#video-embed iframe").src = videoSrc;
+      //viewer.querySelector("#chat-embed iframe").src = chatSrc;
+      document.body.style.overflow = "hidden";
+    }
+  },
+  toggleChat: function(e) {
+    var newStreamerInView = e.target.attributes["data-chat"].value;
+
+    this.setState({ "streamerInView" : parseInt(newStreamerInView) });
+
+    // change the follow/unfollow button for the currently "in view" streamer
+    var streamer = this.state.streamers[newStreamerInView];
+    console.log("streamer", streamer);
+    ajax({
+      url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels/${streamer}`,
+      type: "GET",
+      success: function(data) {
+        document.querySelector(".follow").addClass("hide");
+        document.querySelector(".unfollow").removeClass("hide");
+      },
+      error: function(err) {
+        document.querySelector(".follow").removeClass("hide");
+        document.querySelector(".unfollow").addClass("hide");
+        console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+      }
+    });
+  },
+  loginUser: function() {
+    Twitch.login({
+      scope: ["user_blocks_edit", "user_blocks_read", "user_follows_edit", "channel_read", "channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", "chat_login"]
+    });
+  },
+  appendStreamer: function() {
+    if(this.state.streamers.length < 4) {
+      this.state.streamers.push(this.state.hoveredStreamer);
+      document.querySelector("#stream-viewer").addClass("open").removeClass("shrink");
+      document.body.style.overflow = "hidden";
+      this.setState({});
+
+      // change the follow/unfollow button for the currently "in view" streamer
+      var streamer = this.state.streamers[this.state.streamerInView];
       ajax({
         url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels/${streamer}`,
         type: "GET",
@@ -251,33 +307,13 @@ var ViewParent = React.createClass({
           console.log(`Status: ${err.status}`, `Message: ${err.message}`)
         }
       });
-
-      viewer.addClass("open").removeClass("shrink");
-      //viewer.querySelector("#video-embed iframe").src = videoSrc;
-      //viewer.querySelector("#chat-embed iframe").src = chatSrc;
-      document.body.style.overflow = "hidden";
-    }
-  },
-  toggleChat: function(e) {
-    this.setState({ "streamerInView" : parseInt(e.target.attributes["data-chat"].value) });
-  },
-  loginUser: function() {
-    Twitch.login({
-      scope: ["user_blocks_edit", "user_blocks_read", "user_follows_edit", "channel_read", "channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", "chat_login"]
-    });
-  },
-  appendStreamer: function() {
-    if(this.state.streamers.length < 4) {
-      this.state.streamers.push(this.state.hoveredStreamer);
-      document.querySelector("#stream-viewer").addClass("open").removeClass("shrink");
-      this.setState({});
     }
   },
   componentDidMount: function() {
     var eleminstance = this;
 
     document.addEventListener("mousedown", function(e) {
-      console.log(e);
+      //console.log(e);
       if(e.button === 0) {
         if(e.target.hasClass("streamer-opt")) {
           eleminstance.appendStreamer()
@@ -329,13 +365,13 @@ var ViewParent = React.createClass({
             ),
             React.createElement(
               "div",
-              { "className" : "ctrl follow", "onClick" : this.viewStream },
-              "Follow"
+              { "className" : "ctrl follow", "data-streamer" : `${this.state.streamers[this.state.streamerInView]}`, "onClick" : this.viewStream },
+              `Follow ${this.state.streamers[this.state.streamerInView]}`
             ),
             React.createElement(
               "div",
-              { "className" : "ctrl unfollow", "onClick" : this.viewStream },
-              "Unfollow"
+              { "className" : "ctrl unfollow", "data-streamer" : `${this.state.streamers[this.state.streamerInView]}`, "onClick" : this.viewStream },
+              `Unfollow ${this.state.streamers[this.state.streamerInView]}`
             ),
             this.state.streamers.map(function(streamer, ind) {
               return React.createElement(

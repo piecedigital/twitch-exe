@@ -401,7 +401,14 @@ body {
 					width: 100%;
 					height: 50%;
 				}
-				&.embed-size-3, &.embed-size-4 {
+				&.embed-size-3 {
+					width: 50%;
+					height: 50%;
+					&:last-child {
+						width: 100%;
+					}
+				}
+				&.embed-size-4 {
 					width: 50%;
 					height: 50%;
 				}
