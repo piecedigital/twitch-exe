@@ -383,14 +383,13 @@ body {
 		}
 	}
 	& #embed-area {
-		//position: relative;
-		// padding: 2*$em 25*$em 0 0;
 		width: 100%;
 		height: 100%;
 		padding: 2*$em 0 0;
 		display: inline-flex;
 		& .video-embed {
 			position: relative;
+			display: flex;
 			width: 100%;
 			height: 100%;
 			& .video {
@@ -408,9 +407,6 @@ body {
 				&.embed-size-3 {
 					width: 50%;
 					height: 50%;
-					/* &:first-child {
-						width: 100%;
-					} */
 					&.in-view {
 						position:absolute;
             top: 0;
@@ -434,14 +430,9 @@ body {
 			}
 		}
 		& .chat-embed {
-			// position: absolute;
 			position: relative;
-			// top: 0;
-			// right: 0;
-			// width: 25*$em;
 			width: 21*$em;
 			height: 100%;
-			//padding: 2*$em 0 0;
 			flex-shrink: 0;
 			& .chat-0, .chat-1, .chat-2, .chat-3 {
 				width: 100%;
