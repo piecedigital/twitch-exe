@@ -396,7 +396,7 @@ var ViewParent = React.createClass({
             this.state.streamers.map(function(streamer, ind) {
               return React.createElement(
                 "div",
-                { "className" : `video embed-size-${eleminstance.state.streamers.length}`, "key" : `video${ind}` },
+                { "className" : `video embed-size-${eleminstance.state.streamers.length}${(ind === eleminstance.state.streamerInView) ? " in-view" : " out-view"}`, "key" : `video${ind}` },
                 React.createElement(
                   "iframe",
                   { "src" : `http://player.twitch.tv/?channel=${streamer}`, "frameBorder" : "0" }

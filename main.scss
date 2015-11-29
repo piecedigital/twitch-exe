@@ -340,6 +340,8 @@ body {
 		left: 0;
 		height: 2*$em;
 		overflow: hidden;
+		text-align: left;
+		background-color: $purple;
 		& .ctrl {
 			min-width: 2*$em;
 			height: 100%;
@@ -349,6 +351,7 @@ body {
 			vertical-align: top;
 			box-shadow: inset -.1*$em -.1*$em 0 0 black;
   		cursor: pointer;
+  		text-align: center;
   		&.hide {
   			display: none;
   		}
@@ -376,6 +379,7 @@ body {
 			&.follow, &.unfollow, &.toggle-chat {
 				padding: .5*$em;
 			}
+			&.toggle-chat {}
 		}
 	}
 	& #embed-area {
@@ -386,9 +390,9 @@ body {
 		padding: 2*$em 0 0;
 		display: inline-flex;
 		& .video-embed {
+			position: relative;
 			width: 100%;
 			height: 100%;
-			flex-shrink: 1;
 			& .video {
 				width: 100%;
 				height: 100%;
@@ -404,8 +408,19 @@ body {
 				&.embed-size-3 {
 					width: 50%;
 					height: 50%;
-					&:last-child {
+					/* &:first-child {
 						width: 100%;
+					} */
+					&.in-view {
+						position:absolute;
+            top: 0;
+            left: 0;
+            width: 100%
+					}
+					&.out-view {
+						position: relative;
+            top: 100%;
+            transform: translate(0, -100%)
 					}
 				}
 				&.embed-size-4 {
@@ -502,7 +517,7 @@ body {
 	&.hidden-chat {
 		& #embed-area {
 			padding-right: 0;
-			& #chat-embed {
+			& .chat-embed {
 				width: 0;
 			}
 		}
