@@ -68,7 +68,7 @@ var ViewParent = React.createClass({
   displayName: "ViewParent",
 
   getInitialState: function() {
-    return { "streamer" : null, "search" : null, "history" : ["HomePage"], "streamSearchResults" : [], "channelSearchResults" : [], "limit" : 6*4, "streamOffset" : 0, "channelOffset" : 0, "gameOffset" : 0 };
+    return { "streamers" : [], "streamerInView" : 0, "hoveredStreamer" : null, "search" : null, "history" : ["HomePage"], "streamSearchResults" : [], "channelSearchResults" : [], "limit" : 6*4, "streamOffset" : 0, "channelOffset" : 0, "gameOffset" : 0 };
   },
   // go back in history
   changeViewPrev: function(e) {
@@ -175,7 +175,7 @@ var ViewParent = React.createClass({
 
       viewer.removeClass("open");
       viewer.querySelector("#video-embed iframe").src = "";
-      viewer.querySelector("#chat-embed iframe").src = "";
+      viewer.querySelector("#embed-area iframe").src = "";
       document.body.style.overflow = "";
     } else
     // event for changing the display of the viewer
@@ -230,9 +230,10 @@ var ViewParent = React.createClass({
     // default event for opening streams
     {
       var streamer = e.target.attributes["data-stream-link"].value;
-
-      var videoSrc = `http://player.twitch.tv/?channel=${streamer}`;
-      var chatSrc = `http://twitch.tv/${streamer}/chat`;
+      this.state.streamers = [streamer];
+      this.setState({});
+      //var videoSrc = `http://player.twitch.tv/?channel=${streamer}`;
+      //var chatSrc = `http://twitch.tv/${streamer}/chat`;
       var viewer = document.querySelector("#stream-viewer");
       document.querySelector(".follow").dataset.streamer = streamer;
       document.querySelector(".unfollow").dataset.streamer = streamer;
@@ -242,25 +243,58 @@ var ViewParent = React.createClass({
         type: "GET",
         success: function(data) {
           document.querySelector(".follow").addClass("hide");
+          document.querySelector(".unfollow").removeClass("hide");            
         },
         error: function(err) {
+          document.querySelector(".follow").removeClass("hide");
           document.querySelector(".unfollow").addClass("hide");            
           console.log(`Status: ${err.status}`, `Message: ${err.message}`)
         }
       });
 
       viewer.addClass("open").removeClass("shrink");
-      viewer.querySelector("#video-embed iframe").src = videoSrc;
-      viewer.querySelector("#chat-embed iframe").src = chatSrc;
+      //viewer.querySelector("#video-embed iframe").src = videoSrc;
+      //viewer.querySelector("#chat-embed iframe").src = chatSrc;
       document.body.style.overflow = "hidden";
     }
+  },
+  toggleChat: function(e) {
+    this.setState({ "streamerInView" : parseInt(e.target.attributes["data-chat"].value) });
   },
   loginUser: function() {
     Twitch.login({
       scope: ["user_blocks_edit", "user_blocks_read", "user_follows_edit", "channel_read", "channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", "chat_login"]
     });
   },
+  appendStreamer: function(e) {
+    if(this.state.streamers.length < 4) {
+      this.state.streamers.push(this.state.hoveredStreamer);
+      this.setState({});
+    }
+  },
+  componentDidMount: function() {
+    var eleminstance = this;
+
+    document.addEventListener("mousedown", function(e) {
+      if(e.button === 0) {
+        document.querySelector("#context-menu.streamer-options").addClass("hide");
+      } else
+      if(e.button === 3) {
+        if(e.target.hasClass(["featured-stream-item", "following-stream-item", "followers-stream-item"])) {
+          eleminstance.state.hoveredStreamer = event.target.attributes["data-stream-link"].value;
+          document.querySelector("#context-menu.streamer-options").removeClass("hide");
+          document.querySelector("#context-menu.streamer-options").css({
+            "top": `${e.clientY}px`,
+            "left": `${e.clientX}px`
+          });
+        } else {
+          document.querySelector("#context-menu.streamer-options").addClass("hide");
+        }
+      }
+    });
+  },
   render: function render() {
+    var eleminstance = this;
     return React.createElement(
       "div",
       { "id" : "view-parent" },
@@ -272,57 +306,85 @@ var ViewParent = React.createClass({
         { "id" : "stream-viewer" },
         React.createElement(
           "div",
-          { "id" : "embed-area"},
+          { "id" : `embed-area`},
           React.createElement(
             "div",
             { "id" : "viewer-controls"},
             React.createElement(
               "div",
-              { "className" : "close", "onClick" : this.viewStream }
+              { "className" : "ctrl close", "onClick" : this.viewStream }
             ),
             React.createElement(
               "div",
-              { "className" : "display", "onClick" : this.viewStream }
+              { "className" : "ctrl display", "onClick" : this.viewStream }
             ),
             React.createElement(
               "div",
-              { "className" : "chat", "onClick" : this.viewStream }
+              { "className" : "ctrl chat", "onClick" : this.viewStream }
             ),
             React.createElement(
               "div",
-              { "className" : "follow", "onClick" : this.viewStream },
+              { "className" : "ctrl follow", "onClick" : this.viewStream },
               "Follow"
             ),
             React.createElement(
               "div",
-              { "className" : "unfollow", "onClick" : this.viewStream },
+              { "className" : "ctrl unfollow", "onClick" : this.viewStream },
               "Unfollow"
-            )
-          ),
-          React.createElement(
-            "div",
-            { "id" : "video-embed"},
-            React.createElement(
-              "iframe",
-              { "src" : "", "frameBorder" : "0" }
-            )
-          ),
-          React.createElement(
-            "div",
-            { "id" : "chat-embed"},
-            React.createElement(
-              "div",
-              { "id" : "chat-cover", "onClick" : this.loginUser }
             ),
-            React.createElement(
-              "iframe",
-              { "src" : "", "frameBorder" : "0" }
+            this.state.streamers.map(function(streamer, ind) {
+              return React.createElement(
+                "div",
+                { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : eleminstance.toggleChat, "key" : `toggle${ind}` },
+                `Chat ${ind}`
+              )
+            })
+          ),
+          this.state.streamers.map(function(streamer, ind) {
+            return React.createElement(
+              "div",
+              { "className" : `video-embed`, "key" : `video-embed${ind}` },
+              React.createElement(
+                "div",
+                { "className" : `video embed-size-${eleminstance.state.streamers.length}` },
+                React.createElement(
+                  "iframe",
+                  { "src" : `http://player.twitch.tv/?channel=${streamer}`, "frameBorder" : "0" }
+                )
+              )
             )
-          )
+          }),
+          this.state.streamers.map(function(streamer, ind) {
+            return React.createElement(
+              "div",
+              { "className" : `chat-embed`, "key" : `chat-embed${ind}` },
+              React.createElement(
+                "div",
+                { "className" : `chat-${ind}${(ind === eleminstance.state.streamerInView) ? "" : " hide"}` },
+                React.createElement(
+                  "div",
+                  { "className" : "chat-cover", "onClick" : eleminstance.loginUser }
+                ),
+                React.createElement(
+                  "iframe",
+                  { "src" : `http://twitch.tv/${streamer}/chat`, "frameBorder" : "0" }
+                )
+              )
+            )
+          })
         )
       ),
       // render component for the options bar (top-right corner)
-      React.createElement(OptionsBar, { "parentAPI" : this })
+      React.createElement(OptionsBar, { "parentAPI" : this }),
+      React.createElement(
+        "ul",
+        { "id" : "context-menu", "className" : "streamer-options hide" },
+        React.createElement(
+          "li",
+          { "onClick" : this.appendStreamer },
+          "Add Streamer To View"
+        )
+      )
     )
   }
 });
@@ -370,7 +432,7 @@ var OptionsBar = React.createClass({
       if(cookies.length > 0) {
         // if user is logged in, hide connect button
         document.querySelector(".nav.log").addClass("hide");
-        document.querySelector("#chat-cover").addClass("hide");
+        document.querySelector("#embed-area").addClass("logged-in");
 
         // set the token
         twitchToken = Twitch.getToken();
@@ -428,10 +490,10 @@ var OptionsBar = React.createClass({
       //console.log(status)
       if(status.authenticated) {
         document.querySelector(".nav.log").addClass("hide");
-        document.querySelector("#chat-cover").addClass("hide");
+        document.querySelector("#embed-area").addClass("logged-in");
       } else {
         document.querySelector(".nav.log").removeClass("hide");
-        document.querySelector("#chat-cover").removeClass("hide");
+        document.querySelector("#embed-area").removeClass("logged-in");
       }
     });
   },
@@ -1265,7 +1327,7 @@ var AccountPage = React.createClass({
           this.state.followers.map(function(item, ind) {
             return React.createElement(
               "li",
-              { "key" : "followers-stream-item" + ind, "className" : "followers-stream-item col-6-5-4-3-2-1"/*, "data-stream-link" : (item.user.name), "onClick" : accessView.viewStream*/ },
+              { "key" : "followers-stream-item" + ind, "className" : "followers-stream-item col-6-5-4-3-2-1", "data-stream-link" : (item.user.name), "onClick" : accessView.viewStream },
               React.createElement(
                 "img",
                 { "src" : item.user.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
@@ -1292,202 +1354,5 @@ var AccountPage = React.createClass({
     )
   }
 });
-/* streamer videos page */
-/*var StreamerVideosPage = React.createClass({
-  "displayName": "StreamsVideosPage",
-
-  getInitialState: function() {
-    return { "videos" : [] };
-  },
-  componentDidMount: function() {
-    var elemInstance = this;
-
-    // get list of streams the current user is following
-    this.loadFollowingChannels();
-  },
-  loadFollowingChannels: function(offset) {
-    if(typeof offset !== "number") {
-      offset = this.state.followingOffset+1;
-    }
-    var elemInstance = this;
-
-    // get list of streams the current user is following
-    ajax({
-      url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels?offset=${elemInstance.state.followingOffset * elemInstance.state.followingLimit}&limit=${elemInstance.state.followingLimit}`,
-      success: function(data) {
-        data = JSON.parse(data);
-
-        // check the live status of each stream
-        data.follows.map(function(elem) {
-          ajax({
-            url: `https://api.twitch.tv/kraken/streams/${elem.channel.name}`,
-            success: function(dataToCheckLive) {
-              dataToCheckLive = JSON.parse(dataToCheckLive)
-
-              // sets a key value to online or offline, depending on the status of the stream
-              elem.stream = dataToCheckLive.stream;
-
-              // push the stream object to the array
-              elemInstance.state.following.push(elem);
-
-              // refresh the state-dependent components
-              elemInstance.setState({ "followingOffset" : offset });
-            },
-            error: function(err) {
-              console.log(`Status: ${err.status}`, `Message: ${err.message}`)
-            }
-          });
-        });
-      },
-      error: function(err) {
-        console.log(`Status: ${err.status}`, `Message: ${err.message}`)
-      }
-    });
-  },
-  render: function render() {
-    var elemInstance = this;
-
-    return pageWrapNormal(
-      null,
-      React.createElement(
-        "div",
-        { "id" : "top-streams" },
-        // page title
-        pageWrapNormal(
-          null,
-          React.createElement(
-            "h1",
-            { "className" : "section-title" },
-            `Account Info of ${concurrentData.username}`
-          )
-        ),
-        // separator
-        pageWrapSmall(
-          null,
-          normalSeparator
-        ),
-        // section title
-        pageWrapNormal(
-          null,
-          React.createElement(
-            "div",
-            null,
-            React.createElement(
-              "div",
-              { "className" : "col-2 left-justify" },
-              React.createElement(
-                "h1",
-                { "className" : "section-title" },
-                `Streams you follow`
-              )
-            ),
-            React.createElement(
-              "div",
-              { "className" : "col-2 right-justify" },
-              React.createElement(
-                "div",
-                { "className" : `btn btn-spaced${(this.state.filter === "all") ? " btn-selected" : "" }`, "data-section" : "following", "data-filter" : "all", "onClick" : this.filterList },
-                `Show All`
-              ),
-              React.createElement(
-                "div",
-                { "className" : `btn btn-spaced${(this.state.filter === "online") ? " btn-selected" : "" }`, "data-section" : "following", "data-filter" : "online", "onClick" : this.filterList },
-                `Show Online`
-              ),
-              React.createElement(
-                "div",
-                { "className" : `btn btn-spaced`, "data-section" : "following", "onClick" : this.refreshStreams },
-                `Refresh streams`
-              )
-            )
-          )
-        ),
-        // section
-        React.createElement(
-          "ul",
-          { "id" : "following-streams-list", "className" : `filter-${this.state.filter}` },
-          this.state.following.map(function(item, ind) {
-            return React.createElement(
-              "li",
-              { "key" : "following-stream-item" + ind, "className" : `following-stream-item col-6-5-4-3-2-1${(item.stream) ? "" : " offline" }`, "data-stream-link" : item.channel.name, "onClick" : accessView.viewStream },
-              React.createElement(
-                "img",
-                { "src" : item.channel.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
-              ),
-              React.createElement(
-                "h1",
-                { "className" : "title"},
-                `${item.channel.display_name}`
-              ),
-              React.createElement(
-                "span",
-                { "className" : "stats" },
-                React.createElement(
-                  "span",
-                  { "className" : `bold${(item.stream) ? " online" : " offline"} ` },
-                  `${(item.stream) ? `Online playing ${item.channel.game}` : "Offline" }`
-                )
-              )
-            )
-          })
-        ),
-        // section manual pagination
-        React.createElement(
-          "div",
-          { "className" : "right-justify" },
-          React.createElement(
-            "div",
-            { "className" : "pointer link bold inline-block", "data-section" : "following", "onClick" : elemInstance.loadFollowingChannels },
-            "Load more streams"
-          )
-        ),
-        // separator
-        pageWrapSmall(
-          null,
-          normalSeparator
-        ),
-        // section title
-        pageWrapNormal(
-          null,
-          React.createElement(
-            "h1",
-            { "className" : "section-title" },
-            `Users that follow you`
-          )
-        ),
-        // section
-        React.createElement(
-          "ul",
-          { "id" : "followers-streams-list", "className" : "" },
-          this.state.followers.map(function(item, ind) {
-            return React.createElement(
-              "li",
-              { "key" : "followers-stream-item" + ind, "className" : "followers-stream-item col-6-5-4-3-2-1" },
-              React.createElement(
-                "img",
-                { "src" : item.user.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
-              ),
-              React.createElement(
-                "h1",
-                { "className" : "title"},
-                `${item.user.display_name}`
-              )
-            )
-          })
-        ),
-        // section manual pagination
-        React.createElement(
-          "div",
-          { "className" : "right-justify" },
-          React.createElement(
-            "div",
-            { "className" : "pointer link bold inline-block", "data-section" : "followers", "onClick": elemInstance.loadFollowerChannels },
-            "Load more users"
-          )
-        )
-      )
-    )
-  }
-});*/
 
 var accessView = ReactDOM.render(React.createElement(ViewParent, null), document.getElementById("main-content"));

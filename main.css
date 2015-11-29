@@ -315,9 +315,9 @@ body {
   height: 0;
   background-color: #6441a5;
   overflow: hidden;
+  text-align: center;
   /* states */ }
   #stream-viewer #embed-area {
-    position: relative;
     width: 100%;
     height: 100%;
     padding: 32px 0 0;
@@ -326,49 +326,65 @@ body {
       position: absolute;
       top: 0;
       left: 0;
-      height: 32px; }
-      #stream-viewer #embed-area #viewer-controls div {
+      height: 32px;
+      overflow: hidden; }
+      #stream-viewer #embed-area #viewer-controls .ctrl {
         min-width: 32px;
         height: 100%;
         display: inline-block;
         color: white;
         vertical-align: top;
-        box-shadow: inset -.1em -.1em 0 0 black;
+        box-shadow: inset -1.6px -1.6px 0 0 black;
         cursor: pointer; }
-        #stream-viewer #embed-area #viewer-controls div.hide {
+        #stream-viewer #embed-area #viewer-controls .ctrl.hide {
           display: none; }
-        #stream-viewer #embed-area #viewer-controls div:hover {
+        #stream-viewer #embed-area #viewer-controls .ctrl:hover {
           background-color: #7656B1; }
-        #stream-viewer #embed-area #viewer-controls div.close:after {
+        #stream-viewer #embed-area #viewer-controls .ctrl.close:after {
           content: "\2716";
           position: relative;
-          top: .4em;
-          left: .6em; }
-        #stream-viewer #embed-area #viewer-controls div.display:after {
+          top: 6.4px;
+          left: 0px; }
+        #stream-viewer #embed-area #viewer-controls .ctrl.display:after {
           content: "\2795";
           position: relative;
-          top: .4em;
-          left: .6em; }
-        #stream-viewer #embed-area #viewer-controls div.chat:after {
+          top: 6.4px;
+          left: 0px; }
+        #stream-viewer #embed-area #viewer-controls .ctrl.chat:after {
           content: "\2971";
           position: relative;
-          top: .4em;
-          left: .6em; }
-        #stream-viewer #embed-area #viewer-controls div.follow, #stream-viewer #embed-area #viewer-controls div.unfollow {
+          top: 8.8px;
+          left: 0px; }
+        #stream-viewer #embed-area #viewer-controls .ctrl.follow, #stream-viewer #embed-area #viewer-controls .ctrl.unfollow, #stream-viewer #embed-area #viewer-controls .ctrl.toggle-chat {
           padding: 8px; }
-    #stream-viewer #embed-area #video-embed {
+    #stream-viewer #embed-area .video-embed {
       width: 100%;
       height: 100%;
       flex-shrink: 1; }
-      #stream-viewer #embed-area #video-embed iframe {
+      #stream-viewer #embed-area .video-embed .video {
         width: 100%;
         height: 100%; }
-    #stream-viewer #embed-area #chat-embed {
+        #stream-viewer #embed-area .video-embed .video.embed-size-1 {
+          width: 100%;
+          height: 100%; }
+        #stream-viewer #embed-area .video-embed .video.embed-size-2 {
+          width: 100%;
+          height: 50%; }
+        #stream-viewer #embed-area .video-embed .video.embed-size-3, #stream-viewer #embed-area .video-embed .video.embed-size-4 {
+          width: 50%;
+          height: 50%; }
+        #stream-viewer #embed-area .video-embed .video iframe {
+          width: 100%;
+          height: 100%; }
+    #stream-viewer #embed-area .chat-embed {
       position: relative;
       width: 336px;
       height: 100%;
       flex-shrink: 0; }
-      #stream-viewer #embed-area #chat-embed #chat-cover {
+      #stream-viewer #embed-area .chat-embed .chat-0, #stream-viewer #embed-area .chat-embed .chat-1, #stream-viewer #embed-area .chat-embed .chat-2, #stream-viewer #embed-area .chat-embed .chat-3 {
+        width: 100%;
+        height: 100%; }
+      #stream-viewer #embed-area .chat-embed .chat-cover {
         position: absolute;
         bottom: 0;
         left: 0;
@@ -377,7 +393,7 @@ body {
         background-color: #6441a5;
         opacity: .5;
         cursor: pointer; }
-        #stream-viewer #embed-area #chat-embed #chat-cover:after {
+        #stream-viewer #embed-area .chat-embed .chat-cover:after {
           content: "Connect with Twitch to chat";
           position: absolute;
           bottom: 24px;
@@ -386,14 +402,16 @@ body {
           font-weight: bold;
           color: white;
           opacity: 0; }
-        #stream-viewer #embed-area #chat-embed #chat-cover:hover {
+        #stream-viewer #embed-area .chat-embed .chat-cover:hover {
           opacity: 1; }
-          #stream-viewer #embed-area #chat-embed #chat-cover:hover:after {
+          #stream-viewer #embed-area .chat-embed .chat-cover:hover:after {
             opacity: 1; }
-      #stream-viewer #embed-area #chat-embed iframe {
+      #stream-viewer #embed-area .chat-embed iframe {
         width: 100%;
         height: 100%;
         pointer-events: auto; }
+    #stream-viewer #embed-area.logged-in .chat-embed .chat-cover {
+      display: none; }
   #stream-viewer.open {
     width: 100%;
     height: 100%; }
@@ -402,7 +420,13 @@ body {
       height: 208px; }
       #stream-viewer.open.shrink #embed-area {
         padding: 0; }
-        #stream-viewer.open.shrink #embed-area #chat-embed {
+        #stream-viewer.open.shrink #embed-area .video-embed .video:first-child {
+          width: 100%;
+          height: 100%; }
+        #stream-viewer.open.shrink #embed-area .video-embed .video:not(:first-child) {
+          width: 0;
+          height: 0; }
+        #stream-viewer.open.shrink #embed-area .chat-embed {
           width: 0; }
   #stream-viewer.hidden-chat #embed-area {
     padding-right: 0; }
@@ -462,6 +486,19 @@ body {
       display: none; }
     #options-bar .nav.log.hide span {
       display: inline-block; }
+
+#context-menu {
+  z-index: 10;
+  position: fixed; }
+  #context-menu li {
+    display: block;
+    min-width: 32px;
+    height: 32px;
+    color: white;
+    box-shadow: inset 0 -1.6px 0 0 black;
+    cursor: pointer; }
+    #context-menu li:hover {
+      background-color: #7656B1; }
 
 #login {
   position: fixed;

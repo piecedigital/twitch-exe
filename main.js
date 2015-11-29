@@ -69,3 +69,39 @@ HTMLElement.prototype.toggleClass = function() {
   }
   return this;
 };
+
+HTMLElement.prototype.hasClass = function(className) {
+  console.log("HAS CLASS");
+  if(typeof className === "object") {
+    var classNameArr = className;
+  } else {
+    var classNameArr = [className];
+  }
+  var result = false;
+
+  for(var i in classNameArr) {
+    if(this.className.match(classNameArr[i])) {
+      result = true;
+    }
+  }
+
+  console.log("result", result);
+
+  return result;
+};
+
+HTMLElement.prototype.css = function(property, value) {
+  console.log("APPLY CSS");
+
+  if(typeof property === "string") {
+    this.style[property] = value;
+  } else {
+    for(var prop in property) {
+      this.style[prop] = property[prop];
+    }
+  }
+
+  console.log("style", this.style);
+
+  return this;
+};
