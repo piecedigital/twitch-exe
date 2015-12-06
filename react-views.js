@@ -382,7 +382,7 @@ var ViewParent = React.createClass({
           this.state.streamers.map(function(streamer, ind) {
             return React.createElement(
               "div",
-              { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : eleminstance.toggleChat, "key" : `toggle${ind}` },
+              { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : `${eleminstance.toggleChat}`, "title" : `${streamer}`, "key" : `toggle${ind}` },
               `Chat ${ind}`
             )
           })
@@ -392,7 +392,7 @@ var ViewParent = React.createClass({
           { "id" : `embed-area`},
           React.createElement(
             "div",
-            { "className" : `video-embed` },
+            { "className" : `video-embed${(this.state.streamers.length === 3) ? " three" : ""}` },
             this.state.streamers.map(function(streamer, ind) {
               return React.createElement(
                 "div",
