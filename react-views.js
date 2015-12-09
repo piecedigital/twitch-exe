@@ -68,55 +68,73 @@ var ViewParent = React.createClass({
   displayName: "ViewParent",
 
   getInitialState: function() {
-    return { "streamers" : [], "streamerInView" : 0, "hoveredStreamer" : null, "search" : null, "history" : ["HomePage"], "streamSearchResults" : [], "channelSearchResults" : [], "limit" : 6*4, "streamOffset" : 0, "channelOffset" : 0, "gameOffset" : 0 };
+    return { "streamers" : [], "streamerInView" : 0, "hoveredStreamer" : null, "historyPoint" : 0, "history" : [{ page : "HomePage", search : "" }], "streamSearchResults" : [], "channelSearchResults" : [], "limit" : 6*4, "streamOffset" : 0, "channelOffset" : 0, "gameOffset" : 0 };
   },
   // go back in history
   changeViewPrev: function(e) {
     if(this.state.history.length > 1) {
       this.state.history.pop();
-      this.setState({});
+      var historyPoint = this.state.history[this.state.history.length-1];
+
+      this.state.streamSearchResults = [];
+      this.state.channelSearchResults = [];
+      this.state.streamOffset = 0;
+      this.state.channelOffset = 0;
+      this.state.gameOffset = 0;
+
+      if(historyPoint.page === "StreamsListPage") {
+        this.searchForStreamData();
+        this.searchForChannelData();
+      }
+      if(historyPoint.page === "GamesListPage") {
+        this.searchForGameData();
+      } else {
+        this.setState({});
+      }
     }
   },
   // ajax for streams data and update the requestResults in the state
   searchForStreamData: function(offset) {
     // sets variable to access the class object
     var elemInstance = this;
-    console.log(this.state.search)
-    var url = (this.state.search) ? `https://api.twitch.tv/kraken/search/streams?limit=${this.state.limit}&offset=${this.state.limit * this.state.streamOffset}&q=${this.state.search.toLowerCase()}` : `https://api.twitch.tv/kraken/streams/featured?limit=${this.state.limit}&offset=${this.state.limit * this.state.streamOffset}`;
+    var historyPoint = this.state.history[this.state.history.length-1];
+
+    var url = (historyPoint.search) ? `https://api.twitch.tv/kraken/search/streams?limit=${this.state.limit}&offset=${this.state.limit * this.state.streamOffset}&q=${historyPoint.search.toLowerCase()}` : `https://api.twitch.tv/kraken/streams/featured?limit=${this.state.limit}&offset=${this.state.limit * this.state.streamOffset}`;
 
     ajax({
       url: url,
       success: function(data) {
-        console.log("Streams", (JSON.parse(data)));
+        //console.log("Streams", (JSON.parse(data)));
         JSON.parse(data).streams.map(function(streamData) {
           elemInstance.state.streamSearchResults.push(streamData);
         });
 
-        elemInstance.setState({ "streamOffset" : (offset || elemInstance.state.streamOffset+1) });
+        elemInstance.setState({ "streamOffset" : (offset || elemInstance.state.streamOffset+1), search : "" });
       },
       error: function(data) {
-        console.log(data)
+        //console.log(data)
       }
     });
   },
   searchForChannelData: function(offset) {
     // sets variable to access the class object
     var elemInstance = this;
-    console.log(this.state.search)
-    var url = (this.state.search) ? `https://api.twitch.tv/kraken/search/channels?limit=${this.state.limit}&offset=${this.state.limit * this.state.channelOffset}&q=${this.state.search.toLowerCase()}` : `https://api.twitch.tv/kraken/channels/featured?limit=${this.state.limit}&offset=${this.state.limit * this.state.channelOffset}`;
+    var historyPoint = this.state.history[this.state.history.length-1];
+
+    var url = (historyPoint.search) ? `https://api.twitch.tv/kraken/search/channels?limit=${this.state.limit}&offset=${this.state.limit * this.state.channelOffset}&q=${historyPoint.search.toLowerCase()}` : `https://api.twitch.tv/kraken/channels/featured?limit=${this.state.limit}&offset=${this.state.limit * this.state.channelOffset}`;
 
     ajax({
       url: url,
       success: function(data) {
-        console.log("Channels", (JSON.parse(data)));
+        //console.log("Channels", (JSON.parse(data)));
         JSON.parse(data).channels.map(function(channelData) {
           elemInstance.state.channelSearchResults.push(channelData);
         });
 
-        elemInstance.setState({ "channelOffset" : (offset || elemInstance.state.channelOffset+1) });
+        elemInstance.setState({ "channelOffset" : (offset || elemInstance.state.channelOffset+1), search : "" });
       },
       error: function(data) {
-        console.log(data)
+        //console.log(data)
       }
     });
   },
@@ -126,41 +144,43 @@ var ViewParent = React.createClass({
     ajax({
       url: `https://api.twitch.tv/kraken/games/top?limit=${elemInstance.state.limit}&offset=${elemInstance.state.limit * elemInstance.state.gameOffset}`,
       success: function(data) {
-        console.log("Top Games", JSON.parse(data).top);
+        //console.log("Top Games", JSON.parse(data).top);
         JSON.parse(data).top.map(function(gameData) {
           elemInstance.state.streamSearchResults.push(gameData);
         });
 
-        elemInstance.setState({ "gameOffset" : elemInstance.state.gameOffset+1 });
+        elemInstance.setState({ "gameOffset" : elemInstance.state.gameOffset+1, search : "" });
       },
       error: function(data) {
-        console.log(data)
+        //console.log(data)
       }
     });
   },
   // search function for feeding data to "searchForStreamData" and "searchForGameData"
   pingForData: function(e) {
-    console.log(this.state)
-    var searchText = (e) ? ( (e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : this.state.search ) : this.state.search;
-    var searchPage = (e) ? e.target.attributes["data-page-link"].value : this.state.history[this.state.history.length-1];
+    //console.log(this.state)
+    var historyPoint = this.state.history[this.state.history.length-1];
+    var searchText = (e) ? ( (e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : historyPoint.search ) : historyPoint.search;
+    console.log(searchText)
+    var searchPage = (e) ? e.target.attributes["data-page-link"].value : historyPoint.page;
 
-    if(this.state.history[this.state.history.length-1] !== searchPage) {
-      this.state.history.push(searchPage);
+    if(historyPoint !== searchPage) {
+      this.state.history.push({ page : searchPage, search : searchText });
     }
-    this.state.search = searchText || this.state.search;
+    historyPoint.search = searchText || historyPoint.search;
     this.state.streamSearchResults = [];
     this.state.channelSearchResults = [];
     this.state.streamOffset = 0;
     this.state.channelOffset = 0;
     this.state.gameOffset = 0;
 
-    if(this.state.history[this.state.history.length-1] === "StreamsListPage") {
+    if(historyPoint.page === "StreamsListPage") {
       this.searchForStreamData();
       if(this.state.search) {
         this.searchForChannelData();
       }
     }
-    if(this.state.history[this.state.history.length-1] === "GamesListPage") {
+    if(historyPoint.page === "GamesListPage") {
       this.searchForGameData();
     } else {
       this.setState({});
@@ -207,7 +227,7 @@ var ViewParent = React.createClass({
           document.querySelector(".unfollow").removeClass("hide");
         },
         error: function(err) {
-          console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+          //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
         }
       });
     } else
@@ -223,7 +243,7 @@ var ViewParent = React.createClass({
           document.querySelector(".follow").removeClass("hide");
         },
         error: function(err) {
-          console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+          //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
         }
       });
     } else
@@ -248,7 +268,7 @@ var ViewParent = React.createClass({
         error: function(err) {
           document.querySelector(".follow").removeClass("hide");
           document.querySelector(".unfollow").addClass("hide");
-          console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+          //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
         }
       });
 
@@ -265,7 +285,7 @@ var ViewParent = React.createClass({
 
     // change the follow/unfollow button for the currently "in view" streamer
     var streamer = this.state.streamers[newStreamerInView];
-    console.log("streamer", streamer);
+    //console.log("streamer", streamer);
     ajax({
       url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels/${streamer}`,
       type: "GET",
@@ -276,7 +296,7 @@ var ViewParent = React.createClass({
       error: function(err) {
         document.querySelector(".follow").removeClass("hide");
         document.querySelector(".unfollow").addClass("hide");
-        console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+        //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
       }
     });
   },
@@ -304,7 +324,7 @@ var ViewParent = React.createClass({
         error: function(err) {
           document.querySelector(".follow").removeClass("hide");
           document.querySelector(".unfollow").addClass("hide");            
-          console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+          //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
         }
       });
     }
@@ -313,7 +333,7 @@ var ViewParent = React.createClass({
     var eleminstance = this;
 
     document.addEventListener("mousedown", function(e) {
-      //console.log(e);
+      ////console.log(e);
       if(e.button === 0) {
         if(e.target.hasClass("streamer-opt")) {
           eleminstance.appendStreamer()
@@ -349,7 +369,7 @@ var ViewParent = React.createClass({
       "div",
       { "id" : "view-parent" },
       // render component for the main section of the page
-      React.createElement(window[this.state.history[this.state.history.length-1]], { "parentAPI" : this }),
+      React.createElement(window[this.state.history[this.state.history.length-1].page], { "parentAPI" : this }),
       // render component for the stream viewer (top-left corner)
       React.createElement(
         "div",
@@ -444,7 +464,7 @@ var OptionsBar = React.createClass({
   "displayName": "OptionsBar",
 
   componentDidMount: function() {
-    console.log(this.props)
+    //console.log(this.props)
 
     // eleminstance in any declaration is so that scoped variables still have access to "this"
     var elemInstance = this;
@@ -478,7 +498,7 @@ var OptionsBar = React.createClass({
     remote.getCurrentWebContents().session.cookies.get({
       "name": "name"
     }, function(err, cookies) {
-      //console.log(cookies);
+      ////console.log(cookies);
       if(cookies.length > 0) {
         // if user is logged in, hide connect button
         document.querySelector(".nav.log").addClass("hide");
@@ -492,13 +512,13 @@ var OptionsBar = React.createClass({
             url: `https://api.twitch.tv/kraken/channel?oauth_token=${twitchToken}`,
             success: function(data) {
               data = JSON.parse(data);
-              console.log(data);
+              //console.log(data);
               concurrentData.username = data.display_name;
               concurrentData.links = data._links;
               remote.require("./handle-con-data").saveConcurrentData(concurrentData);
             },
             error: function(data) {
-              console.log(data)
+              //console.log(data)
             }
           });
         }
@@ -521,12 +541,12 @@ var OptionsBar = React.createClass({
       }, function(err) {
         if(err) throw err;
 
-        console.log("storage data cleared");
+        //console.log("storage data cleared");
       });
       twitchToken = null;
       concurrentData.username = null;
       concurrentData.links = null;
-      console.log("user logged out");
+      //console.log("user logged out");
       var newHistory = eleminstance.props.parentAPI.state.history.filter(function(elem) {
         if( !elem.match(/AccountInfoPage/i) ) {
           return elem;
@@ -537,7 +557,7 @@ var OptionsBar = React.createClass({
     Twitch.getStatus({ "force" : true }, function(err, status) {
       if(err) throw err;
 
-      //console.log(status)
+      ////console.log(status)
       if(status.authenticated) {
         document.querySelector(".nav.log").addClass("hide");
         document.querySelector("#embed-area").addClass("logged-in");
@@ -707,10 +727,10 @@ var TopStreams = React.createClass({
       url: "https://api.twitch.tv/kraken/streams/featured?limit=6",
       success: function(data) {
         elemInstance.setState({streams: JSON.parse(data)});
-        console.log("Top Streams", JSON.parse(data));
+        //console.log("Top Streams", JSON.parse(data));
       },
       error: function(data) {
-        console.log(data)
+        //console.log(data)
       }
     });
   },
@@ -830,10 +850,10 @@ var TopGames = React.createClass({
       url: "https://api.twitch.tv/kraken/games/top?limit=12",
       success: function(data) {
         elemInstance.setState({games: JSON.parse(data)});
-        console.log("Top Games", JSON.parse(data));
+        //console.log("Top Games", JSON.parse(data));
       },
       error: function(data) {
-        console.log(data)
+        //console.log(data)
       }
     });
   },
@@ -844,7 +864,7 @@ var TopGames = React.createClass({
     this.getGames();
   },
   componentWillUpdate: function(nextProps, nextState) {
-    //console.log(nextState)
+    ////console.log(nextState)
   },
   render: function render() {
     if(!this.state.games.top) {
@@ -911,10 +931,10 @@ var FeaturedStreams = React.createClass({
       url: "https://api.twitch.tv/kraken/streams/featured?limit=6",
       success: function(data) {
         elemInstance.setState({streams: JSON.parse(data)});
-        console.log("Top Streams", JSON.parse(data));
+        //console.log("Top Streams", JSON.parse(data));
       },
       error: function(data) {
-        console.log(data)
+        //console.log(data)
       }
     });
   },
@@ -925,7 +945,7 @@ var FeaturedStreams = React.createClass({
     this.getStreams();
   },
   componentWillUpdate: function(nextProps, nextState) {
-    //console.log(nextState)
+    ////console.log(nextState)
   },
   render: function render() {
     if(!this.state.streams.featured) {
@@ -1046,8 +1066,11 @@ var StreamsPage = React.createClass({
 
   render: function render() {
     var elemInstance = this;
-    console.log(accessView.state.streamSearchResults);
-    console.log(accessView.state.channelSearchResults);
+    var historyPoint = accessView.state.history[accessView.state.history.length-1];
+    console.log(historyPoint)
+    //console.log(accessView.state.streamSearchResults);
+    //console.log(accessView.state.channelSearchResults);
+
     return pageWrapNormal(
       null,
       React.createElement(
@@ -1059,7 +1082,7 @@ var StreamsPage = React.createClass({
           React.createElement(
             "h1",
             { "className" : "section-title" },
-            `Live Streams ${(accessView.state.search) ? `for "${accessView.state.search}"` : ""}`
+            `Live Streams ${(historyPoint.search) ? `for "${historyPoint.search}"` : ""}`
           )
         ),
         /* section */
@@ -1069,15 +1092,15 @@ var StreamsPage = React.createClass({
           accessView.state.streamSearchResults.map(function(item, ind) {
             return React.createElement(
               "li",
-              { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : ((!accessView.state.search) ? item.stream.channel.name : item.channel.name), "onClick" : accessView.viewStream },
+              { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : ((item.stream) ? item.stream.channel.name : item.channel.name), "onClick" : accessView.viewStream },
               React.createElement(
                 "img",
-                { "src" : ((!accessView.state.search) ? item.stream.preview.large : item.preview.large) }
+                { "src" : ((item.stream) ? item.stream.preview.large : item.preview.large) }
               ),
               React.createElement(
                 "h1",
                 { "className" : "title"},
-                `${((!accessView.state.search) ? item.title : item.channel.status)}`
+                `${((item.title) ? item.title : item.channel.status)}`
               ),
               React.createElement(
                 "span",
@@ -1085,11 +1108,11 @@ var StreamsPage = React.createClass({
                 React.createElement(
                   "span",
                   null,
-                  `${((!accessView.state.search) ? item.stream.viewers : item.viewers)} viewers on `,
+                  `${((item.stream) ? item.stream.viewers : item.viewers)} viewers on `,
                   React.createElement(
                     "span",
                     { "className" : "bold" },
-                    `${((!accessView.state.search) ? item.stream.channel.name : item.channel.display_name)}`
+                    `${((item.stream) ? item.stream.channel.name : item.channel.display_name)}`
                   )
                 )
               )
@@ -1117,7 +1140,7 @@ var StreamsPage = React.createClass({
           React.createElement(
             "h1",
             { "className" : "section-title" },
-            `Channel results ${(accessView.state.search) ? `for "${accessView.state.search}"` : ""}`
+            `Channel results ${(accessView.state.historyPoint.search) ? `for "${accessView.state.historyPoint.search}"` : ""}`
           )
         ),
         /* section */
@@ -1199,13 +1222,13 @@ var AccountPage = React.createClass({
               elemInstance.setState({ "followingOffset" : offset });
             },
             error: function(err) {
-              console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+              //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
             }
           });
         });
       },
       error: function(err) {
-        console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+        //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
       }
     });
   },
@@ -1226,7 +1249,7 @@ var AccountPage = React.createClass({
         elemInstance.setState({ "followersOffset" : offset });
       },
       error: function(err) {
-        console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+        //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
       }
     });
   },
@@ -1242,13 +1265,13 @@ var AccountPage = React.createClass({
 
             // sets a key value to online or offline, depending on the status of the stream
             elemInstance.state.following[ind].stream = dataToCheckLive.stream;
-            // console.log(elemInstance.state.following[ind])
+            // //console.log(elemInstance.state.following[ind])
 
             // refresh the state-dependent components
             elemInstance.setState({ "following" : elemInstance.state.following });
           },
           error: function(err) {
-            console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+            //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
           }
         });
       });
