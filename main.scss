@@ -201,7 +201,7 @@ body {
 }
 #top-streams {
 	position: relative;
-	padding: 1*$em 1*$em 1*$em;
+	padding: 2*$em 1*$em 1*$em;
 	& .top-streams-viewer {
 		position: absolute;
 		top: 1*$em;
@@ -392,8 +392,12 @@ body {
 			position: relative;
 			width: 100%;
 			height: 100%;
-			&.three {
-				display: flex;
+			display: flex;
+			&.embedded-2 {
+				flex-direction: column;
+			}
+			&.embedded-4 {
+				flex-wrap: wrap;
 			}
 			& .video {
 				width: 100%;

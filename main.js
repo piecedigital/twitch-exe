@@ -21,7 +21,11 @@ var ajax = function(optionsObj) {
   
   httpRequest.open((optionsObj.type || "GET"), optionsObj.url);
   httpRequest.send((optionsObj.data || null));
-}
+};
+
+Array.prototype.include = function(data) {
+  return this.indexOf(data) >= 0;
+};
 
 HTMLElement.prototype.addClass = function() {
   if(this) {

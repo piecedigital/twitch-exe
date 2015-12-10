@@ -87,7 +87,7 @@ var ViewParent = React.createClass({
         this.searchForChannelData();
       }
       if(historyPoint.page === "GamesListPage") {
-        this.searchForGameData();
+        this.searchForTopGame();
       } else {
         this.setState({});
       }
@@ -139,7 +139,7 @@ var ViewParent = React.createClass({
     });
   },
   // ajax for games data and update the requestResults in the state
-  searchForGameData: function(offset) {
+  searchForTopGame: function(offset) {
     var elemInstance = this;
     ajax({
       url: `https://api.twitch.tv/kraken/games/top?limit=${elemInstance.state.limit}&offset=${elemInstance.state.limit * elemInstance.state.gameOffset}`,
@@ -156,7 +156,7 @@ var ViewParent = React.createClass({
       }
     });
   },
-  // search function for feeding data to "searchForStreamData" and "searchForGameData"
+  // search function for feeding data to "searchForStreamData" and "searchForTopGame"
   pingForData: function(e) {
     //console.log(this.state)
     var historyPoint = this.state.history[this.state.history.length-1];
@@ -176,12 +176,10 @@ var ViewParent = React.createClass({
 
     if(historyPoint.page === "StreamsListPage") {
       this.searchForStreamData();
-      if(this.state.search) {
-        this.searchForChannelData();
-      }
+      this.searchForChannelData();
     }
     if(historyPoint.page === "GamesListPage") {
-      this.searchForGameData();
+      this.searchForTopGame();
     } else {
       this.setState({});
     }
@@ -306,7 +304,7 @@ var ViewParent = React.createClass({
     });
   },
   appendStreamer: function() {
-    if(this.state.streamers.length < 4) {
+    if(this.state.streamers.length < 4 && !this.state.streamers.include(this.state.hoveredStreamer)) {
       this.state.streamers.push(this.state.hoveredStreamer);
       document.querySelector("#stream-viewer").addClass("open").removeClass("shrink");
       document.body.style.overflow = "hidden";
@@ -355,6 +353,7 @@ var ViewParent = React.createClass({
             if(parseInt(e.target.attributes["data-chat"].value) > eleminstance.state.streamers.length-1) {
               eleminstance.state.streamerInView = eleminstance.state.streamers.length-1;
             }
+            document.querySelector("#context-menu.streamer-options").addClass("hide");
             eleminstance.setState({});
           }
         } else {
@@ -402,8 +401,8 @@ var ViewParent = React.createClass({
           this.state.streamers.map(function(streamer, ind) {
             return React.createElement(
               "div",
-              { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : `${eleminstance.toggleChat}`, "title" : `${streamer}`, "key" : `toggle${ind}` },
-              `Chat ${ind}`
+              { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : eleminstance.toggleChat, "title" : `${streamer}`, "key" : `toggle${ind}` },
+              `Chat ${ind+1}`
             )
           })
         ),
@@ -412,7 +411,7 @@ var ViewParent = React.createClass({
           { "id" : `embed-area`},
           React.createElement(
             "div",
-            { "className" : `video-embed${(this.state.streamers.length === 3) ? " three" : ""}` },
+            { "className" : `video-embed embedded-${this.state.streamers.length}` },
             this.state.streamers.map(function(streamer, ind) {
               return React.createElement(
                 "div",
@@ -668,7 +667,7 @@ var GamesListPage = React.createClass({
   displayName: "GamesListPage",
 
   componentDidMount: function() {
-    this.props.parentAPI.searchForGameData();
+    this.props.parentAPI.searchForTopGame();
   },
   render: function render() {
     return React.createElement(
@@ -1052,7 +1051,7 @@ var GamesPage = React.createClass({
           { "className" : "right-justify" },
           React.createElement(
             "div",
-            { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForGameData },
+            { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForTopGame },
             "Load more games"
           )
         )
@@ -1140,7 +1139,7 @@ var StreamsPage = React.createClass({
           React.createElement(
             "h1",
             { "className" : "section-title" },
-            `Channel results ${(accessView.state.historyPoint.search) ? `for "${accessView.state.historyPoint.search}"` : ""}`
+            `Channel results ${(historyPoint.search) ? `for "${historyPoint.search}"` : ""}`
           )
         ),
         /* section */

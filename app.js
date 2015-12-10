@@ -35,7 +35,7 @@ app.on('ready', function() {
   var server = require("./server");
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    "width" : 1327,
+    "width" : 1000,
     "height" : 700,
     "node-integration" : "iframe",
     "web-preferences" : {
