@@ -1,8 +1,10 @@
 var clientId = "1xb1e12mtrfjt0r0p805cu00bu6x4xn";
 Twitch.init({ "clientId" : clientId }, function(error, status) {
 });
-var twitchToken;
+// set the token
+var twitchToken = Twitch.getToken();
 var concurrentData = {};
+
 remote.require("./handle-con-data").loadConcurrentData(function(data) {
   concurrentData = JSON.parse(data);
 });
@@ -161,7 +163,7 @@ var ViewParent = React.createClass({
     //console.log(this.state)
     var historyPoint = this.state.history[this.state.history.length-1];
     var searchText = (e) ? ( (e.target.attributes["data-search"]) ? e.target.attributes["data-search"].value : historyPoint.search ) : historyPoint.search;
-    console.log(searchText)
+    //console.log(searchText)
     var searchPage = (e) ? e.target.attributes["data-page-link"].value : historyPoint.page;
 
     if(historyPoint !== searchPage) {
@@ -187,7 +189,7 @@ var ViewParent = React.createClass({
   // opens up the stream viewer
   viewStream: function(e) {
     // event for closing the viewer
-    if(e.target.className.match("close")) {
+    if(e.target.hasClass("close")) {
       var viewer = document.querySelector("#stream-viewer");
 
       viewer.removeClass("open");
@@ -197,7 +199,7 @@ var ViewParent = React.createClass({
       this.setState({ "streamers" : [] })
     } else
     // event for changing the display of the viewer
-    if(e.target.className.match("display")) {
+    if(e.target.hasClass("display")) {
       var viewer = document.querySelector("#stream-viewer");
 
       viewer.toggleClass("shrink");
@@ -208,13 +210,13 @@ var ViewParent = React.createClass({
       }
     } else
     // event for changing the display of the chat
-    if(e.target.className.match("chat")) {
+    if(e.target.hasClass("chat")) {
       var viewer = document.querySelector("#stream-viewer");
 
       viewer.toggleClass("hidden-chat");
     } else
     // event for following the current channel
-    if(e.target.className.match(/^follow$/i)) {
+    if(e.target.hasClass("follow")) {
       var streamer = e.target.attributes["data-streamer"].value
 
       ajax({
@@ -230,7 +232,7 @@ var ViewParent = React.createClass({
       });
     } else
     // event for unfollowing the current channel
-    if(e.target.className.match("unfollow")) {
+    if(e.target.hasClass("unfollow")) {
       var streamer = e.target.attributes["data-streamer"].value
 
       ajax({
@@ -328,19 +330,19 @@ var ViewParent = React.createClass({
     }
   },
   componentDidMount: function() {
-    var eleminstance = this;
+    var elemInstance = this;
 
     document.addEventListener("mousedown", function(e) {
       ////console.log(e);
       if(e.button === 0) {
         if(e.target.hasClass("streamer-opt")) {
-          eleminstance.appendStreamer()
+          elemInstance.appendStreamer()
         }
         document.querySelector("#context-menu.streamer-options").addClass("hide");
       } else
       if(e.button === 2) {
         if(e.target.hasClass(["featured-stream-item", "following-stream-item", "followers-stream-item"])) {
-          eleminstance.state.hoveredStreamer = event.target.attributes["data-stream-link"].value;
+          elemInstance.state.hoveredStreamer = event.target.attributes["data-stream-link"].value;
           document.querySelector("#context-menu.streamer-options").removeClass("hide");
           document.querySelector("#context-menu.streamer-options").css({
             "top": `${e.clientY}px`,
@@ -348,22 +350,33 @@ var ViewParent = React.createClass({
           });
         } else
         if(e.target.hasClass("toggle-chat")) {
-          if(eleminstance.state.streamers.length > 1) {
-            eleminstance.state.streamers.splice( parseInt(e.target.attributes["data-chat"].value), 1 );
-            if(parseInt(e.target.attributes["data-chat"].value) > eleminstance.state.streamers.length-1) {
-              eleminstance.state.streamerInView = eleminstance.state.streamers.length-1;
+          if(elemInstance.state.streamers.length > 1) {
+            elemInstance.state.streamers.splice( parseInt(e.target.attributes["data-chat"].value), 1 );
+            if(parseInt(e.target.attributes["data-chat"].value) > elemInstance.state.streamers.length-1) {
+              elemInstance.state.streamerInView = elemInstance.state.streamers.length-1;
             }
             document.querySelector("#context-menu.streamer-options").addClass("hide");
-            eleminstance.setState({});
+            elemInstance.setState({});
           }
         } else {
           document.querySelector("#context-menu.streamer-options").addClass("hide");
         }
       }
     });
+    document.addEventListener("keydown", function(e) {
+      if(e.keyCode === 27) {
+        document.querySelector(".video.full-screen").removeClass("full-screen");
+        remote.BrowserWindow.getAllWindows()[0].setFullScreen(false);
+      }
+    });
+  },
+  fullScreenify: function(e) {
+    var bw = remote.BrowserWindow.getAllWindows()[0];
+    (!bw.isFullScreen()) ? e.target.parentNode.addClass( 'full-screen') : e.target.parentNode.removeClass( 'full-screen');
+    bw.setFullScreen( ((!bw.isFullScreen()) ? true : false) );
   },
   render: function render() {
-    var eleminstance = this;
+    var elemInstance = this;
     return React.createElement(
       "div",
       { "id" : "view-parent" },
@@ -401,7 +414,7 @@ var ViewParent = React.createClass({
           this.state.streamers.map(function(streamer, ind) {
             return React.createElement(
               "div",
-              { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : eleminstance.toggleChat, "title" : `${streamer}`, "key" : `toggle${ind}` },
+              { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : elemInstance.toggleChat, "title" : `${streamer}`, "key" : `toggle${ind}` },
               `Chat ${ind+1}`
             )
           })
@@ -415,10 +428,14 @@ var ViewParent = React.createClass({
             this.state.streamers.map(function(streamer, ind) {
               return React.createElement(
                 "div",
-                { "className" : `video embed-size-${eleminstance.state.streamers.length}${(ind === eleminstance.state.streamerInView) ? " in-view" : " out-view"}`, "key" : `video${ind}` },
+                { "className" : `video embed-size-${elemInstance.state.streamers.length}${(ind === elemInstance.state.streamerInView) ? " in-view" : " out-view"}`, "key" : `video${ind}` },
                 React.createElement(
                   "iframe",
                   { "src" : `http://player.twitch.tv/?channel=${streamer}`, "frameBorder" : "0" }
+                ),
+                React.createElement(
+                  "div",
+                  { "className" : "full-screenify", "title" : "fullscreen", "onClick" : elemInstance.fullScreenify }
                 )
               )
             })
@@ -426,13 +443,13 @@ var ViewParent = React.createClass({
           this.state.streamers.map(function(streamer, ind) {
             return React.createElement(
               "div",
-              { "className" : `chat-embed${(ind === eleminstance.state.streamerInView) ? "" : " hide"}`, "key" : `chat-embed${ind}` },
+              { "className" : `chat-embed${(ind === elemInstance.state.streamerInView) ? "" : " hide"}`, "key" : `chat-embed${ind}` },
               React.createElement(
                 "div",
                 { "className" : `chat-${ind}` },
                 React.createElement(
                   "div",
-                  { "className" : "chat-cover", "onClick" : eleminstance.loginUser }
+                  { "className" : "chat-cover", "onClick" : elemInstance.loginUser }
                 ),
                 React.createElement(
                   "iframe",
@@ -465,7 +482,7 @@ var OptionsBar = React.createClass({
   componentDidMount: function() {
     //console.log(this.props)
 
-    // eleminstance in any declaration is so that scoped variables still have access to "this"
+    // elemInstance in any declaration is so that scoped variables still have access to "this"
     var elemInstance = this;
 
     // event listeners for option elements
@@ -493,18 +510,16 @@ var OptionsBar = React.createClass({
     });
 
     // check for user login data
-    var eleminstance = twitchToken;
+    var elemInstance = twitchToken;
     remote.getCurrentWebContents().session.cookies.get({
       "name": "name"
     }, function(err, cookies) {
       ////console.log(cookies);
-      if(cookies.length > 0) {
+      if(cookies.length > 0 && twitchToken) {
         // if user is logged in, hide connect button
         document.querySelector(".nav.log").addClass("hide");
         document.querySelector("#embed-area").addClass("logged-in");
 
-        // set the token
-        twitchToken = Twitch.getToken();
         // sets the current user name if it doesn't exist
         if(!concurrentData.username) {
           ajax({
@@ -532,7 +547,7 @@ var OptionsBar = React.createClass({
   },
   // function to log the user out
   logoutUser: function() {
-    var eleminstance = this;
+    var elemInstance = this;
 
     Twitch.logout(function() {
       remote.getCurrentWebContents().session.clearStorageData({
@@ -546,12 +561,12 @@ var OptionsBar = React.createClass({
       concurrentData.username = null;
       concurrentData.links = null;
       //console.log("user logged out");
-      var newHistory = eleminstance.props.parentAPI.state.history.filter(function(elem) {
-        if( !elem.match(/AccountInfoPage/i) ) {
+      var newHistory = elemInstance.props.parentAPI.state.history.filter(function(elem) {
+        if( !elem.page.match(/AccountInfoPage/i) ) {
           return elem;
         }
       });
-      eleminstance.props.parentAPI.setState({ "history" : newHistory });
+      elemInstance.props.parentAPI.setState({ "history" : newHistory });
     });
     Twitch.getStatus({ "force" : true }, function(err, status) {
       if(err) throw err;
@@ -567,7 +582,7 @@ var OptionsBar = React.createClass({
     });
   },
   render: function render() {
-    var eleminstance = this;
+    var elemInstance = this;
     return React.createElement(
       "div",
       { "id" : "options-bar"},

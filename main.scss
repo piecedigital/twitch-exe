@@ -42,7 +42,7 @@ $purple: #6441a5;
 $hoverPurple: #7656B1;
 $linkPurple: #a68ed2;
 $darkPurple: #211042;
-$offBlack: rgba(20, 20, 20, 1);
+$offBlack: rgba(25, 25, 31, 1);// #19191f
 
 /* column styles */
 .col-6-5-4-3-2-1 {
@@ -329,9 +329,9 @@ body {
 	width: 0;
 	height: 0;
 
-	background-color: $purple;
+	background-color: $offBlack;
 
-	overflow: hidden;
+	// overflow: hidden;
 	text-align: center;
 
 	& #viewer-controls {
@@ -400,6 +400,7 @@ body {
 				flex-wrap: wrap;
 			}
 			& .video {
+				position: relative;
 				width: 100%;
 				height: 100%;
 				display: inline-block;
@@ -434,6 +435,48 @@ body {
 					width: 100%;
 					height: 100%;
 				}
+				& .full-screenify {
+					z-index: 6;
+					position: absolute;
+					top: 1*$em;
+					right: 1*$em;
+					width: 1.5*$em;
+					height: 1.5*$em;
+					background-color: $purple;
+					cursor: pointer;
+					box-shadow: inset 0 0 0 .1*$em black;
+					opacity: 0;
+					pointer-events: none;
+					transition: .3s all;
+					&:after {
+						content: "\2927";
+						position: relative;
+				    top: .2*$em;
+				    left: 0;
+				    color: white;
+					}
+					&:hover {
+						background-color: $hoverPurple;
+					}
+				}
+				&:hover {
+					& .full-screenify {
+						opacity: 1;
+						pointer-events: auto;
+					}
+				}
+				&.full-screen {
+					z-index: 6;
+					position: fixed !important;
+					top: 0;
+					left: 0;
+					width: 100%;
+					height: 100%;
+					& .full-screenify {
+						right: 0;
+						left: 1*$em;
+					}
+				}
 			}
 		}
 		& .chat-embed {
@@ -452,7 +495,7 @@ body {
 		    width: 100%;
 		    height: 7*$em;
 		    background-color: #6441a5;
-		    opacity: .5;
+		    opacity: .2;
 		    cursor: pointer;
 		    &:after {
 		    	content: "Connect with Twitch to chat";
@@ -493,7 +536,6 @@ body {
 			width: 12*$em;
 			height: 13*$em;
 			& #embed-area {
-				padding: 0;
 				& .video-embed {
 					& .video {
 						&:first-child {

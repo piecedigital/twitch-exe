@@ -27,6 +27,27 @@ Array.prototype.include = function(data) {
   return this.indexOf(data) >= 0;
 };
 
+Object.prototype.map = function(callback) {
+  try {
+    var arr = [];
+    var keys = Object.keys(this);
+
+    for(var i = 0; i < keys.length; i++) {
+      var returnData = callback(this[keys[i]], keys[i], this);
+      if(returnData) { arr.push(returnData) };
+      returnData = null;
+    }
+    return arr;
+  }
+  catch(e) {
+    if(e.toString().match("TypeError: callback is not a function")) {
+      console.error("No callback provided");
+    } else {
+      console.error(e);
+    }
+  }
+};
+
 HTMLElement.prototype.addClass = function() {
   if(this) {
     console.log("ADD CLASS");
@@ -82,7 +103,9 @@ HTMLElement.prototype.toggleClass = function() {
 
 HTMLElement.prototype.hasClass = function(className) {
   if(this) {
+    var thisClassName = this.className.split(" ");
     console.log("HAS CLASS");
+
     if(typeof className === "object") {
       var classNameArr = className;
     } else {
@@ -90,10 +113,15 @@ HTMLElement.prototype.hasClass = function(className) {
     }
     var result = false;
 
-    for(var i in classNameArr) {
-      if(this.className.match(classNameArr[i])) {
-        result = true;
+    for(var i = 0; i < classNameArr.length; i++) {
+      for(var j = 0; j < thisClassName.length; j++) {
+        console.log("classnames", classNameArr[i], thisClassName[j])
+        if(classNameArr[i] === thisClassName[j]) {
+          result = true;
+          i = classNameArr.length;
+        }
       }
+      if(result) i = thisClassName.length;
     }
 
     console.log("result", result);
