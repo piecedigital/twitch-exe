@@ -494,7 +494,7 @@ var OptionsBar = React.createClass({
           if(elem) {
             console.log(elemInstance)
             elemInstance.props.parentAPI.state.hoveredStreamer = elem;
-            elemInstance.appendStreamer();
+            elemInstance.props.parentAPI.appendStreamer();
           }
         });
       } else {
