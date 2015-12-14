@@ -1,17 +1,22 @@
-tutoPop = function(tutArr, color, index, nextCB, closeCB) {
+var tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 	// This variable is the structure for our tutorial dialog box
-	var tutBox = function(text, x, y, side) {
+	var tutBox = function(text, x, y, side, offset, maxWidth) {
+	  text = text || "???";
 	  x = x + "px" || "50%";
 	  y = y + "px" || "50%";
 	  side = side || "top";
+	  offset = offset || 0;
+	  var minWidth = 10 * 16;
+	  maxWidth = maxWidth || 15 * 16;
 
-	  return $("<div>").addClass("tut-box").css({
+	  return $("<div>").css({
+	  	"z-index": "1000",
 	  	"position": "fixed",
 	    "top": y,
 	    "left": x,
 	  	"transform": "translate(-50%, -50%) scale(0.9)",
-	  	"min-width": 15 * 16 + "px",
-	  	"max-width": 15 + 16 + "px",
+	  	"min-width": minWidth + "px",
+	  	"max-width": maxWidth + "px",
 	  	"padding": "16px",
 	  	"border-radius": "16px",
 	  	"background-color": bgColor,
@@ -25,9 +30,10 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 	      	"position": "absolute",
 	      	"width": 3.5 * 16 + "px",
 	      	"height": 1.75 * 16 + "px",
-	      	"top": (side === "top") ? -1.75 * 16 + "px" : (side === "right") ? "50%" : (side === "bottom") ? "100%" : "50%",
-	      	"left": (side === "top") ? "50%" : (side === "right") ? "100%" : (side === "bottom") ? "50%" : "0%",
-	      	"transform": (side === "top") ? "translate(-50%, 0) rotateZ(0deg)" : (side === "right") ? "translate(-25%, -50%) rotateZ(90deg)" : (side === "bottom") ? "translate(-50%, 1%) rotateZ(180deg)" : "translate(-75%, -50%) rotateZ(-90deg)"
+	      	"top": (side === "top") ? -1.75 * 16 + "px" : (side === "right") ? 50+offset+"%" : (side === "bottom") ? "100%" : 50+offset+"%",
+	      	"left": (side === "top") ? 50+offset+"%" : (side === "right") ? "100%" : (side === "bottom") ? 50+offset+"%" : "0%",
+	      	"transform": (side === "top") ? "translate(-50%, 0) rotateZ(0deg)" : (side === "right") ? "translate(-25%, -50%) rotateZ(90deg)" : (side === "bottom") ? "translate(-50%, 1%) rotateZ(180deg)" : "translate(-75%, -50%) rotateZ(-90deg)",
+	      	"box-shadow": "0 20px 0 -6px " + bgColor
 	      }).html( $("<div>").css({
 	      	"transform": "rotateZ(45deg)",
 	      	"display": "block",
@@ -37,9 +43,11 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 	      	"height": "32px",
 	      	"box-shadow": "0 0 " + .4 * 16 + "px 0 black"
 	      }) ),
-	      $("<p>").html(text),
+	      $("<p>").css({
+	      	"word-wrap": "break-word"
+	      }).html(text),
 	      $("<div>").css({
-	      	"background-color": "#004B6E",
+	      	"background-color": textColor,
 	      	"height": "1px",
 	      	"margin": .5 * 16 + "px 0",
 	      	"opacity": "0.5"
@@ -69,6 +77,7 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 	return {
 		timeline: function(options) {
 			options = options || {};
+			var fadeIn = (typeof options.fadeIn === "number") ? options.fadeIn : .5;
 			bgColor = "#9be0ff",
 			textColor = "#017ab1";
 			
@@ -90,20 +99,30 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 			  height = ((height + 32) || "100") + "px";
 			  radius = (radius || "16") + "px";
 
-			  opacity = options.opacity || ".5";
-			  color = options.color || "black";
+			  var opacity = options.opacity || ".5";
+			  var color = options.color || "black";
 
-			  return $("<div>").addClass("tuto-highlight").css({
-			    "position": "fixed",
-			    "top": y,
-			    "left": x,
-			    "width": width,
-			    "height": height,
-			  	"transform": "translate(-50%, -50%)",
-			  	"box-shadow": "0 0 0 1920px " + color + ", inset 0 0 16px 10px " + color,
-          "border-radius": radius,
-          "opacity": opacity
-			  });
+			  return $("<div>").css({
+			  	"z-index": "1000",
+		  		"position": "fixed",
+		  		"top": 0,
+		  		"left": 0,
+		  		"width": "100%",
+		  		"height": "100%",
+		  		"pointer-events": "all"
+		  	}).html(
+		  		$("<div>").css({
+				    "position": "fixed",
+				    "top": y,
+				    "left": x,
+				    "width": width,
+				    "height": height,
+				  	"transform": "translate(-50%, -50%)",
+				  	"box-shadow": "0 0 0 1920px " + color + ", inset 0 0 16px 10px " + color,
+	          "border-radius": radius,
+	          "opacity": opacity
+				  })
+		  	);
 			};
 
 			// This is the function that brings together all of the components created above
@@ -112,12 +131,12 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 			var tutRun = function(arr, ind, nextFunc, closeFunc) {
 			  ind = ind || 0;
 			  var thisHLBox = (options.highlight) ? new tutHighlight(arr[ind].highlightX + 16, arr[ind].highlightY + 16, arr[ind].highlightWidth, arr[ind].highlightHeight, arr[ind].highlightRadius) : "";
-			  var thisTutBox = new tutBox(arr[ind].msg, arr[ind].dialogX + 16, arr[ind].dialogY + 16, arr[ind].side);
+			  var thisTutBox = new tutBox(arr[ind].msg, arr[ind].dialogX + 16, arr[ind].dialogY + 16, arr[ind].side, arr[ind].offset, arr[ind].maxWidth);
 
 			  $("body").append($(thisHLBox), $(thisTutBox));
 			  setTimeout(function() {
 			    $(thisTutBox).css({
-			    	"transition": ".5s all",
+			    	"transition": fadeIn + "s all",
 			    	"opacity": "1",
 			    	"transform": "translate(-50%, -50%) scale(1)"
 			    });
@@ -142,7 +161,7 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 			  $(thisTutBox).find(".next").on("click", function() {
 			  	$(thisHLBox).remove();
 			  	thisHLBox = null;
-			    $(thisTutBox).remove();
+			    $(thisTutBox)[0].remove();
 			    thisTutBox = null;
 			    if(nextFunc && typeof nextFunc === "function") { nextFunc(arr, ind, nextFunc, closeFunc); };
 			    if(ind < arr.length-1) { tutRun(arr, ind+1, nextFunc, closeFunc); nextFunc = null; };
@@ -151,13 +170,13 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 			    if(closeFunc && typeof closeFunc === "function") { closeFunc(arr, ind, nextFunc, closeFunc); nextFunc = null; };
 			    $(thisHLBox).remove();
 			    thisHLBox = null;
-			    $(thisTutBox).remove();
+			    $(thisTutBox)[0].remove();
 			    thisTutBox = null;
 			  });
 			}
 			tutRun(tutArr, index, nextCB, closeCB);
 		},
-		oneTime: function() {
+		oneTime: function(options) {
 			bgColor = "#9be0ff",
 			textColor = "#017ab1";
 			
@@ -170,6 +189,7 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 			index = index || 0,
 			nextCB = nextCB || null,
 			closeCB = closeCB || null;
+			var fadeIn = (typeof options.fadeIn === "number") ? options.fadeIn : .5;
 
 			// This is the function that brings together all of the components created above
 			// It initiates the tutorial dialog box.
@@ -181,7 +201,7 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 			  $("body").append($(thisTutBox));
 			  setTimeout(function() {
 			    $(thisTutBox).css({
-			    	"transition": ".5s all",
+			    	"transition": fadeIn + "s all",
 			    	"opacity": "1",
 			    	"transform": "translate(-50%, -50%) scale(1)"
 			    });
@@ -204,12 +224,14 @@ tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 			  }
 			  
 			  $(thisTutBox).find(".next").on("click", function() {
-			    $(thisTutBox).remove();
+			    $(thisTutBox)[0].remove();
+			    thisTutBox = null;
 			    if(nextFunc && typeof nextFunc === "function") { nextFunc(tut, ind, nextFunc, closeFunc); };
 			  });
 			  $(thisTutBox).find(".quit").on("click", function() {
 			    if(closeFunc && typeof closeFunc === "function") { closeFunc(tut, ind, nextFunc, closeFunc); nextFunc = null; };
-			    $(thisTutBox).remove();
+			    $(thisTutBox)[0].remove();
+			    thisTutBox = null;
 			  });
 			}
 			for(var tut in tutArr) {

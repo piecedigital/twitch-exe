@@ -488,18 +488,29 @@ var OptionsBar = React.createClass({
     // event listeners for option elements
     document.querySelector(".nav.search").addEventListener("submit", function(e) {
       e.preventDefault();
-      accessView.pingForData({
-        "target": {
-          "attributes": {
-            "data-search": {
-              "value": e.target[0].value
-            },
-            "data-page-link": {
-              "value": "StreamsListPage"
+      if( e.target[0].value.match(/^(http(s)?:\/\/)?(ms:\/\/)?/) && e.target[0].value.match(/^(http(s)?:\/\/)?(ms:\/\/)?/).shift() ) {
+        var arr = e.target[0].value.match(/(com)?\/(\/)?([\/\w]*)$/).pop().split("/");
+        arr.map(function(elem) {
+          if(elem) {
+            console.log(elemInstance)
+            elemInstance.props.parentAPI.state.hoveredStreamer = elem;
+            elemInstance.appendStreamer();
+          }
+        });
+      } else {
+        accessView.pingForData({
+          "target": {
+            "attributes": {
+              "data-search": {
+                "value": e.target[0].value
+              },
+              "data-page-link": {
+                "value": "StreamsListPage"
+              }
             }
           }
-        }
-      });
+        });
+      }
 
       e.target[0].value = "";
     });
@@ -510,7 +521,6 @@ var OptionsBar = React.createClass({
     });
 
     // check for user login data
-    var elemInstance = twitchToken;
     remote.getCurrentWebContents().session.cookies.get({
       "name": "name"
     }, function(err, cookies) {
@@ -1109,7 +1119,7 @@ var StreamsPage = React.createClass({
               { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : ((item.stream) ? item.stream.channel.name : item.channel.name), "onClick" : accessView.viewStream },
               React.createElement(
                 "img",
-                { "src" : ((item.stream) ? item.stream.preview.large : item.preview.large) }
+                { "src" : (((item.stream) ? item.stream.preview.large : item.preview.large)) || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
               ),
               React.createElement(
                 "h1",
@@ -1167,7 +1177,7 @@ var StreamsPage = React.createClass({
               { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : item.name, "onClick" : accessView.viewStream },
               React.createElement(
                 "img",
-                { "src" : item.logo }
+                { "src" : item.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
               ),
               React.createElement(
                 "h1",
