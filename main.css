@@ -27,28 +27,21 @@ html {
   max-width: 960px;
   margin: auto; }
 
+/* colors */
 /* scrollbar */
 ::-webkit-scrollbar {
-  width: 14px; }
+  width: 9px; }
 
 ::-webkit-scrollbar-track {
   background-color: white;
-  /* border-radius: 1em;
-    -webkit-border-radius: 1em;
-    -moz-border-radius: 1em;
-    -o-border-radius: 1em; */
-  box-shadow: inset 0 0 0 1px black; }
+  border-radius: 16px; }
 
 ::-webkit-scrollbar-track-piece:active {
-  background-color: transparent; }
+  background-color: #211042; }
 
 ::-webkit-scrollbar-thumb {
   background-color: #6441a5;
-  /* border-radius: 1em;
-    -webkit-border-radius: 1em;
-    -moz-border-radius: 1em;
-    -o-border-radius: 1em; */
-  box-shadow: inset 0 0 0 1px black; }
+  border-radius: 16px; }
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: #7656B1; }
@@ -58,11 +51,7 @@ html {
 
 ::-webkit-scrollbar-button {
   background-color: #6441a5;
-  /* border-radius: 1em;
-    -webkit-border-radius: 1em;
-    -moz-border-radius: 1em;
-    -o-border-radius: 1em; */
-  box-shadow: inset 0 0 0 1px black; }
+  border-radius: 16px; }
 
 ::-webkit-scrollbar-button:hover {
   background-color: #7656B1; }
@@ -85,7 +74,6 @@ html {
 /* optional styles */
 /* position */
 /* arrows */
-/* colors */
 /* column styles */
 .col-6-5-4-3-2-1 {
   display: inline-block;
@@ -398,28 +386,37 @@ body {
         #stream-viewer #embed-area .video-embed .video iframe {
           width: 100%;
           height: 100%; }
-        #stream-viewer #embed-area .video-embed .video .full-screenify {
+        #stream-viewer #embed-area .video-embed .video .video-options {
           z-index: 6;
           position: absolute;
           top: 16px;
           right: 16px;
-          width: 24px;
-          height: 24px;
-          background-color: #6441a5;
-          cursor: pointer;
-          box-shadow: inset 0 0 0 1.6px black;
-          opacity: 0;
           pointer-events: none;
-          transition: .3s all; }
-          #stream-viewer #embed-area .video-embed .video .full-screenify:after {
-            content: "\2927";
-            position: relative;
-            top: 3.2px;
-            left: 0;
-            color: white; }
-          #stream-viewer #embed-area .video-embed .video .full-screenify:hover {
-            background-color: #7656B1; }
-        #stream-viewer #embed-area .video-embed .video:hover .full-screenify {
+          transition: .3s all;
+          opacity: 0;
+          text-align: right; }
+          #stream-viewer #embed-area .video-embed .video .video-options .option {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-color: #6441a5;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 1.6px black;
+            vertical-align: top;
+            text-align: center; }
+            #stream-viewer #embed-area .video-embed .video .video-options .option:after {
+              position: relative;
+              top: 3.2px;
+              left: 0;
+              color: white; }
+            #stream-viewer #embed-area .video-embed .video .video-options .option:hover {
+              background-color: #7656B1; }
+            #stream-viewer #embed-area .video-embed .video .video-options .option.full-screenify:after {
+              content: "\2927"; }
+            #stream-viewer #embed-area .video-embed .video .video-options .option.info:after {
+              content: "i";
+              font-weight: bold; }
+        #stream-viewer #embed-area .video-embed .video:hover .video-options {
           opacity: 1;
           pointer-events: auto; }
         #stream-viewer #embed-area .video-embed .video.full-screen {
@@ -429,7 +426,8 @@ body {
           left: 0;
           width: 100%;
           height: 100%; }
-          #stream-viewer #embed-area .video-embed .video.full-screen .full-screenify {
+          #stream-viewer #embed-area .video-embed .video.full-screen .video-options {
+            top: 32px;
             right: 0;
             left: 16px; }
     #stream-viewer #embed-area .chat-embed {
@@ -468,6 +466,74 @@ body {
         pointer-events: auto; }
     #stream-viewer #embed-area.logged-in .chat-embed .chat-cover {
       display: none; }
+    #stream-viewer #embed-area .panels-box {
+      z-index: 6;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      height: 0;
+      text-align: left;
+      opacity: 0;
+      overflow: auto;
+      pointer-events: none; }
+      #stream-viewer #embed-area .panels-box.open {
+        top: 0;
+        height: 100%;
+        opacity: 1;
+        pointer-events: all; }
+      #stream-viewer #embed-area .panels-box .close-panels {
+        z-index: 6;
+        position: fixed;
+        top: 48px;
+        left: 16px;
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 3.2px;
+        box-shadow: inset 0 0 0 1.6px black;
+        font-size: 24px;
+        color: #6441a5;
+        cursor: pointer; }
+        #stream-viewer #embed-area .panels-box .close-panels:hover {
+          color: white;
+          background-color: #7656B1; }
+      #stream-viewer #embed-area .panels-box > div {
+        position: relative;
+        background-color: white;
+        box-shadow: inset 0 0 0 1.6px black;
+        border-radius: 3.2px;
+        padding: 64px 16px;
+        text-align: center; }
+        #stream-viewer #embed-area .panels-box > div .panel-parent {
+          padding: 8px;
+          vertical-align: top; }
+          #stream-viewer #embed-area .panels-box > div .panel-parent .panel {
+            box-shadow: 0 0 3.2px 0.8px black;
+            vertical-align: top;
+            margin: 0 0 16px;
+            max-height: 15.5em;
+            overflow: auto; }
+            #stream-viewer #embed-area .panels-box > div .panel-parent .panel .head {
+              background-color: #e6e6e6; }
+              #stream-viewer #embed-area .panels-box > div .panel-parent .panel .head .title {
+                display: inline-block;
+                padding: 4px 8px;
+                color: white;
+                font-weight: bold;
+                word-wrap: break-word; }
+              #stream-viewer #embed-area .panels-box > div .panel-parent .panel .head .img-link {
+                display: block;
+                padding: 3.2px;
+                width: 100%; }
+                #stream-viewer #embed-area .panels-box > div .panel-parent .panel .head .img-link img {
+                  width: 100%; }
+            #stream-viewer #embed-area .panels-box > div .panel-parent .panel .desc {
+              padding: 8px;
+              word-wrap: break-word;
+              text-align: left; }
+              #stream-viewer #embed-area .panels-box > div .panel-parent .panel .desc p {
+                padding: 0;
+                margin: 0; }
   #stream-viewer.open {
     width: 100%;
     height: 100%;

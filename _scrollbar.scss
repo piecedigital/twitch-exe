@@ -1,53 +1,41 @@
 ::-webkit-scrollbar {
-    width: 14px;
+    width: 9px;
 }
 ::-webkit-scrollbar-track {
     background-color: white;
-    /* border-radius: 1em;
-    -webkit-border-radius: 1em;
-    -moz-border-radius: 1em;
-    -o-border-radius: 1em; */
-    box-shadow: inset 0 0 0 1px black;
+    border-radius: 1*$em;
 }
 ::-webkit-scrollbar-track-piece:active {
-    background-color: transparent;
+    background-color: $darkPurple;
 }
 ::-webkit-scrollbar-thumb {
-    background-color: #6441a5;
-    /* border-radius: 1em;
-    -webkit-border-radius: 1em;
-    -moz-border-radius: 1em;
-    -o-border-radius: 1em; */
-    box-shadow: inset 0 0 0 1px black;
+    background-color: $purple;
+    border-radius: 1*$em;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #7656B1;
+    background-color: $hoverPurple;
 }
 ::-webkit-scrollbar-thumb:active {
-    background-color: #6441a5;
+    background-color: $purple;
 }
 ::-webkit-scrollbar-button {
-    background-color: #6441a5;
-    /* border-radius: 1em;
-    -webkit-border-radius: 1em;
-    -moz-border-radius: 1em;
-    -o-border-radius: 1em; */
-    box-shadow: inset 0 0 0 1px black;
+    background-color: $purple;
+    border-radius: 1*$em;
 }
 ::-webkit-scrollbar-button:hover {
-    background-color: #7656B1;
+    background-color: $hoverPurple;
 }
 ::-webkit-scrollbar-button:active {
-    background-color: #6441a5;
+    background-color: $purple;
 }
 ::-webkit-scrollbar-corner {
     background-color: black;
 }
 ::selection {
     background: #017ab1;
-    color: #7656B1;
+    color: $hoverPurple;
 }
 ::selection:window-inactive {
-    background-color: #6441a5;
-    color: #7656B1;
+    background-color: $purple;
+    color: $hoverPurple;
 }

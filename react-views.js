@@ -11,6 +11,11 @@ remote.require("./handle-con-data").loadConcurrentData(function(data) {
 //////////////////////////////
 // app ///////////////////////
 //////////////////////////////
+var R = React;
+R.CC = React.createClass;
+R.CE = React.createElement;
+delete R.createClass;
+delete R.createElement;
 
 // page wrap and section element components
 var pageWrapSmall = function(attrs, content) {
@@ -20,7 +25,7 @@ var pageWrapSmall = function(attrs, content) {
     initAttrs[key] = (initAttrs[key]) ? `${initAttrs[key]} ${attrs[key]}` : `${attrs[key]}`;
   };
 
-  return React.createElement(
+  return R.CE(
     "div",
     initAttrs,
     content
@@ -33,32 +38,32 @@ var pageWrapNormal = function(attrs, content) {
     initAttrs[key] = (initAttrs[key]) ? `${initAttrs[key]} ${attrs[key]}` : `${attrs[key]}`;
   };
 
-  return React.createElement(
+  return R.CE(
     "div",
     initAttrs,
     content
   );
 };
 var section = function(attrs, content) {
-  return React.createElement(
+  return R.CE(
     "section",
     attrs,
     content
   );
 };
 
-var normalSeparator = React.createElement(
+var normalSeparator = R.CE(
   "span",
   { className : "normal-separator" },
-  React.createElement(
+  R.CE(
     "span",
     null
   )
 );
-var smallSeparator = React.createElement(
+var smallSeparator = R.CE(
   "span",
   { className : "small-separator" },
-  React.createElement(
+  R.CE(
     "span",
     null
   )
@@ -66,11 +71,11 @@ var smallSeparator = React.createElement(
 
 // view parent
 // renders every part of the app
-var ViewParent = React.createClass({
+var ViewParent = R.CC({
   displayName: "ViewParent",
 
   getInitialState: function() {
-    return { "streamers" : [], "streamerInView" : 0, "hoveredStreamer" : null, "historyPoint" : 0, "history" : [{ page : "HomePage", search : "" }], "streamSearchResults" : [], "channelSearchResults" : [], "limit" : 6*4, "streamOffset" : 0, "channelOffset" : 0, "gameOffset" : 0 };
+    return { "streamers" : [], "streamerInView" : 0, "streamerPanels" : [], "hoveredStreamer" : null, "historyPoint" : 0, "history" : [{ page : "HomePage", search : "" }], "streamSearchResults" : [], "channelSearchResults" : [], "limit" : 6*4, "streamOffset" : 0, "channelOffset" : 0, "gameOffset" : 0 };
   },
   // go back in history
   changeViewPrev: function(e) {
@@ -193,8 +198,6 @@ var ViewParent = React.createClass({
       var viewer = document.querySelector("#stream-viewer");
 
       viewer.removeClass("open");
-      //viewer.querySelector("#video-embed iframe").src = "";
-      //viewer.querySelector("#embed-area iframe").src = "";
       document.body.style.overflow = "";
       this.setState({ "streamers" : [] })
     } else
@@ -252,11 +255,7 @@ var ViewParent = React.createClass({
       var streamer = e.target.attributes["data-stream-link"].value;
       this.state.streamers = [streamer];
       this.setState({ "streamerInView" : 0 });
-      //var videoSrc = `http://player.twitch.tv/?channel=${streamer}`;
-      //var chatSrc = `http://twitch.tv/${streamer}/chat`;
       var viewer = document.querySelector("#stream-viewer");
-      //document.querySelector(".follow").dataset.streamer = streamer;
-      //document.querySelector(".unfollow").dataset.streamer = streamer;
 
       ajax({
         url: `https://api.twitch.tv/kraken/users/${concurrentData.username.toLowerCase()}/follows/channels/${streamer}`,
@@ -273,8 +272,6 @@ var ViewParent = React.createClass({
       });
 
       viewer.addClass("open").removeClass("shrink");
-      //viewer.querySelector("#video-embed iframe").src = videoSrc;
-      //viewer.querySelector("#chat-embed iframe").src = chatSrc;
       document.body.style.overflow = "hidden";
     }
   },
@@ -329,6 +326,31 @@ var ViewParent = React.createClass({
       });
     }
   },
+  getPanels: function(e) {
+    var elemInstance = this;
+    var streamer = e.target.attributes["data-streamer"].value;
+
+    ajax({
+      url: `https://api.twitch.tv/api/channels/${streamer}/panels`,
+      type: "GET",
+      success: function(data) {
+        console.log( JSON.parse(data) );
+        elemInstance.setState({ "streamerPanels" : JSON.parse(data) });
+      },
+      error: function(err) {
+        //console.log(`Status: ${err.status}`, `Message: ${err.message}`)
+      }
+    });
+  },
+  closePanels: function() {
+    this.setState({ "streamerPanels" : [] });
+  },
+  fullScreenify: function(e) {
+    var bw = remote.BrowserWindow.getAllWindows()[0];
+    e.target.parentNode.parentNode[((!bw.isFullScreen()) ? "addClass" : "removeClass")]('full-screen');
+
+    bw.setFullScreen( ((!bw.isFullScreen()) ? true : false) );
+  },
   componentDidMount: function() {
     var elemInstance = this;
 
@@ -370,88 +392,140 @@ var ViewParent = React.createClass({
       }
     });
   },
-  fullScreenify: function(e) {
-    var bw = remote.BrowserWindow.getAllWindows()[0];
-    (!bw.isFullScreen()) ? e.target.parentNode.addClass( 'full-screen') : e.target.parentNode.removeClass( 'full-screen');
-    bw.setFullScreen( ((!bw.isFullScreen()) ? true : false) );
-  },
   render: function render() {
     var elemInstance = this;
-    return React.createElement(
+    return R.CE(
       "div",
       { "id" : "view-parent" },
       // render component for the main section of the page
-      React.createElement(window[this.state.history[this.state.history.length-1].page], { "parentAPI" : this }),
+      R.CE(window[this.state.history[this.state.history.length-1].page], { "parentAPI" : this }),
       // render component for the stream viewer (top-left corner)
-      React.createElement(
+      R.CE(
         "div",
         { "id" : "stream-viewer" },
-        React.createElement(
+        R.CE(
           "div",
           { "id" : "viewer-controls"},
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "ctrl close", "onClick" : this.viewStream }
           ),
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "ctrl display", "onClick" : this.viewStream }
           ),
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "ctrl chat", "onClick" : this.viewStream }
           ),
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "ctrl follow", "data-streamer" : `${this.state.streamers[this.state.streamerInView]}`, "onClick" : this.viewStream },
             `Follow ${this.state.streamers[this.state.streamerInView]}`
           ),
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "ctrl unfollow", "data-streamer" : `${this.state.streamers[this.state.streamerInView]}`, "onClick" : this.viewStream },
             `Unfollow ${this.state.streamers[this.state.streamerInView]}`
           ),
           this.state.streamers.map(function(streamer, ind) {
-            return React.createElement(
+            return R.CE(
               "div",
               { "className" : "ctrl toggle-chat", "data-chat" : ind, "onClick" : elemInstance.toggleChat, "title" : `${streamer}`, "key" : `toggle${ind}` },
               `Chat ${ind+1}`
             )
           })
         ),
-        React.createElement(
+        R.CE(
           "div",
           { "id" : `embed-area`},
-          React.createElement(
+          R.CE(
             "div",
             { "className" : `video-embed embedded-${this.state.streamers.length}` },
             this.state.streamers.map(function(streamer, ind) {
-              return React.createElement(
+              return R.CE(
                 "div",
                 { "className" : `video embed-size-${elemInstance.state.streamers.length}${(ind === elemInstance.state.streamerInView) ? " in-view" : " out-view"}`, "key" : `video${ind}` },
-                React.createElement(
+                R.CE(
                   "iframe",
                   { "src" : `http://player.twitch.tv/?channel=${streamer}`, "frameBorder" : "0" }
                 ),
-                React.createElement(
+                R.CE(
                   "div",
-                  { "className" : "full-screenify", "title" : "fullscreen", "onClick" : elemInstance.fullScreenify }
+                  { "className" : "video-options" },
+                  R.CE(
+                    "div",
+                    { "className" : "option info", "title" : "info", "data-streamer" : streamer, "onClick" : elemInstance.getPanels }
+                  ),
+                  R.CE(
+                    "div",
+                    { "className" : "option full-screenify", "title" : "fullscreen", "onClick" : elemInstance.fullScreenify }
+                  )
                 )
               )
-            })
+            }),
+            R.CE(
+              "div",
+              { "className" : `panels-box${(this.state.streamerPanels.length > 0) ? " open" : ""}` },
+              R.CE(
+                "div",
+                { "className" : "close-panels", "onClick" : this.closePanels },
+                "X"
+              ),
+              R.CE(
+                "div",
+                null,
+                /*R.CE(
+                  "span",
+                  { "className" : "streamer-name" },
+                  this.state.streamerPanels[0].channels
+                ),*/
+                this.state.streamerPanels.map(function(panel, ind) {
+                  return R.CE(
+                    "div",
+                    { "className" : "col-3-2-1 panel-parent", "key" : `panel${ind}` },
+                    R.CE(
+                      "div",
+                      { "className" : "panel" },
+                      R.CE(
+                        "div",
+                        { "className" : "head" },
+                        (!panel.data.title) ? "" : R.CE(
+                          "span",
+                          { "className" : "title" },
+                          panel.data.title
+                        ),
+                        R.CE(
+                          "a",
+                          { "className" : "img-link", "href" : panel.data.link || "#" },
+                          (!panel.data.image) ? "" : R.CE(
+                            "img",
+                            { "src" : panel.data.image }
+                          )
+                        )
+                      ),
+                      (!panel.data.description) ? "" : R.CE(
+                        "div",
+                        { "className" : "desc", "dangerouslySetInnerHTML" : { "__html" : panel.html_description } }
+                      )
+                    )
+                  )
+                })
+              )
+            )
           ),
           this.state.streamers.map(function(streamer, ind) {
-            return React.createElement(
+            return R.CE(
               "div",
               { "className" : `chat-embed${(ind === elemInstance.state.streamerInView) ? "" : " hide"}`, "key" : `chat-embed${ind}` },
-              React.createElement(
+              R.CE(
                 "div",
                 { "className" : `chat-${ind}` },
-                React.createElement(
+                R.CE(
                   "div",
                   { "className" : "chat-cover", "onClick" : elemInstance.loginUser }
                 ),
-                React.createElement(
+                R.CE(
                   "iframe",
                   { "src" : `http://twitch.tv/${streamer}/chat`, "frameBorder" : "0" }
                 )
@@ -461,11 +535,11 @@ var ViewParent = React.createClass({
         )
       ),
       // render component for the options bar (top-right corner)
-      React.createElement(OptionsBar, { "parentAPI" : this }),
-      React.createElement(
+      R.CE(OptionsBar, { "parentAPI" : this }),
+      R.CE(
         "ul",
         { "id" : "context-menu", "className" : "streamer-options hide" },
-        React.createElement(
+        R.CE(
           "li",
           { "className" : "streamer-opt" },
           "Add Streamer To View"
@@ -476,7 +550,7 @@ var ViewParent = React.createClass({
 });
 
 // options - nav, search, login/out
-var OptionsBar = React.createClass({
+var OptionsBar = R.CC({
   "displayName": "OptionsBar",
 
   componentDidMount: function() {
@@ -593,39 +667,39 @@ var OptionsBar = React.createClass({
   },
   render: function render() {
     var elemInstance = this;
-    return React.createElement(
+    return R.CE(
       "div",
       { "id" : "options-bar"},
-      React.createElement(
+      R.CE(
         "div",
         { "className" : "nav prev" }
       ),
-      React.createElement(
+      R.CE(
         "form",
         { "className" : "nav search" },
-        React.createElement(
+        R.CE(
           "input",
           { "type" : "text", "name" : "search", "min" : "1", "placeholder" : "Search..." }
         ),
-        React.createElement(
+        R.CE(
           "input",
           { "type" : "submit", "value" : "GO" }
         )
       ),
-      React.createElement(
+      R.CE(
         "div",
         { "className" : "nav log"
         },
-        React.createElement(
+        R.CE(
           "img",
           { "src" : "http://ttv-api.s3.amazonaws.com/assets/connect_dark.png", "className" : "twitch-connect", href : "#", "onClick" : this.loginUser }
         ),
-        React.createElement(
+        R.CE(
           "span",
            { "onClick" : this.logoutUser },
           "Logout"
         ),
-        React.createElement(
+        R.CE(
           "span",
            { "data-page-link" : "AccountInfoPage", "onClick" : this.props.parentAPI.pingForData },
           "Account"
@@ -636,16 +710,16 @@ var OptionsBar = React.createClass({
 });
 // react pages
 //////////////////////////////
-var HomePage = React.createClass({
+var HomePage = R.CC({
   displayName: "HomePage",
 
   render: function render() {
-    return React.createElement(
+    return R.CE(
       "div",
       { "id" : "home-page" },
       section(
         { "className" : "off-black" },
-        React.createElement(TopStreams)
+        R.CE(TopStreams)
       ),
       pageWrapSmall(
         null,
@@ -655,7 +729,7 @@ var HomePage = React.createClass({
         null,
         pageWrapSmall(
           null,
-          React.createElement(
+          R.CE(
             "h1",
             { className : "section-title" },
             "Top Games"
@@ -664,7 +738,7 @@ var HomePage = React.createClass({
       ),
       section(
         null,
-        React.createElement(TopGames)
+        R.CE(TopGames)
       ),
       pageWrapSmall(
         null,
@@ -674,7 +748,7 @@ var HomePage = React.createClass({
         null,
         pageWrapSmall(
           null,
-          React.createElement(
+          R.CE(
             "h1",
             { className : "section-title" },
             "Featured Streams"
@@ -683,29 +757,29 @@ var HomePage = React.createClass({
       ),
       section(
         null,
-        React.createElement(FeaturedStreams)
+        R.CE(FeaturedStreams)
       )
     );
   }
 });
-var GamesListPage = React.createClass({
+var GamesListPage = R.CC({
   displayName: "GamesListPage",
 
   componentDidMount: function() {
     this.props.parentAPI.searchForTopGame();
   },
   render: function render() {
-    return React.createElement(
+    return R.CE(
       "div",
       { "id" : "games-list-page" },
       section(
         null,
-        React.createElement(GamesPage)
+        R.CE(GamesPage)
       )
     );
   }
 });
-var StreamsListPage = React.createClass({
+var StreamsListPage = R.CC({
   displayName: "StreamsListPage",
 
   componentDidMount: function() {
@@ -713,26 +787,26 @@ var StreamsListPage = React.createClass({
     this.props.parentAPI.searchForChannelData();
   },
   render: function render() {
-    return React.createElement(
+    return R.CE(
       "div",
       { "id" : "streams-page" },
       section(
         null,
-        React.createElement(StreamsPage)
+        R.CE(StreamsPage)
       )
     )
   }
 });
-var AccountInfoPage = React.createClass({
+var AccountInfoPage = R.CC({
   displayName: "AccountInfoPage",
 
   render: function render() {
-    return React.createElement(
+    return R.CE(
       "div",
       { "id" : "account-page" },
       section(
         null,
-        React.createElement(AccountPage)
+        R.CE(AccountPage)
       )
     )
   }
@@ -741,7 +815,7 @@ var AccountInfoPage = React.createClass({
 // page components
 //////////////////////////////
 /* home page */
-var TopStreams = React.createClass({
+var TopStreams = R.CC({
   displayName: "TopStreams",
 
   getStreams: function() {
@@ -780,81 +854,81 @@ var TopStreams = React.createClass({
 
     return pageWrapSmall(
       { "className" : "" },
-      React.createElement(
+      R.CE(
         "div",
         { "id" : "top-streams", "className" : "right-justify" },
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "top-streams-viewer" },
-          React.createElement(
+          R.CE(
             "iframe",
             { "className" : "video", "src" : `http://player.twitch.tv?channel=${this.state.streams.featured[this.state.index].stream.channel.name}`, "width" : "100%", "height" : "100%", "frameBorder" : "0" }
           )
         ),
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "top-streams-info" },
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "top-stream-channel" },
-            React.createElement(
+            R.CE(
               "div",
               { "className" : "image-div" },
-              React.createElement(
+              R.CE(
                 "img",
                 { "className" : "", "src" : this.state.streams.featured[this.state.index].stream.channel.logo }
               )
             ),
-            React.createElement(
+            R.CE(
               "div",
               { "className" : "details-div" },
-              React.createElement(              "span",
+              R.CE(              "span",
                 { "className" : "" },
                 `${this.state.streams.featured[this.state.index].stream.channel.display_name}`
               ),
-              React.createElement(
+              R.CE(
                 "br",
                 null
               ),
-              React.createElement(
+              R.CE(
                 "span",
                 null,
                 `playing ${this.state.streams.featured[this.state.index].stream.game}`
               )
             )
           ),
-          React.createElement(
+          R.CE(
             "h1",
             { "className" : "section-title" },
             this.state.streams.featured[this.state.index].title
           ),
-          React.createElement(
+          R.CE(
             "p",
             null,
             this.state.streams.featured[this.state.index].text.replace(/<br>[\n]*.*/gi, "").replace(/<(\/)?p>/gi, ""),
-            React.createElement(
+            R.CE(
               "br",
               null
             ),
-            React.createElement(
+            R.CE(
               "br",
               null
             ),
-            React.createElement(
+            R.CE(
               "a",
               { "href" : "#", "className" : "stream-link", "data-stream-link" : this.state.streams.featured[this.state.index].stream.channel.name, "onClick" : accessView.viewStream },
               "watch this stream"
             )
           )
         ),
-        React.createElement(
+        R.CE(
           "ul",
           { "id" : "top-streams-list", "className" : "" },
           this.state.streams.featured.map(function(item, ind) {
-            return React.createElement(
+            return R.CE(
               "li",
               { "key" : "top-stream-item" + ind, "className" : `${(ind === elemInstance.state.index) ? "selected" : ""} top-stream-item col-6-5-4-3-2-1`, "data-item-index" : ind },
-              React.createElement(
+              R.CE(
                 "img",
                 { "src" : item.stream.preview.medium, "onClick" : elemInstance.setStream }
               )
@@ -865,7 +939,7 @@ var TopStreams = React.createClass({
     )
   }
 });
-var TopGames = React.createClass({
+var TopGames = R.CC({
   displayName: "TopGames",
 
   getGames: function() {
@@ -896,35 +970,35 @@ var TopGames = React.createClass({
     }
     return pageWrapSmall(
       null,
-      React.createElement(
+      R.CE(
         "div",
         { "id" : "top-games" },
-        React.createElement(
+        R.CE(
           "ul",
           { "id" : "games-list", "className" : "" },
           this.state.games.top.map(function(item, ind) {
-            return React.createElement(
+            return R.CE(
               "li",
               { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1", "data-page-link" : "StreamsListPage", "data-search": item.game.name, "onClick" : accessView.pingForData },
-              React.createElement(
+              R.CE(
                 "img",
                 { "src" : item.game.box.large }
               ),
-              React.createElement(
+              R.CE(
                 "h1",
                 { "className" : "title" },
                 `${item.game.name}`
               ),
-              React.createElement(
+              R.CE(
                 "span",
                 { "className" : "stats" },
-                React.createElement(
+                R.CE(
                   "span",
                   null,
                   `Viewers: ${item.viewers}`
                 ),
                 smallSeparator,
-                React.createElement(
+                R.CE(
                   "span",
                   null,
                   `Channels: ${item.channels}`
@@ -933,10 +1007,10 @@ var TopGames = React.createClass({
             )
           })
         ),
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "right-justify" },
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "pointer link bold inline-block", "data-page-link" : "GamesListPage", "onClick" : accessView.pingForData },
             "View all games"
@@ -946,7 +1020,7 @@ var TopGames = React.createClass({
     )
   }
 });
-var FeaturedStreams = React.createClass({
+var FeaturedStreams = R.CC({
   displayName: "FeaturedStreams",
 
   getStreams: function() {
@@ -977,33 +1051,33 @@ var FeaturedStreams = React.createClass({
     }
     return pageWrapSmall(
       null,
-      React.createElement(
+      R.CE(
         "div",
         { "id" : "featured-streams" },
-        React.createElement(
+        R.CE(
           "ul",
           { "id" : "featured-streams-list", "className" : "" },
           this.state.streams.featured.map(function(item, ind) {
-            return React.createElement(
+            return R.CE(
               "li",
               { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-3-2-1", "data-stream-link" : item.stream.channel.name, "onClick" : accessView.viewStream },
-              React.createElement(
+              R.CE(
                 "img",
                 { "src" : item.stream.preview.large }
               ),
-              React.createElement(
+              R.CE(
                 "h1",
                 { "className" : "title"},
                 `${item.title}`
               ),
-              React.createElement(
+              R.CE(
                 "span",
                 { "className" : "stats" },
-                React.createElement(
+                R.CE(
                   "span",
                   null,
                   `${item.stream.viewers} viewers on `,
-                  React.createElement(
+                  R.CE(
                     "span",
                     { "className" : "bold" },
                     `${item.stream.channel.display_name}`
@@ -1013,10 +1087,10 @@ var FeaturedStreams = React.createClass({
             )
           })
         ),
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "right-justify" },
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "pointer link bold inline-block", "data-page-link" : "StreamsListPage", "onClick" : accessView.pingForData },
             "View all streams"
@@ -1028,41 +1102,41 @@ var FeaturedStreams = React.createClass({
 });
 
 /* pages page */
-var GamesPage = React.createClass({
+var GamesPage = R.CC({
   displayName: "TopGames",
 
   render: function render() {
     return pageWrapSmall(
       null,
-      React.createElement(
+      R.CE(
         "div",
         { "id" : "top-games" },
-        React.createElement(
+        R.CE(
           "ul",
           { "id" : "games-list", "className" : "" },
           accessView.state.streamSearchResults.map(function(item, ind) {
-            return React.createElement(
+            return R.CE(
               "li",
               { "key" : "game-item" + ind, "className" : "game-item col-6-5-4-3-2-1", "data-page-link" : "StreamsListPage", "data-search": item.game.name, "onClick" : accessView.pingForData },
-              React.createElement(
+              R.CE(
                 "img",
                 { "src" : item.game.box.large }
               ),
-              React.createElement(
+              R.CE(
                 "h1",
                 { "className" : "title" },
                 `${item.game.name}`
               ),
-              React.createElement(
+              R.CE(
                 "span",
                 { "className" : "stats" },
-                React.createElement(
+                R.CE(
                   "span",
                   null,
                   `Viewers: ${item.viewers}`
                 ),
                 smallSeparator,
-                React.createElement(
+                R.CE(
                   "span",
                   null,
                   `Channels: ${item.channels}`
@@ -1071,10 +1145,10 @@ var GamesPage = React.createClass({
             )
           })
         ),
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "right-justify" },
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForTopGame },
             "Load more games"
@@ -1085,7 +1159,7 @@ var GamesPage = React.createClass({
   }
 });
 /* streams page */
-var StreamsPage = React.createClass({
+var StreamsPage = R.CC({
   "displayName": "StreamsPage",
 
   render: function render() {
@@ -1097,43 +1171,43 @@ var StreamsPage = React.createClass({
 
     return pageWrapNormal(
       null,
-      React.createElement(
+      R.CE(
         "div",
         { "id" : "top-streams" },
         /* section title */
         pageWrapNormal(
           null,
-          React.createElement(
+          R.CE(
             "h1",
             { "className" : "section-title" },
             `Live Streams ${(historyPoint.search) ? `for "${historyPoint.search}"` : ""}`
           )
         ),
         /* section */
-        React.createElement(
+        R.CE(
           "ul",
           { "id" : "featured-streams-list", "className" : "" },
           accessView.state.streamSearchResults.map(function(item, ind) {
-            return React.createElement(
+            return R.CE(
               "li",
               { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : ((item.stream) ? item.stream.channel.name : item.channel.name), "onClick" : accessView.viewStream },
-              React.createElement(
+              R.CE(
                 "img",
                 { "src" : (((item.stream) ? item.stream.preview.large : item.preview.large)) || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
               ),
-              React.createElement(
+              R.CE(
                 "h1",
                 { "className" : "title"},
                 `${((item.title) ? item.title : item.channel.status)}`
               ),
-              React.createElement(
+              R.CE(
                 "span",
                 { "className" : "stats" },
-                React.createElement(
+                R.CE(
                   "span",
                   null,
                   `${((item.stream) ? item.stream.viewers : item.viewers)} viewers on `,
-                  React.createElement(
+                  R.CE(
                     "span",
                     { "className" : "bold" },
                     `${((item.stream) ? item.stream.channel.name : item.channel.display_name)}`
@@ -1144,10 +1218,10 @@ var StreamsPage = React.createClass({
           })
         ),
         /* section manual pagination */
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "right-justify" },
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForStreamData },
             "Load more streams"
@@ -1161,25 +1235,25 @@ var StreamsPage = React.createClass({
         /* section title */
         pageWrapNormal(
           null,
-          React.createElement(
+          R.CE(
             "h1",
             { "className" : "section-title" },
             `Channel results ${(historyPoint.search) ? `for "${historyPoint.search}"` : ""}`
           )
         ),
         /* section */
-        React.createElement(
+        R.CE(
           "ul",
           { "id" : "featured-streams-list", "className" : "" },
           accessView.state.channelSearchResults.map(function(item, ind) {
-            return React.createElement(
+            return R.CE(
               "li",
               { "key" : "featured-stream-item" + ind, "className" : "featured-stream-item col-6-5-4-3-2-1", "data-stream-link" : item.name, "onClick" : accessView.viewStream },
-              React.createElement(
+              R.CE(
                 "img",
                 { "src" : item.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
               ),
-              React.createElement(
+              R.CE(
                 "h1",
                 { "className" : "title"},
                 `${item.display_name}`
@@ -1188,10 +1262,10 @@ var StreamsPage = React.createClass({
           })
         ),
         /* section manual pagination */
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "right-justify" },
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "pointer link bold inline-block", "onClick" : accessView.searchForChannelData },
             "Load more streams"
@@ -1202,7 +1276,7 @@ var StreamsPage = React.createClass({
   }
 });
 /* account page */
-var AccountPage = React.createClass({
+var AccountPage = R.CC({
   "displayName": "AccountPage",
 
   getInitialState: function() {
@@ -1311,13 +1385,13 @@ var AccountPage = React.createClass({
 
     return pageWrapNormal(
       null,
-      React.createElement(
+      R.CE(
         "div",
         { "id" : "top-streams" },
         // page title
         pageWrapNormal(
           null,
-          React.createElement(
+          R.CE(
             "h1",
             { "className" : "section-title" },
             `Account Info of ${concurrentData.username}`
@@ -1331,32 +1405,32 @@ var AccountPage = React.createClass({
         // section title
         pageWrapNormal(
           null,
-          React.createElement(
+          R.CE(
             "div",
             null,
-            React.createElement(
+            R.CE(
               "div",
               { "className" : "col-2 left-justify" },
-              React.createElement(
+              R.CE(
                 "h1",
                 { "className" : "section-title" },
                 `Streams you follow`
               )
             ),
-            React.createElement(
+            R.CE(
               "div",
               { "className" : "col-2 right-justify" },
-              React.createElement(
+              R.CE(
                 "div",
                 { "className" : `btn btn-spaced${(this.state.filter === "all") ? " btn-selected" : "" }`, "data-section" : "following", "data-filter" : "all", "onClick" : this.filterList },
                 `Show All`
               ),
-              React.createElement(
+              R.CE(
                 "div",
                 { "className" : `btn btn-spaced${(this.state.filter === "online") ? " btn-selected" : "" }`, "data-section" : "following", "data-filter" : "online", "onClick" : this.filterList },
                 `Show Online`
               ),
-              React.createElement(
+              R.CE(
                 "div",
                 { "className" : `btn btn-spaced`, "data-section" : "following", "onClick" : this.refreshStreams },
                 `Refresh streams`
@@ -1365,26 +1439,26 @@ var AccountPage = React.createClass({
           )
         ),
         // section
-        React.createElement(
+        R.CE(
           "ul",
           { "id" : "following-streams-list", "className" : `filter-${this.state.filter}` },
           this.state.following.map(function(item, ind) {
-            return React.createElement(
+            return R.CE(
               "li",
               { "key" : "following-stream-item" + ind, "className" : `following-stream-item col-6-5-4-3-2-1${(item.stream) ? "" : " offline" }`, "data-stream-link" : item.channel.name, "onClick" : accessView.viewStream },
-              React.createElement(
+              R.CE(
                 "img",
                 { "src" : item.channel.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
               ),
-              React.createElement(
+              R.CE(
                 "h1",
                 { "className" : "title"},
                 `${item.channel.display_name}`
               ),
-              React.createElement(
+              R.CE(
                 "span",
                 { "className" : "stats" },
-                React.createElement(
+                R.CE(
                   "span",
                   { "className" : `bold${(item.stream) ? " online" : " offline"} ` },
                   `${(item.stream) ? `Online playing ${item.channel.game}` : "Offline" }`
@@ -1394,10 +1468,10 @@ var AccountPage = React.createClass({
           })
         ),
         // section manual pagination
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "right-justify" },
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "pointer link bold inline-block", "data-section" : "following", "onClick" : elemInstance.loadFollowingChannels },
             "Load more streams"
@@ -1411,25 +1485,25 @@ var AccountPage = React.createClass({
         // section title
         pageWrapNormal(
           null,
-          React.createElement(
+          R.CE(
             "h1",
             { "className" : "section-title" },
             `Users that follow you`
           )
         ),
         // section
-        React.createElement(
+        R.CE(
           "ul",
           { "id" : "followers-streams-list", "className" : "" },
           this.state.followers.map(function(item, ind) {
-            return React.createElement(
+            return R.CE(
               "li",
               { "key" : "followers-stream-item" + ind, "className" : "followers-stream-item col-6-5-4-3-2-1", "data-stream-link" : (item.user.name), "onClick" : accessView.viewStream },
-              React.createElement(
+              R.CE(
                 "img",
                 { "src" : item.user.logo || "http://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_150x150.png" }
               ),
-              React.createElement(
+              R.CE(
                 "h1",
                 { "className" : "title"},
                 `${item.user.display_name}`
@@ -1438,10 +1512,10 @@ var AccountPage = React.createClass({
           })
         ),
         // section manual pagination
-        React.createElement(
+        R.CE(
           "div",
           { "className" : "right-justify" },
-          React.createElement(
+          R.CE(
             "div",
             { "className" : "pointer link bold inline-block", "data-section" : "followers", "onClick": elemInstance.loadFollowerChannels },
             "Load more users"
@@ -1452,4 +1526,4 @@ var AccountPage = React.createClass({
   }
 });
 
-var accessView = ReactDOM.render(React.createElement(ViewParent, null), document.getElementById("main-content"));
+var accessView = ReactDOM.render(R.CE(ViewParent, null), document.getElementById("main-content"));
