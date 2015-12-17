@@ -43,7 +43,7 @@ app.on('ready', function() {
       "web-security" : false
     },
     "frame" : true,
-    "icon" : __dirname + "/icon.png",
+    "icon" : __dirname + "/icon.ico",
     "toolbar" : false,
     "auto-hide-menu-bar" : false,
     "title" :"Guide Cyberclub Chat"
