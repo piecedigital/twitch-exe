@@ -1,9 +1,10 @@
 var http = require("http");
 var path = require("path");
 var fs = require("fs");
+var cancelError = "/?error=access_denied&error_description=The+user+denied+you+access";
 
 var server = http.createServer(function (req, res) {
-	var url = (req.url !== "/") ? req.url : "/index.html";
+	var url = (req.url !== "/" && req.url !== cancelError) ? req.url : "/index.html";
 	console.log(url)
     fs.readFile(`${__dirname+url}`, "utf8", function(err, data) {
     	if(err) throw err;

@@ -155,3 +155,12 @@ HTMLElement.prototype.parent = function(property, value) {
     return (this.parentNode) ? this.parentNode : this.target.parentNode;
   }
 };
+HTMLElement.prototype.remove = function() {
+  if(this) {
+    //console.log("REMOVE NODE");
+
+    console.log(this);
+    this.parentNode.removeChild(this);
+    console.log(this);
+  }
+};

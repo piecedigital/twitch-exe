@@ -28,12 +28,6 @@ html {
 	margin: auto;
 }
 /* colors */
-$purple: #6441a5;
-$hoverPurple: #7656B1;
-$linkPurple: #a68ed2;
-$darkPurple: #211042;
-$offBlack: rgba(25, 25, 31, 1);// #19191f
-$offWhite: rgba(230,230,230,1);
 
 /* scrollbar */
 @import "_scrollbar";
@@ -110,7 +104,7 @@ $offWhite: rgba(230,230,230,1);
 	background-color: $offBlack;
 }
 a {
-	color: $linkPurple;
+	color: $lightBlue;
 	text-decoration: none;
 }
 .bold {
@@ -120,9 +114,9 @@ a {
 	cursor: pointer;
 }
 .link {
-	color: $purple;
+	color: $midBlue;
 	&:hover {
-		color: $hoverPurple;
+		color: $higherMidBlue;
 	}
 }
 .left-justify {
@@ -175,14 +169,14 @@ body {
 }
 .btn {
   height: 2*$em;
-  background-color: $purple;
+  background-color: $midBlue;
   color: white;
   display: inline-block;
   padding: .5*$em;
   box-shadow: 0 0 0 .1*$em black;
   cursor: pointer;
   &:hover {
-  	background-color: $hoverPurple;
+  	background-color: $higherMidBlue;
   }
 }
 .btn-spaced {
@@ -195,7 +189,41 @@ body {
 		background-color: rgba(230, 230, 230, 1);
 	}
 }
-
+#opening-splash {
+	z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: white;
+	box-shadow: insert 0 0 2*$em .1*$em $midBlue;
+	& div {
+		opacity: 0;
+		& svg {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 12em;
+		}
+	}
+	& h1, h3 {
+		color: $midBlue;
+	}
+	& h3 {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -9*$em);
+	}
+	& h1 {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, 5*$em);
+	}
+}
 .section-title {
 	margin: 0 0 1*$em;
 	padding: 0;
@@ -343,7 +371,7 @@ body {
 		height: 2*$em;
 		overflow: hidden;
 		text-align: left;
-		background-color: $purple;
+		background-color: $midBlue;
 		& .ctrl {
 			min-width: 2*$em;
 			height: 100%;
@@ -358,7 +386,7 @@ body {
   			display: none;
   		}
   		&:hover {
-  			background-color: $hoverPurple;
+  			background-color: $higherMidBlue;
   		}
 			&.close:after {
 				content: "\2716";
@@ -449,7 +477,7 @@ body {
 						display: inline-block;
 						width: 1.5*$em;
 						height: 1.5*$em;
-						background-color: $purple;
+						background-color: $midBlue;
 						cursor: pointer;
 						box-shadow: inset 0 0 0 .1*$em black;
 						vertical-align: top;
@@ -461,7 +489,7 @@ body {
 					    color: white;
 						}
 						&:hover {
-							background-color: $hoverPurple;
+							background-color: $higherMidBlue;
 						}
 						&.full-screenify {
 							&:after {
@@ -513,7 +541,7 @@ body {
 		    left: 0;
 		    width: 100%;
 		    height: 7*$em;
-		    background-color: #6441a5;
+		    background-color: $midBlue;
 		    opacity: .2;
 		    cursor: pointer;
 		    &:after {
@@ -574,11 +602,11 @@ body {
 				border-radius: .2*$em;
 				box-shadow: inset 0 0 0 .1*$em black;
 				font-size: 1.5*$em;
-				color: $purple;
+				color: $midBlue;
 				cursor: pointer;
 				&:hover {
 					color: white;
-					background-color: $hoverPurple;
+					background-color: $higherMidBlue;
 				}
 			}
 			& > div {
@@ -670,7 +698,7 @@ body {
 	position: fixed;
 	top: 0;
 	right: 0;
-	background-color: $purple;
+	background-color: $midBlue;
 	overflow: hidden;
 	& .nav {
 		display: inline-block;
@@ -681,7 +709,7 @@ body {
 		vertical-align: top;
 		cursor: pointer;
 		&:hover {
-			background-color: $hoverPurple;
+			background-color: $higherMidBlue;
 		}
 		&.prev:after {
 			content: "<";
@@ -700,14 +728,14 @@ body {
 				color: white;
 				box-shadow: inset .1*$em -.1*$em 0 0 black;
 				&[type="text"] {
-					background-color: $darkPurple;
+					background-color: $darkBlue;
 					padding: 0 .5*$em 0;
 				}
 				&[type="submit"] {
 					cursor: pointer;
-					background-color: $purple;
+					background-color: $midBlue;
 					&:hover {
-						background-color: $hoverPurple;
+						background-color: $higherMidBlue;
 					}
 				}
 			}
@@ -719,9 +747,9 @@ body {
 				cursor: pointer;
 				display: none;
 				box-shadow: inset .1*$em -.1*$em 0 0 black;
-				background-color: $purple;
+				background-color: $midBlue;
 				&:hover {
-					background-color: $hoverPurple;
+					background-color: $higherMidBlue;
 				}
 			}
 			&.hide {
@@ -749,7 +777,7 @@ body {
 		height: 2*$em;
 		color: white;
 		cursor: pointer;
-		background-color: $purple;
+		background-color: $midBlue;
 		padding: .5*$em;
 		text-align: center;
 		&:not(:last-child) {
@@ -757,7 +785,7 @@ body {
 			margin: 0 0 .1*$em;
 		}
 		&:hover {
-			background-color: $hoverPurple;
+			background-color: $higherMidBlue;
 		}
 	}
 }

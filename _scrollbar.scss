@@ -6,36 +6,36 @@
     border-radius: 1*$em;
 }
 ::-webkit-scrollbar-track-piece:active {
-    background-color: $darkPurple;
+    background-color: $darkBlue;
 }
 ::-webkit-scrollbar-thumb {
-    background-color: $purple;
+    background-color: $midBlue;
     border-radius: 1*$em;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background-color: $hoverPurple;
+    background-color: $higherMidBlue;
 }
 ::-webkit-scrollbar-thumb:active {
-    background-color: $purple;
+    background-color: $midBlue;
 }
 ::-webkit-scrollbar-button {
-    background-color: $purple;
+    background-color: $midBlue;
     border-radius: 1*$em;
 }
 ::-webkit-scrollbar-button:hover {
-    background-color: $hoverPurple;
+    background-color: $higherMidBlue;
 }
 ::-webkit-scrollbar-button:active {
-    background-color: $purple;
+    background-color: $midBlue;
 }
 ::-webkit-scrollbar-corner {
     background-color: black;
 }
 ::selection {
     background: #017ab1;
-    color: $hoverPurple;
+    color: $higherMidBlue;
 }
 ::selection:window-inactive {
-    background-color: $purple;
-    color: $hoverPurple;
+    background-color: $midBlue;
+    color: $higherMidBlue;
 }

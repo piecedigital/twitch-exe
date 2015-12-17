@@ -391,6 +391,27 @@ var ViewParent = R.CC({
         remote.BrowserWindow.getAllWindows()[0].setFullScreen(false);
       }
     });
+    // splash setup
+    setTimeout(function() {
+      document.querySelector("body").css({
+        "overflow": "hidden"
+      });
+      document.querySelector("#opening-splash div").css({
+        "opacity": 1
+      });
+      console.log(typeof document.querySelector("#opening-splash div svg"))
+      setTimeout(function() {
+        document.querySelector("#opening-splash").css({
+          "opacity": 0
+        });
+        setTimeout(function() {
+          document.querySelector("body").css({
+            "overflow": ""
+          });
+          document.querySelector("#opening-splash").remove();
+        }, 1000);
+      }, 3000);
+    }, 0);
   },
   render: function render() {
     var elemInstance = this;
@@ -562,7 +583,7 @@ var OptionsBar = R.CC({
     // event listeners for option elements
     document.querySelector(".nav.search").addEventListener("submit", function(e) {
       e.preventDefault();
-      if( e.target[0].value.match(/^(http(s)?:\/\/)?(ms:\/\/)?/) && e.target[0].value.match(/^(http(s)?:\/\/)?(ms:\/\/)?/).shift() ) {
+      if( e.target[0].value.match(/^(http(s)?:\/\/(www(\.)?)?multitwitch.tv)?(ms:\/\/)?/) && e.target[0].value.match(/^(http(s)?:\/\/(www(\.)?)?multitwitch.tv)?(ms:\/\/)?/).shift() ) {
         var arr = e.target[0].value.match(/(com)?\/(\/)?([\/\w]*)$/).pop().split("/");
         arr.map(function(elem) {
           if(elem) {
@@ -626,44 +647,33 @@ var OptionsBar = R.CC({
   // function to log the user in
   loginUser: function(e) {
     Twitch.login({
-      scope: ["user_blocks_edit", "user_blocks_read", "user_follows_edit", "channel_read", "channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", "chat_login"]
+      scope: ["channel_read", /*"user_blocks_edit", "user_blocks_read", */"user_follows_edit", /*"channel_editor", "channel_commercial", "channel_stream", "channel_subscriptions", "user_subscriptions", "channel_check_subscription", */"chat_login"]
     });
   },
   // function to log the user out
   logoutUser: function() {
     var elemInstance = this;
 
-    Twitch.logout(function() {
-      remote.getCurrentWebContents().session.clearStorageData({
-        storages: ["cookies"]
-      }, function(err) {
-        if(err) throw err;
-
-        //console.log("storage data cleared");
-      });
-      twitchToken = null;
-      concurrentData.username = null;
-      concurrentData.links = null;
-      //console.log("user logged out");
-      var newHistory = elemInstance.props.parentAPI.state.history.filter(function(elem) {
-        if( !elem.page.match(/AccountInfoPage/i) ) {
-          return elem;
-        }
-      });
-      elemInstance.props.parentAPI.setState({ "history" : newHistory });
-    });
-    Twitch.getStatus({ "force" : true }, function(err, status) {
+    remote.getCurrentWebContents().session.clearStorageData({
+      storages: ["cookies"]
+    }, function(err) {
       if(err) throw err;
 
-      ////console.log(status)
-      if(status.authenticated) {
-        document.querySelector(".nav.log").addClass("hide");
-        document.querySelector("#embed-area").addClass("logged-in");
-      } else {
+      //console.log("storage data cleared");
         document.querySelector(".nav.log").removeClass("hide");
         document.querySelector("#embed-area").removeClass("logged-in");
+    });
+    twitchToken = null;
+    concurrentData.username = null;
+    concurrentData.links = null;
+    //console.log("user logged out");
+    var newHistory = elemInstance.props.parentAPI.state.history.filter(function(elem) {
+      if( !elem.page.match(/AccountInfoPage/i) ) {
+        return elem;
       }
     });
+    elemInstance.props.parentAPI.setState({ "history" : newHistory });
+
   },
   render: function render() {
     var elemInstance = this;
@@ -692,7 +702,7 @@ var OptionsBar = R.CC({
         },
         R.CE(
           "img",
-          { "src" : "http://ttv-api.s3.amazonaws.com/assets/connect_dark.png", "className" : "twitch-connect", href : "#", "onClick" : this.loginUser }
+          { "src" : "http://ttv-api.s3.amazonaws.com/assets/connect_light.png", "className" : "twitch-connect", href : "#", "onClick" : this.loginUser }
         ),
         R.CE(
           "span",
