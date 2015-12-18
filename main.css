@@ -211,7 +211,7 @@ body {
   box-shadow: insert 0 0 32px 1.6px #00a2eb; }
   #opening-splash div {
     opacity: 0; }
-    #opening-splash div svg {
+    #opening-splash div svg, #opening-splash div img {
       position: fixed;
       top: 50%;
       left: 50%;

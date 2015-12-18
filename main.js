@@ -1,8 +1,11 @@
+var appVersion = "0.5.1";
+
 window.$ = module.exports;
 window.jQuery = module.exports;
 var remote = require("remote");
 
 var ajax = function(optionsObj) {
+  console.log(optionsObj)
   optionsObj = optionsObj || {};
 
   var httpRequest = new XMLHttpRequest();
@@ -18,8 +21,14 @@ var ajax = function(optionsObj) {
       }
   	}
   }
-  
-  httpRequest.open((optionsObj.type || "GET"), optionsObj.url);
+  contentTypes = {
+    json: "application/json",
+    text: "text/plain"
+  }
+
+  httpRequest.open(((optionsObj.type || "").toUpperCase() || "GET"), optionsObj.url);
+  httpRequest.setRequestHeader("Content-Type", `${contentTypes[(optionsObj.dataType || "json")]}; charset=UTF-8`);
+  //httpRequest.send((JSON.stringify(optionsObj.data) || null));
   httpRequest.send((optionsObj.data || null));
 };
 

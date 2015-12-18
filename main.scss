@@ -200,7 +200,7 @@ body {
 	box-shadow: insert 0 0 2*$em .1*$em $midBlue;
 	& div {
 		opacity: 0;
-		& svg {
+		& svg, img {
 			position: fixed;
 			top: 50%;
 			left: 50%;

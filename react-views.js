@@ -399,7 +399,6 @@ var ViewParent = R.CC({
       document.querySelector("#opening-splash div").css({
         "opacity": 1
       });
-      console.log(typeof document.querySelector("#opening-splash div svg"))
       setTimeout(function() {
         document.querySelector("#opening-splash").css({
           "opacity": 0
