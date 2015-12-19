@@ -1,11 +1,18 @@
-var appVersion = "0.5.1";
+var appVersion = "0.6.0";
 
 window.$ = module.exports;
 window.jQuery = module.exports;
 var remote = require("remote");
 
+var restartApp = function() {
+  var app = remote.require("app")
+  var exec = require("child_process").exec;
+  exec("electron .");
+  app.quit();
+};
+
 var ajax = function(optionsObj) {
-  console.log(optionsObj)
+  //console.log(optionsObj)
   optionsObj = optionsObj || {};
 
   var httpRequest = new XMLHttpRequest();
@@ -56,6 +63,14 @@ Object.prototype.map = function(callback) {
     }
   }
 };
+
+var parseBufferData = function(data) {
+  if(Array.isArray(data)) {
+    return data.map(function(buff) {
+      return String.fromCharCode( parseInt( buff.toString(2), 2 ) );
+    }).join("");
+  }
+}
 
 HTMLElement.prototype.addClass = function() {
   if(this) {
@@ -168,8 +183,8 @@ HTMLElement.prototype.remove = function() {
   if(this) {
     //console.log("REMOVE NODE");
 
-    console.log(this);
+    //console.log(this);
     this.parentNode.removeChild(this);
-    console.log(this);
+    //console.log(this);
   }
 };

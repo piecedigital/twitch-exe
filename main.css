@@ -230,6 +230,24 @@ body {
     left: 50%;
     transform: translate(-50%, 80px); }
 
+#update-logger {
+  z-index: 1001;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0 16px 0;
+  margin: 0;
+  background-color: white; }
+  #update-logger li {
+    color: #646464;
+    font-size: 12.8px;
+    list-style: none; }
+    #update-logger li span {
+      color: black; }
+
 .section-title {
   margin: 0 0 16px;
   padding: 0; }
@@ -253,7 +271,7 @@ body {
     margin: 0 0 16px;
     text-align: left; }
     #top-streams .top-streams-info p {
-      word-wrap: word-break;
+      word-wrap: break-word;
       margin: 0; }
     #top-streams .top-streams-info .top-stream-channel .image-div {
       display: inline-block; }

@@ -14,11 +14,72 @@
       </div>
       <h1>Twitch Exe</h1>
     </div>
+    <ul id="update-logger">
+    </ul>
     <script src="https://fb.me/react-0.14.2.js"></script>
     <script src="https://fb.me/react-dom-0.14.2.js"></script>
-    <script src="jquery-1.11.3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
     <script src="main.js"></script>
+    <script id="check-update">
+      ajax({
+        url: "http://twitch-exe-updater.herokuapp.com/check-update",
+        type: "POST",
+        data: JSON.stringify({ appVersion : appVersion }),
+        success: function(data) {
+          data = JSON.parse(data);
+          //console.log(data);
+          if(data.status === "OOD") {
+            if(confirm("Your version is out of date. Would you like to update now?")) {
+              document.querySelector("#update-logger").css("display", "block");
+
+              var successful = true;
+
+              var finished = function() {
+                if(successful === true) {
+                  document.querySelector("#update-logger").innerHTML += `<li><span>Update complete!</span></li>`;
+                  alert("Update successful. You must now restart the application.");
+                  //restartApp();
+                };
+              };
+
+              data.files.map(function(file, index, array) {
+                document.querySelector("body").css("overflow", "hidden");
+                document.querySelector("#update-logger").innerHTML += `<li class="li-${index}">Updating ${file}...<span></span></li>`;
+                ajax({
+                  url: "http://twitch-exe-updater.herokuapp.com/get-file",
+                  type: "post",
+                  data: JSON.stringify({ filePath : file }),
+                  success: function(data2) {
+                    data2 = JSON.parse(data2);
+                    var parsed = parseBufferData(data2.bufferData.data);
+                    remote.require("./handle-data").saveFile(file, parsed, function(res) {
+                      console.log(res);
+                      document.querySelectorAll("#update-logger li")[index].querySelector("span").innerHTML = " success!";
+                      if(index === array.length-1) {
+                        finished();
+                      }
+                    });
+                    //console.log(parsed);
+                  },
+                  error: function(err2) {
+                    document.querySelectorAll("#update-logger li")[document.querySelectorAll("#update-logger li").length-1].querySelector("span").innerHTML = " error";
+                    console.error(err2)
+                  }
+                });
+              });
+            }
+          } else
+          if(data.status === "UTD") {
+            document.querySelector("#update-logger").remove();
+            document.querySelector("#check-update").remove();
+          }
+        },
+        error: function(err) {
+          console.error(err)
+        }
+      });
+    </script>
     
     <script src="https://ttv-api.s3.amazonaws.com/twitch.min.js"></script>
 
@@ -75,18 +136,18 @@
       }
     ];
     
-    remote.require("./handle-con-data").loadConcurrentData(function(data) {
+    remote.require("./handle-data").loadConcurrentData(function(data) {
       var newUserData = JSON.parse(data);
 
       var setViewerTutTrue = function() {
         newUserData.wentThroughTut.viewer = true;
 
-        remote.require("./handle-con-data").saveConcurrentData(newUserData);
+        remote.require("./handle-data").saveConcurrentData(newUserData);
       }
       var setOptionsTutTrue = function() {
         newUserData.wentThroughTut.options = true;
 
-        remote.require("./handle-con-data").saveConcurrentData(newUserData);
+        remote.require("./handle-data").saveConcurrentData(newUserData);
       }
 
       if(typeof newUserData === "object") {
@@ -117,37 +178,6 @@
         console.log(newUserData)
       }
     });
-    </script>
-    <script id="check-update">
-      ajax({
-        url: "http://localhost:8182/check-update",
-        type: "POST",
-        data: JSON.stringify({ appVersion : appVersion }),
-        success: function(data) {
-          console.log(data);
-          data = jSON.stringify(data);
-          if(data.status === "OOD") {
-            if(confirm("Your version is out of date. Would you like to update now?")) {
-              data.files.map(function(file) {
-                ajax({
-                  url: "http://localhost:8182/get-file",
-                  type: "post",
-                  data: JSON.stringify({ filePath : file }),
-                  success: function(data) {
-                    console.log(data);
-                  },
-                  error: function(data) {
-                    console.error(data)
-                  }
-                });
-              });
-            }
-          }
-        },
-        error: function(data) {
-          console.error(data)
-        }
-      });
     </script>
   </body>
 </html>

@@ -5,7 +5,7 @@ Twitch.init({ "clientId" : clientId }, function(error, status) {
 var twitchToken = Twitch.getToken();
 var concurrentData = {};
 
-remote.require("./handle-con-data").loadConcurrentData(function(data) {
+remote.require("./handle-data").loadConcurrentData(function(data) {
   concurrentData = JSON.parse(data);
 });
 //////////////////////////////
@@ -633,7 +633,7 @@ var OptionsBar = R.CC({
               //console.log(data);
               concurrentData.username = data.display_name;
               concurrentData.links = data._links;
-              remote.require("./handle-con-data").saveConcurrentData(concurrentData);
+              remote.require("./handle-data").saveConcurrentData(concurrentData);
             },
             error: function(data) {
               //console.log(data)

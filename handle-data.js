@@ -10,12 +10,12 @@ exports.loadConcurrentData = function(func) {
 						viewer: false
 					}
 				};
-				console.log(userData)
+				//console.log("user data", data);
 				exports.saveConcurrentData(userData, func);
 			}
 		} else {
 			func(data);
-			console.log("user data", data);
+			//console.log("user data", data);
 		}
 
 	});
@@ -31,3 +31,12 @@ exports.saveConcurrentData = function(objData, func) {
 		}
 	});
 };
+
+exports.saveFile = function(path, data, callback) {
+	fs.writeFile(`${__dirname}/${path}`, data, "utf8", function(err) {
+		if(err) throw err;
+
+		console.log(`${path} was successfully saved!`);
+		callback(`${path} was successfully saved!`);
+	});
+}

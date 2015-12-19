@@ -224,6 +224,26 @@ body {
 		transform: translate(-50%, 5*$em);
 	}
 }
+#update-logger {
+	z-index: 1001;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0 1*$em 0;
+	margin: 0;
+	background-color: white;
+	& li {
+		color: rgba(100, 100, 100, 1);
+		font-size: .8*$em;
+		list-style: none;
+		span {
+			color: black;
+		}
+	}
+}
 .section-title {
 	margin: 0 0 1*$em;
 	padding: 0;
@@ -249,7 +269,7 @@ body {
 		margin: 0 0 1*$em;
 		text-align: left;
 		& p {
-			word-wrap: word-break;
+			word-wrap: break-word;
 			margin: 0;
 		}
 		& .top-stream-channel {
