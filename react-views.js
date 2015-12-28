@@ -406,6 +406,13 @@ var ViewParent = R.CC({
       }, 3000);
     }, 0);
   },
+  reloadVideo: function(e) {
+    // reloads the video player
+    var target = e.target.parent().parent().querySelector("iframe");
+    var originalSource = target.src;
+    // ... by reassigning its own "src"
+    target.src = originalSource;
+  },
   closeVideo: function(e) {
     if(this.state.streamers.length > 1) {
       this.state.streamers.splice( parseInt(e.target.attributes["data-chat"].value), 1 );
@@ -486,6 +493,11 @@ var ViewParent = R.CC({
                   R.CE(
                     "div",
                     { "className" : "option full-screenify", "title" : "fullscreen", "onClick" : elemInstance.fullScreenify }
+                  ),
+                  R.CE(
+                    "div",
+                    { "className" : "option reload", "title" : "reload", "data-chat" : ind, "onClick" : elemInstance.reloadVideo },
+                    "RELOAD"
                   ),
                   (elemInstance.state.streamers.length > 1) ? R.CE(
                     "div",

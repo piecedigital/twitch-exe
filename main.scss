@@ -495,16 +495,17 @@ body {
 					text-align: right;
 					& .option {
 						display: inline-block;
-						width: 1.5*$em;
+						min-width: 1.5*$em;
 						height: 1.5*$em;
+						padding: .25*$em;
+					  color: white;
 						background-color: $midBlue;
-						cursor: pointer;
 						box-shadow: inset 0 0 0 .1*$em black;
-						vertical-align: top;
 						text-align: center;
+						cursor: pointer;
+						vertical-align: top;
 						&:after {
 							position: relative;
-					    top: .2*$em;
 					    left: 0;
 					    color: white;
 						}
@@ -514,19 +515,21 @@ body {
 						&.info {
 							&:after {
 								content: "i";
+					    	top: .05*$em;
 								font-weight: bold;
 							}
 						}
 						&.full-screenify {
 							&:after {
+								top: -.05*$em;
 								content: "\2927";
 							}
 						}
 						&.close {
 							&:after {
-								content: "\2927";
+								content: "\2795";
     						display: block;
-    						top: .05*$em;
+    						top: -.2*$em;
 								transform: rotate(45deg);
 							}
 						}
