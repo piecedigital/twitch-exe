@@ -459,11 +459,16 @@ body {
               color: white; }
             #stream-viewer #embed-area .video-embed .video .video-options .option:hover {
               background-color: #17B4FB; }
-            #stream-viewer #embed-area .video-embed .video .video-options .option.full-screenify:after {
-              content: "\2927"; }
             #stream-viewer #embed-area .video-embed .video .video-options .option.info:after {
               content: "i";
               font-weight: bold; }
+            #stream-viewer #embed-area .video-embed .video .video-options .option.full-screenify:after {
+              content: "\2927"; }
+            #stream-viewer #embed-area .video-embed .video .video-options .option.close:after {
+              content: "\2927";
+              display: block;
+              top: 0.8px;
+              transform: rotate(45deg); }
         #stream-viewer #embed-area .video-embed .video:hover .video-options {
           opacity: 1;
           pointer-events: auto; }

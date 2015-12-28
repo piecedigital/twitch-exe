@@ -511,15 +511,23 @@ body {
 						&:hover {
 							background-color: $higherMidBlue;
 						}
+						&.info {
+							&:after {
+								content: "i";
+								font-weight: bold;
+							}
+						}
 						&.full-screenify {
 							&:after {
 								content: "\2927";
 							}
 						}
-						&.info {
+						&.close {
 							&:after {
-								content: "i";
-								font-weight: bold;
+								content: "\2927";
+    						display: block;
+    						top: .05*$em;
+								transform: rotate(45deg);
 							}
 						}
 					}
