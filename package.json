@@ -1,5 +1,5 @@
 {
-  "name": "Twitch Stream Viewer",
+  "name": "twitch-stream-viewer",
   "version": "0.5.2",
   "main": "app.js",
   "description": "Desktop application for viewing Twitch.tv streams",

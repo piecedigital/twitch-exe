@@ -1,4 +1,4 @@
-var appVersion = "0.6.1";
+var appVersion = "0.6.2";
 
 window.$ = module.exports;
 window.jQuery = module.exports;

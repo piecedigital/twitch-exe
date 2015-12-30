@@ -240,3 +240,5 @@ var tutoPop = function(tutArr, color, index, nextCB, closeCB) {
 		}
 	}
 };
+
+if(module && module.exports) exports.tutoPop = tutoPop;

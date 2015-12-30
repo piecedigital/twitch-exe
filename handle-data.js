@@ -17,7 +17,6 @@ exports.loadConcurrentData = function(func) {
 			func(data);
 			//console.log("user data", data);
 		}
-
 	});
 };
 
