@@ -5,7 +5,7 @@
 ## Summary
 Twitch Exe is a desktop application that delivers a smooth viewing experience for enjoying live broadcasts from [Twitch.tv](http://twitch.tv/)
 
-Unlike the viewing experience on (Twitch.tv)[http://twitch.tv/] itself, Twitch Exe provides a app-like user expereince to the user. Built into [Electron](http://electron.atom.io/)(formally Atom Shell) Twitch Exe is essentially a single-page application.
+Unlike the viewing experience on [Twitch.tv](http://twitch.tv/) itself, Twitch Exe provides a app-like user expereince to the user. Built into [Electron](http://electron.atom.io/)(formally Atom Shell) Twitch Exe is essentially a single-page application.
 
 ***
 
@@ -31,7 +31,18 @@ Once I started to learn and understand it I realized that this would be the tool
 ***
 
 ## Code Design
-I wouldn't say that I pursued any particular style of coding, but the closest that I got to here would be functional. I prefer to break my code operations into smaller functions. That's soemthing I did the more I wrote and I find that it made my code cleaner and more manageable.
+I wouldn't say that I pursued any particular style of coding, but the closest that I got to here would be a mix of both OO and functional programming. I prefer to break my code operations into smaller functions. That's something I did the more I wrote and I find that it made my code cleaner and more manageable.
+
+***
+
+## Wiki Directory
+
+* [Server.js](https://github.com/piecedigital/twitch-exe/wiki/Server)
+* [Main.js](https://github.com/piecedigital/twitch-exe/wiki/Main)
+* [Tutopop.js](https://github.com/piecedigital/twitch-exe/wiki/Tutopop)
+* [Handle-Data.js](https://github.com/piecedigital/twitch-exe/wiki/Handle-Data)
+* [React-Views.js](https://github.com/piecedigital/twitch-exe/wiki/React-Views)
+* [Index.html](https://github.com/piecedigital/twitch-exe/wiki/Index)
 
 ***
 
